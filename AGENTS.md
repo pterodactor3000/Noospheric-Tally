@@ -1,5 +1,3 @@
-
-
 <!-- BEGIN @pterodactor3000/silica-animus -->
 # Team Engineering Conventions
 
