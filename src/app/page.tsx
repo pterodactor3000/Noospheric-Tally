@@ -1,52 +1,55 @@
-import Image from "next/image";
-
 export default function Home() {
-	return (
-		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-				<Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
-				<ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-					<li className="mb-2 tracking-[-.01em]">
-						Get started by editing{" "}
-						<code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-							src/app/page.tsx
-						</code>
-						.
-					</li>
-					<li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-				</ol>
+  return (
+    <main className="flex min-h-screen items-center bg-background px-6 py-12 text-foreground sm:px-10">
+      <div className="mx-auto w-full max-w-2xl">
+        <div className="rounded-3xl border border-foreground/10 bg-white/70 p-8 shadow-sm backdrop-blur sm:p-12 dark:bg-black/20">
+          <div className="mb-12 flex items-center justify-between gap-4">
+            <p className="font-mono text-xs font-semibold tracking-[0.24em] text-foreground/70 uppercase">
+              Noospheric Tally
+            </p>
+            <span className="inline-flex items-center gap-2 rounded-full border border-foreground/10 px-3 py-1 font-mono text-xs text-foreground/70">
+              <span
+                aria-hidden
+                className="size-2 rounded-full bg-emerald-500"
+              />
+              HTTPS ready
+            </span>
+          </div>
 
-				<div className="flex gap-4 items-center flex-col sm:flex-row">
-					<a
-						className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Read our docs
-					</a>
-				</div>
-			</main>
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-					Go to nextjs.org →
-				</a>
-			</footer>
-		</div>
-	);
+          <div className="max-w-xl">
+            <p className="mb-4 text-sm font-medium text-foreground/60">
+              Household inventory
+            </p>
+            <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+              Know what is at home before you shop.
+            </h1>
+            <p className="mt-6 max-w-lg text-pretty text-base leading-7 text-foreground/70 sm:text-lg">
+              Noospheric Tally keeps everyday supplies visible at the moment
+              stock changes. The deployment foundation is in place for the
+              inventory experience to follow.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-4 border-t border-foreground/10 pt-6 sm:grid-cols-2">
+            <section>
+              <h2 className="font-mono text-xs font-semibold tracking-[0.18em] text-foreground/60 uppercase">
+                Next milestone
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-foreground/80">
+                Sign in and create a household inventory.
+              </p>
+            </section>
+            <section>
+              <h2 className="font-mono text-xs font-semibold tracking-[0.18em] text-foreground/60 uppercase">
+                Platform
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-foreground/80">
+                Secure web delivery for phone-ready barcode scanning.
+              </p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
 }
