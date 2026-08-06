@@ -1,4 +1,5 @@
 <!-- BEGIN @pterodactor3000/silica-animus -->
+
 # Team Engineering Conventions
 
 These conventions apply to all code in this repository. Adapt names, framework rules, testing policy, and security expectations to your stack before treating them as exhaustive.
@@ -48,3 +49,30 @@ These conventions apply to all code in this repository. Adapt names, framework r
 - Specific assertions: `toEqual(expected)` instead of `toBeTruthy()`
 - Cover edge cases: empty, null, boundary values and error paths
 <!-- END @pterodactor3000/silica-animus -->
+
+## Commit messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <imperative summary>
+```
+
+- Types: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `chore`, `build`, `ci`, `style`, `revert`
+- Scope is optional; use a short area name (`auth`, `api`, `ui`, `db`)
+- Subject: imperative mood (`add`, `fix`, `remove`), no trailing period, ≤72 chars
+- Focus on why, not a file list; the diff already shows what changed
+- Body only when needed: non-obvious why, breaking changes, migrations, linked issues
+- Breaking changes: append `!` after type/scope, and explain in a `BREAKING CHANGE:` footer
+- No emoji, no AI attribution, no "This commit does…" filler
+
+Examples:
+
+```
+feat(auth): add session cookie validation
+fix(db): prevent double-count on concurrent tally writes
+docs: clarify roadmap slice acceptance criteria
+feat(api)!: rename /v1/orders to /v1/checkout
+
+BREAKING CHANGE: clients must migrate to /v1/checkout; old route returns 410
+```

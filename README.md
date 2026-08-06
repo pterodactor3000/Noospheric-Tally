@@ -1,47 +1,49 @@
-# OpenNext Starter
+# Noospheric Tally
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Home inventory web app. Scan a barcode to add or subtract stock of consumables (cooking staples, pet food) so counts stay trustworthy at the moment of change.
+
+Built with [Next.js](https://nextjs.org) and deployed to Cloudflare via [OpenNext](https://opennext.js.org/cloudflare).
 
 ## Getting Started
 
-Read the documentation at https://opennext.js.org/cloudflare.
-
-## Develop
-
-Run the Next.js development server:
-
 ```bash
+npm install
 npm run dev
-# or similar package manager command
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000). Edit `app/page.tsx` and the page updates as you save.
 
 ## Preview
 
-Preview the application locally on the Cloudflare runtime:
+Run against the Cloudflare runtime locally:
 
 ```bash
 npm run preview
-# or similar package manager command
 ```
 
 ## Deploy
 
-Deploy the application to Cloudflare:
-
 ```bash
 npm run deploy
-# or similar package manager command
 ```
 
-## Learn More
+## Project context
 
-To learn more about Next.js, take a look at the following resources:
+Product and planning docs live under `context/foundation/`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `prd.md` - product requirements
+- `roadmap.md` - ordered vertical slices
+- `tech-stack.md` - stack decisions
+- `shape-notes.md` - discovery notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contributing
+
+Engineering conventions (naming, TypeScript, testing, security) and commit message format are in [`AGENTS.md`](./AGENTS.md).
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <imperative summary>
+```
+
+Examples: `feat(auth): add session cookie validation`, `fix(db): prevent double-count on concurrent tally writes`.
