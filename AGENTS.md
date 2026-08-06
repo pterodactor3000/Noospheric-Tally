@@ -1,5 +1,4 @@
 <!-- BEGIN @pterodactor3000/silica-animus -->
-
 # Team Engineering Conventions
 
 These conventions apply to all code in this repository. Adapt names, framework rules, testing policy, and security expectations to your stack before treating them as exhaustive.
