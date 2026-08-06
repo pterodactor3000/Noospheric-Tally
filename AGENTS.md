@@ -49,6 +49,12 @@ These conventions apply to all code in this repository. Adapt names, framework r
 - Cover edge cases: empty, null, boundary values and error paths
 <!-- END @pterodactor3000/silica-animus -->
 
+## Repository and tracker
+
+- **GitHub repo (canonical):** `pterodactor3000/Noospheric-Tally` (`https://github.com/pterodactor3000/Noospheric-Tally`)
+- **Linear project:** Noospheric Tally (team: Tech Heresy)
+- When creating or linking GitHub issues from Linear (or via `gh`), always target `pterodactor3000/Noospheric-Tally`. Never use another workspace repo (for example `ttrpg-handouts-generator`) for this project's issues, mirrors, or PR links.
+
 ## Commit messages
 
 Use [Conventional Commits](https://www.conventionalcommits.org/):
