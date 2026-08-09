@@ -30,6 +30,7 @@ dist-ssr
 # skills
 .claude
 .cursor
+
 # from next
 /node_modules
 /.pnp
