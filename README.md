@@ -13,6 +13,26 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Edit `src/app/page.tsx` and the page updates as you save.
 
+## Supabase environment and Auth
+
+Household sign-in needs a Supabase project. Copy [`.env.example`](./.env.example) to `.env.local` for Next.js, and set the same names in [`.dev.vars`](./.dev.vars) for Wrangler/OpenNext local runs:
+
+- `NEXT_PUBLIC_SUPABASE_URL`: Project URL from Supabase → Project Settings → API
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: anon / publishable key from the same page
+
+These values are public client config. Do not introduce a service role key in this app.
+
+Production Worker runtime reads them from the `vars` block in [`wrangler.jsonc`](./wrangler.jsonc). CI needs the same names as GitHub Actions repository secrets so `worker:check` and `worker:deploy` can inline them at build time:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Before building auth UI, set these Auth dashboard options:
+
+1. Disable email confirmation (password sign-up must land in a session immediately).
+2. Site URL: `https://noospheric-tally.eldritchcode-it.workers.dev`
+3. If the redirect allowlist is enforced for password auth, include `http://localhost:3000`
+
 ## Verification
 
 Run the checks shared by local development and CI:
@@ -57,6 +77,7 @@ npm run deploy
 
 - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account that owns the Worker.
 - `CLOUDFLARE_API_TOKEN`: account-scoped token with Cloudflare Workers Scripts edit permission for that account.
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`: see [Supabase environment and Auth](#supabase-environment-and-auth).
 
 The workflow installs scoped packages with GitHub's short-lived `GITHUB_TOKEN` and `packages: read` permission. If the package is not accessible through that token, configure a `GH_PACKAGES_TOKEN` repository secret with package-read access.
 
