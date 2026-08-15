@@ -2,6 +2,7 @@
   "name": "noospheric-tally",
   "version": "0.1.1",
   "private": true,
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,15 +10,15 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "worker:build": "opennextjs-cloudflare build",
-    "worker:check": "npm run worker:build && wrangler deploy --dry-run",
+    "worker:check": "pnpm worker:build && wrangler deploy --dry-run",
     "worker:deploy": "opennextjs-cloudflare deploy",
-    "deploy": "npm run worker:build && npm run worker:deploy",
-    "upload": "npm run worker:build && opennextjs-cloudflare upload",
-    "preview": "npm run worker:build && opennextjs-cloudflare preview",
+    "deploy": "pnpm worker:build && pnpm worker:deploy",
+    "upload": "pnpm worker:build && opennextjs-cloudflare upload",
+    "preview": "pnpm worker:build && opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
-    "bump:patch": "npm version patch --no-git-tag-version",
-    "bump:minor": "npm version minor --no-git-tag-version",
-    "bump:major": "npm version major --no-git-tag-version"
+    "bump:patch": "pnpm version patch --no-git-tag-version",
+    "bump:minor": "pnpm version minor --no-git-tag-version",
+    "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.19.9",
@@ -37,6 +38,7 @@
     "eslint-config-next": "16.2.11",
     "tailwindcss": "^4",
     "typescript": "^5.7.4",
+    "vitest": "^4.1.10",
     "wrangler": "^4.118.0"
   }
 }
