@@ -1,4 +1,4 @@
-import { expect, it, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { getSupabaseEnv } from './env'
 
 const NEXT_PUBLIC_SUPABASE_URL = 'https://test.supa.base'
@@ -20,61 +20,65 @@ const runWithSupabaseEnv = (env: SupabaseEnvStub, run: () => void) => {
   }
 }
 
-it('returns both values when the environment is complete', () => {
-  runWithSupabaseEnv(
-    {
-      supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
-      supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    },
-    () => {
-      expect(getSupabaseEnv()).toEqual({
+describe('getSupabaseEnv', () => {
+  test('returns both values when the environment is complete', () => {
+    runWithSupabaseEnv(
+      {
         supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
         supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      })
-    },
-  )
+      },
+      () => {
+        expect(getSupabaseEnv()).toEqual({
+          supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
+          supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        })
+      },
+    )
+  })
+
+  test('throws naming the URL variable when test is absent', () => {
+    runWithSupabaseEnv(
+      {
+        supabaseUrl: undefined,
+        supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      },
+      () => {
+        expect(() => getSupabaseEnv()).toThrow(
+          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_URL',
+        )
+      },
+    )
+  })
+
+  test('throws naming the anon key variable when test is absent', () => {
+    runWithSupabaseEnv(
+      { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: undefined },
+      () => {
+        expect(() => getSupabaseEnv()).toThrow(
+          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY',
+        )
+      },
+    )
+  })
+
+  test('throws when a variable is present but empty', () => {
+    runWithSupabaseEnv(
+      { supabaseUrl: '', supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY },
+      () => {
+        expect(() => getSupabaseEnv()).toThrow(
+          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_URL',
+        )
+      },
+    )
+
+    runWithSupabaseEnv(
+      { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: '' },
+      () => {
+        expect(() => getSupabaseEnv()).toThrow(
+          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY',
+        )
+      },
+    )
+  })
 })
-
-it('throws naming the URL variable when it is absent', () => {
-  runWithSupabaseEnv(
-    { supabaseUrl: undefined, supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY },
-    () => {
-      expect(() => getSupabaseEnv()).toThrow(
-        'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_URL',
-      )
-    },
-  )
-})
-
-it('throws naming the anon key variable when it is absent', () => {
-  runWithSupabaseEnv(
-    { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: undefined },
-    () => {
-      expect(() => getSupabaseEnv()).toThrow(
-        'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY',
-      )
-    },
-  )
-})
-
-it('throws when a variable is present but empty', () => {
-  runWithSupabaseEnv(
-    { supabaseUrl: '', supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY },
-    () => {
-      expect(() => getSupabaseEnv()).toThrow(
-        'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_URL',
-      )
-    },
-  )
-
-  runWithSupabaseEnv(
-    { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: '' },
-    () => {
-      expect(() => getSupabaseEnv()).toThrow(
-        'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY',
-      )
-    },
-  )
-})
-
 export { runWithSupabaseEnv }
