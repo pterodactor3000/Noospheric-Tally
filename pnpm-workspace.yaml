@@ -4,3 +4,5 @@ allowBuilds:
   sharp: false
   unrs-resolver: false
   workerd: false
+minimumReleaseAgeExclude:
+  - '@pterodactor3000/silica-animus@0.6.0'

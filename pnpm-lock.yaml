@@ -28,8 +28,8 @@ importers:
         version: 19.2.8(react@19.2.8)
     devDependencies:
       '@pterodactor3000/silica-animus':
-        specifier: ^0.5.1
-        version: 0.5.1
+        specifier: ^0.6.0
+        version: 0.6.0
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.3.3
@@ -1282,8 +1282,8 @@ packages:
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
 
-  '@pterodactor3000/silica-animus@0.5.1':
-    resolution: {integrity: sha512-y7bZfeOM2TSlQL24Kxfb++GJ/DlMZxVTwX71R2vGkovlIa/HxDnZVByajRMlwdHGUmhzkYfRpWyp7sfgdhaQqQ==, tarball: https://npm.pkg.github.com/download/@pterodactor3000/silica-animus/0.5.1/610ed6a232e71e31e37a4a655a65f4a4ec0b13d9}
+  '@pterodactor3000/silica-animus@0.6.0':
+    resolution: {integrity: sha512-2ijDBTAgjRzOb5WMFfNnxsxo1u70RdPuej0BdPoTaQXjBOwZgK78hem27tcxtH+KZtiAranye9Iz0Ano997V2Q==, tarball: https://npm.pkg.github.com/download/@pterodactor3000/silica-animus/0.6.0/4b76403f90c98bf486665ce0a85128dbb1d27af5}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -5303,7 +5303,7 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@pterodactor3000/silica-animus@0.5.1': {}
+  '@pterodactor3000/silica-animus@0.6.0': {}
 
   '@rolldown/binding-android-arm64@1.2.4':
     optional: true

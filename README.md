@@ -7,8 +7,8 @@ Built with [Next.js](https://nextjs.org) and deployed to Cloudflare via [OpenNex
 ## Getting Started
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). Edit `src/app/page.tsx` and the page updates as you save.
@@ -38,9 +38,9 @@ Before building auth UI, set these Auth dashboard options:
 Run the checks shared by local development and CI:
 
 ```bash
-npm run lint
-npm run typecheck
-npm run worker:check
+pnpm lint
+pnpm typecheck
+pnpm worker:check
 ```
 
 `worker:check` builds the OpenNext Worker and runs a non-publishing Wrangler deployment validation.
@@ -50,7 +50,7 @@ npm run worker:check
 Run against the Cloudflare runtime locally:
 
 ```bash
-npm run preview
+pnpm preview
 ```
 
 Open [http://127.0.0.1:8787](http://127.0.0.1:8787) after the preview starts.
@@ -62,11 +62,11 @@ No custom domain is required for this foundation. The first successful deploy pr
 Live deployment: [https://noospheric-tally.eldritchcode-it.workers.dev](https://noospheric-tally.eldritchcode-it.workers.dev)
 
 1. Enable the `workers.dev` subdomain for the intended Cloudflare account.
-2. Authenticate interactively with `npx wrangler login`.
+2. Authenticate interactively with `pnpm dlx wrangler login`.
 3. Publish the Worker:
 
 ```bash
-npm run deploy
+pnpm deploy
 ```
 
 1. Save the URL printed by Wrangler and verify it from a phone over HTTPS.
