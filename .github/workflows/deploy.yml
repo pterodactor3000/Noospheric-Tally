@@ -34,7 +34,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
           registry-url: https://npm.pkg.github.com
-          scope: "@pterodactor3000"
+          scope: '@pterodactor3000'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -46,6 +46,9 @@ jobs:
 
       - name: Check TypeScript
         run: pnpm typecheck
+
+      - name: Run tests
+        run: pnpm test
 
       - name: Validate Worker deployment
         run: pnpm worker:check
