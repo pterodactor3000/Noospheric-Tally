@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit",
     "worker:build": "opennextjs-cloudflare build",
     "worker:check": "pnpm worker:build && wrangler deploy --dry-run",
