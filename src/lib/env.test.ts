@@ -36,7 +36,7 @@ describe('getSupabaseEnv', () => {
     )
   })
 
-  test('throws naming the URL variable when test is absent', () => {
+  test('throws naming the URL variable when it is absent', () => {
     runWithSupabaseEnv(
       {
         supabaseUrl: undefined,
@@ -50,7 +50,7 @@ describe('getSupabaseEnv', () => {
     )
   })
 
-  test('throws naming the anon key variable when test is absent', () => {
+  test('throws naming the anon key variable when it is absent', () => {
     runWithSupabaseEnv(
       { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: undefined },
       () => {

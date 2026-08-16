@@ -30,7 +30,7 @@
     "react-dom": "^19.1.7"
   },
   "devDependencies": {
-    "@pterodactor3000/silica-animus": "^0.6.0",
+    "@pterodactor3000/silica-animus": "^0.6.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.43",
     "@types/react": "^19.1.7",

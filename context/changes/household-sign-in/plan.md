@@ -50,15 +50,15 @@ Phases are ordered so each one is verifiable on its own: configuration and clien
 
 ## Critical Implementation Details
 
-**Next.js 16 uses `proxy.ts`, not `middleware.ts`.** The `middleware` filename is deprecated in Next.js 16. The correct convention is `src/proxy.ts` exporting a function named `proxy`, and its runtime is Node.js and cannot be configured. Type imports rename accordingly (`NextMiddleware` becomes `NextProxy`, `MiddlewareConfig` becomes `ProxyConfig`). Supabase documentation still shows `middleware.ts`; adapt the cookie `getAll`/`setAll` body verbatim but place it in `proxy.ts` under the new export name.
+**Next.js 16 uses** `proxy.ts`**, not** `middleware.ts`**.** The `middleware` filename is deprecated in Next.js 16. The correct convention is `src/proxy.ts` exporting a function named `proxy`, and its runtime is Node.js and cannot be configured. Type imports rename accordingly (`NextMiddleware` becomes `NextProxy`, `MiddlewareConfig` becomes `ProxyConfig`). Supabase documentation still shows `middleware.ts`; adapt the cookie `getAll`/`setAll` body verbatim but place it in `proxy.ts` under the new export name.
 
-**`NEXT_PUBLIC_*` variables are needed at build time, not only at runtime.** The client bundle inlines them during `next build`, which in this repository runs inside `npm run worker:check` and `npm run worker:deploy` in CI. Supplying them only as Cloudflare Worker secrets produces a deployed app whose browser client has an undefined URL. They must be present as GitHub Actions environment values for the build steps as well as available to the Worker at runtime.
+`NEXT_PUBLIC_*` **variables are needed at build time, not only at runtime.** The client bundle inlines them during `next build`, which in this repository runs inside `npm run worker:check` and `npm run worker:deploy` in CI. Supplying them only as Cloudflare Worker secrets produces a deployed app whose browser client has an undefined URL. They must be present as GitHub Actions environment values for the build steps as well as available to the Worker at runtime.
 
 **Household creation must be atomic and cannot be two client-issued inserts.** Under row-level security, an authenticated user inserting a `households` row and then a `household_members` row is two statements with a window where a household exists that nobody can read, and the membership insert policy has to trust a household the user is not yet a member of. Implement creation as a single `security definer` Postgres function that inserts both rows in one transaction and returns the new household id, then call it through `supabase.rpc`.
 
 **Row-level security policies must not recurse.** The `households` select policy references `household_members`, so the `household_members` select policy must be expressed as `user_id = auth.uid()` directly rather than by joining back through `households`. A policy pair that references each other produces an infinite recursion error at query time rather than at migration time.
 
-**Session reads use `getUser`, never `getSession`.** On the server, `supabase.auth.getUser()` revalidates the token against the Auth server. `getSession()` returns unverified cookie contents and must not gate access to household data.
+**Session reads use** `getUser`**, never** `getSession`**.** On the server, `supabase.auth.getUser()` revalidates the token against the Auth server. `getSession()` returns unverified cookie contents and must not gate access to household data.
 
 ---
 
@@ -148,9 +148,9 @@ Add a test runner with a real assertion, and make CI fail when tests fail, so th
 
 **Files:** `package.json`, `vitest.config.ts`
 
-**Intent:** Add Vitest as a dev dependency with a `test` script, configured for the Node environment and the `@/*` path alias, covering pure modules only.
+**Intent:** Add Vitest as a dev dependency with a `test` script, configured for the Node environment and the `@/`\* path alias, covering pure modules only.
 
-**Contract:** `npm test` runs Vitest once and exits non-zero on failure. Configuration resolves `@/*` to `src/*` to match `tsconfig.json:21-23`. No JSDOM, no React component rendering, no Supabase network access in tests.
+**Contract:** `npm test` runs Vitest once and exits non-zero on failure. Configuration resolves `@/`_ to `src/_`to match`tsconfig.json:21-23`. No JSDOM, no React component rendering, no Supabase network access in tests.
 
 #### 2. First tests
 
@@ -255,7 +255,7 @@ Refresh the session cookie on every relevant request and protect the signed-in a
 
 **Intent:** Refresh the Supabase auth cookie on each request and redirect unauthenticated visitors away from protected paths.
 
-**Contract:** Exports `proxy(request: NextRequest)` and a `config.matcher` covering `/inventory` and `/household/:path*` while excluding static assets, image optimization, and favicon. Builds a `createServerClient` with `getAll`/`setAll` bound to the request cookies and the outgoing response, calls `supabase.auth.getUser()`, and returns the response with refreshed cookies. Unauthenticated requests to a protected path redirect to `/login`. The file uses the Next.js 16 `proxy` convention, not the deprecated `middleware` filename or export.
+**Contract:** Exports `proxy(request: NextRequest)` and a `config.matcher` covering `/inventory` and `/household/:path`\* while excluding static assets, image optimization, and favicon. Builds a `createServerClient` with `getAll`/`setAll` bound to the request cookies and the outgoing response, calls `supabase.auth.getUser()`, and returns the response with refreshed cookies. Unauthenticated requests to a protected path redirect to `/login`. The file uses the Next.js 16 `proxy` convention, not the deprecated `middleware` filename or export.
 
 #### 2. Server-side session helper
 
@@ -263,7 +263,7 @@ Refresh the session cookie on every relevant request and protect the signed-in a
 
 **Intent:** Give server components one verified way to ask who the caller is.
 
-**Contract:** Exports `loadCurrentUser()` returning the Supabase user or `null`, using `supabase.auth.getUser()` on the server client. Never uses `getSession`. Named `load*` rather than `get*` because it performs auth I/O and must not be treated as a pure query under team conventions. It reads the request context and returns without redirecting.
+**Contract:** Exports `loadCurrentUser()` returning the Supabase user or `null`, using `supabase.auth.getUser()` on the server client. Never uses `getSession`. Named `load`_ rather than `get_` because it performs auth I/O and must not be treated as a pure query under team conventions. It reads the request context and returns without redirecting.
 
 #### 3. Protected placeholder route
 
@@ -369,7 +369,7 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 **Intent:** Read the caller's household from a lib loader, and create one through a route-colocated server action that calls the atomic function from Phase 3. Auth mutations already live under `src/app/(auth)/actions.ts`; household mutations follow the same convention.
 
-**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load*` rather than `get*` because it performs database I/O and must not be treated as a pure query under team conventions. `src/app/household/actions.ts` exports `createHousehold` as a `"use server"` action calling `supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
+**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load`_ rather than `get_`because it performs database I/O and must not be treated as a pure query under team conventions.`src/app/household/actions.ts`exports`createHousehold`as a`"use server"`action calling`supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
 
 #### 2. Household name validation and tests
 
@@ -490,12 +490,12 @@ Application rollback is a revert of the merge commit followed by the automatic r
 
 #### Automated
 
-- [ ] 2.1 `npm test` passes with at least four env module assertions
-- [ ] 2.2 `npm run lint` and `npm run typecheck` exit zero with test files present
+- [x] 2.1 `npm test` passes with at least four env module assertions (`7ecb2d1`, `57dc0a2`, `0a20a36`)
+- [x] 2.2 `npm run lint` and `npm run typecheck` exit zero with test files present (`7ecb2d1`, `8b6804d`, `57dc0a2`)
 
 #### Manual
 
-- [ ] 2.3 Breaking one assertion makes `npm test` exit non-zero, then reverted
+- [x] 2.3 Breaking one assertion makes `npm test` exit non-zero, then reverted (verified 2026-08-16)
 
 ### Phase 3: Household schema and row-level security
 
