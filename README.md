@@ -38,11 +38,11 @@ Before building auth UI, set these Auth dashboard options:
 Schema lives in [`supabase/migrations/`](./supabase/migrations/). Apply pending files to the linked Supabase project rather than pasting SQL in the dashboard:
 
 ```bash
-supabase link --project-ref <project-id>
-supabase db push
+pnpm exec supabase link --project-ref <project-id>
+pnpm exec supabase db push
 ```
 
-`db push` records applied versions in `supabase_migrations.schema_migrations`, so re-running it skips files already applied. To reproduce the schema from empty, run `supabase db push` against a new linked project.
+`db push` records applied versions in `supabase_migrations.schema_migrations`, so re-running it skips files already applied. To reproduce the schema from empty, run `pnpm exec supabase db push` against a new linked project.
 
 ## Verification
 

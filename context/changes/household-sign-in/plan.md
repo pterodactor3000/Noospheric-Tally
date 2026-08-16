@@ -148,9 +148,9 @@ Add a test runner with a real assertion, and make CI fail when tests fail, so th
 
 **Files:** `package.json`, `vitest.config.ts`
 
-**Intent:** Add Vitest as a dev dependency with a `test` script, configured for the Node environment and the `@/`\* path alias, covering pure modules only.
+**Intent:** Add Vitest as a dev dependency with a `test` script, configured for the Node environment and the `@/` path alias, covering pure modules only.
 
-**Contract:** `npm test` runs Vitest once and exits non-zero on failure. Configuration resolves `@/`_ to `src/_`to match`tsconfig.json:21-23`. No JSDOM, no React component rendering, no Supabase network access in tests.
+**Contract:** `npm test` runs Vitest once and exits non-zero on failure. Configuration resolves `@/`\_ to `src/`\_to match`tsconfig.json:21-23`. No JSDOM, no React component rendering, no Supabase network access in tests.
 
 #### 2. First tests
 
@@ -255,7 +255,7 @@ Refresh the session cookie on every relevant request and protect the signed-in a
 
 **Intent:** Refresh the Supabase auth cookie on each request and redirect unauthenticated visitors away from protected paths.
 
-**Contract:** Exports `proxy(request: NextRequest)` and a `config.matcher` covering `/inventory` and `/household/:path`\* while excluding static assets, image optimization, and favicon. Builds a `createServerClient` with `getAll`/`setAll` bound to the request cookies and the outgoing response, calls `supabase.auth.getUser()`, and returns the response with refreshed cookies. Unauthenticated requests to a protected path redirect to `/login`. The file uses the Next.js 16 `proxy` convention, not the deprecated `middleware` filename or export.
+**Contract:** Exports `proxy(request: NextRequest)` and a `config.matcher` covering `/inventory` and `/household/:path` while excluding static assets, image optimization, and favicon. Builds a `createServerClient` with `getAll`/`setAll` bound to the request cookies and the outgoing response, calls `supabase.auth.getUser()`, and returns the response with refreshed cookies. Unauthenticated requests to a protected path redirect to `/login`. The file uses the Next.js 16 `proxy` convention, not the deprecated `middleware` filename or export++.++
 
 #### 2. Server-side session helper
 
@@ -263,7 +263,7 @@ Refresh the session cookie on every relevant request and protect the signed-in a
 
 **Intent:** Give server components one verified way to ask who the caller is.
 
-**Contract:** Exports `loadCurrentUser()` returning the Supabase user or `null`, using `supabase.auth.getUser()` on the server client. Never uses `getSession`. Named `load`_ rather than `get_` because it performs auth I/O and must not be treated as a pure query under team conventions. It reads the request context and returns without redirecting.
+**Contract:** Exports `loadCurrentUser()` returning the Supabase user or `null`, using `supabase.auth.getUser()` on the server client. Never uses `getSession`. Named `load`_ rather than `get`_ because it performs auth I/O and must not be treated as a pure query under team conventions. It reads the request context and returns without redirecting.
 
 #### 3. Protected placeholder route
 
@@ -369,7 +369,7 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 **Intent:** Read the caller's household from a lib loader, and create one through a route-colocated server action that calls the atomic function from Phase 3. Auth mutations already live under `src/app/(auth)/actions.ts`; household mutations follow the same convention.
 
-**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load`_ rather than `get_`because it performs database I/O and must not be treated as a pure query under team conventions.`src/app/household/actions.ts`exports`createHousehold`as a`"use server"`action calling`supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
+**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load`\_ rather than `get`\_because it performs database I/O and must not be treated as a pure query under team conventions.`src/app/household/actions.ts`exports`createHousehold`as a`"use server"`action calling`supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
 
 #### 2. Household name validation and tests
 
@@ -501,15 +501,15 @@ Application rollback is a revert of the merge commit followed by the automatic r
 
 #### Automated
 
-- [ ] 3.1 The migration applies cleanly with no error
-- [ ] 3.2 Re-running the full migration set from empty reproduces the schema
+- [x] 3.1 The migration applies cleanly with no error (`d890c26`)
+- [x] 3.2 Re-running the full migration set from empty reproduces the schema (`d890c26`)
 
 #### Manual
 
-- [ ] 3.3 `create_household('Test')` creates exactly one household and one membership
-- [ ] 3.4 A second call by the same user is refused
-- [ ] 3.5 A second authenticated user selecting from `households` returns zero rows
-- [ ] 3.6 The anon role selecting from `households` returns zero rows
+- [x] 3.3 `create_household('Test')` creates exactly one household and one membership (verified 2026-08-16)
+- [x] 3.4 A second call by the same user is refused (verified 2026-08-16)
+- [x] 3.5 A second authenticated user selecting from `households` returns zero rows (verified 2026-08-16)
+- [x] 3.6 The anon role selecting from `households` returns zero rows (verified 2026-08-16)
 
 ### Phase 4: Session plumbing and route protection
 
