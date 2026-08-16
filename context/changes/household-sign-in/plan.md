@@ -150,7 +150,7 @@ Add a test runner with a real assertion, and make CI fail when tests fail, so th
 
 **Intent:** Add Vitest as a dev dependency with a `test` script, configured for the Node environment and the `@/` path alias, covering pure modules only.
 
-**Contract:** `npm test` runs Vitest once and exits non-zero on failure. Configuration resolves `@/`\_ to `src/`\_to match`tsconfig.json:21-23`. No JSDOM, no React component rendering, no Supabase network access in tests.
+**Contract:** `npm test` runs Vitest once and exits non-zero on failure. Configuration resolves `@/` to `src/`to match`tsconfig.json:21-23`. No JSDOM, no React component rendering, no Supabase network access in tests.
 
 #### 2. First tests
 
@@ -369,7 +369,7 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 **Intent:** Read the caller's household from a lib loader, and create one through a route-colocated server action that calls the atomic function from Phase 3. Auth mutations already live under `src/app/(auth)/actions.ts`; household mutations follow the same convention.
 
-**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load`\_ rather than `get`\_because it performs database I/O and must not be treated as a pure query under team conventions.`src/app/household/actions.ts`exports`createHousehold`as a`"use server"`action calling`supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
+**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load` rather than `get`because it performs database I/O and must not be treated as a pure query under team conventions.`src/app/household/actions.ts`exports`createHousehold`as a`"use server"`action calling`supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
 
 #### 2. Household name validation and tests
 
@@ -515,15 +515,15 @@ Application rollback is a revert of the merge commit followed by the automatic r
 
 #### Automated
 
-- [ ] 4.1 `npm run lint`, `npm run typecheck`, and `npm test` exit zero
-- [ ] 4.2 `npm run worker:check` builds and dry-run deploys with the proxy present
-- [ ] 4.3 Typecheck confirms no deprecated `NextMiddleware` or `MiddlewareConfig` imports
+- [x] 4.1 `npm run lint`, `npm run typecheck`, and `npm test` exit zero
+- [x] 4.2 `npm run worker:check` builds and dry-run deploys with the proxy present
+- [x] 4.3 Typecheck confirms no deprecated `NextMiddleware` or `MiddlewareConfig` imports
 
 #### Manual
 
-- [ ] 4.4 `/inventory` while signed out redirects to `/login` (404 at `/login` is expected until Phase 5)
-- [ ] 4.5 `/` while signed out renders with no redirect
-- [ ] 4.6 Static assets and favicon load normally
+- [x] 4.4 `/inventory` while signed out redirects to `/login` (404 at `/login` is expected until Phase 5)
+- [x] 4.5 `/` while signed out renders with no redirect
+- [x] 4.6 Static assets and favicon load normally
 
 ### Phase 5: Sign-up, sign-in, and sign-out
 

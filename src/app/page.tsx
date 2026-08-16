@@ -1,4 +1,17 @@
+'use client'
+
+import { Button } from '@/components/ui/button'
+import { redirect } from 'next/navigation'
+
 export default function Home() {
+  const handleLoginButton = () => {
+    redirect('/login')
+  }
+
+  const handleSignUpButton = () => {
+    redirect('/signup')
+  }
+
   return (
     <main className="flex min-h-screen items-center bg-background px-6 py-12 text-foreground sm:px-10">
       <div className="mx-auto w-full max-w-2xl">
@@ -28,6 +41,12 @@ export default function Home() {
               stock changes. The deployment foundation is in place for the
               inventory experience to follow.
             </p>
+            <Button variant="outline" onClick={handleLoginButton}>
+              Login
+            </Button>
+            <Button variant="outline" onClick={handleSignUpButton}>
+              Sign up
+            </Button>
           </div>
 
           <div className="mt-12 grid gap-4 border-t border-foreground/10 pt-6 sm:grid-cols-2">
@@ -51,5 +70,5 @@ export default function Home() {
         </div>
       </div>
     </main>
-  );
+  )
 }
