@@ -33,6 +33,17 @@ Before building auth UI, set these Auth dashboard options:
 2. Site URL: `https://noospheric-tally.eldritchcode-it.workers.dev`
 3. If the redirect allowlist is enforced for password auth, include `http://localhost:3000`
 
+## Database migrations
+
+Schema lives in [`supabase/migrations/`](./supabase/migrations/). Apply pending files to the linked Supabase project rather than pasting SQL in the dashboard:
+
+```bash
+supabase link --project-ref <project-id>
+supabase db push
+```
+
+`db push` records applied versions in `supabase_migrations.schema_migrations`, so re-running it skips files already applied. To reproduce the schema from empty, run `supabase db push` against a new linked project.
+
 ## Verification
 
 Run the checks shared by local development and CI:

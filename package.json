@@ -37,6 +37,7 @@
     "@types/react-dom": "^19.1.7",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
+    "supabase": "^2.114.0",
     "tailwindcss": "^4",
     "typescript": "^5.7.4",
     "vitest": "^4.1.10",
