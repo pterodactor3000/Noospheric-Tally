@@ -1,0 +1,50 @@
+import { createServerClient } from '@supabase/ssr'
+
+import { type NextRequest, NextResponse } from 'next/server'
+
+import { getSupabaseEnv } from '@/lib/env'
+
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabaseEnv = getSupabaseEnv()
+
+  const supabase = createServerClient(
+    supabaseEnv.supabaseUrl,
+    supabaseEnv.supabaseAnonKey,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value)
+          })
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) => {
+            supabaseResponse.cookies.set(name, value, options)
+          })
+        },
+      },
+    },
+  )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = '/login'
+    return NextResponse.redirect(loginUrl)
+  }
+
+  return supabaseResponse
+}
+
+export const runtime = 'experimental-edge'
+
+export const config = {
+  matcher: ['/inventory', '/inventory/:path*', '/household/:path*'],
+}
