@@ -23,9 +23,33 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
         'sm:px-10',
       )}
     >
-      <div className={clsx('mx-auto', 'w-full', 'max-w-md')}>
-        <p>Noospheric Tally</p>
-        {children}
+      <div className={clsx('mx-auto', 'w-full', 'max-w-4xl')}>
+        <div
+          className={clsx(
+            'border',
+            'border-foreground/50',
+            'bg-white/70',
+            'p-8',
+            'shadow-sm',
+            'backdrop-blur',
+            'sm:p-12',
+            'dark:bg-black/20',
+          )}
+        >
+          <p
+            className={clsx(
+              'mb-8',
+              'font-mono',
+              'font-semibold',
+              'tracking-[0.24em]',
+              'text-foreground/70',
+              'uppercase',
+            )}
+          >
+            Noospheric Tally
+          </p>
+          {children}
+        </div>
       </div>
     </main>
   )
