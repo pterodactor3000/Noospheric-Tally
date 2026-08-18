@@ -12299,11 +12299,10 @@ declare abstract class EmailEvent extends ExtendableEvent {
 }
 declare type EmailExportedHandler<Env = unknown, Props = unknown> = (message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext<Props>) => void | Promise<void>;
 declare module "cloudflare:email" {
-    let _EmailMessage: {
+    export const EmailMessage: {
         prototype: EmailMessage;
         new (from: string, to: string, raw: ReadableStream | string): EmailMessage;
     };
-    export { _EmailMessage as EmailMessage };
 }
 /**
  * Evaluation context for targeting rules.
@@ -13221,8 +13220,7 @@ interface SecretsStoreSecret {
     get(): Promise<string>;
 }
 declare module "cloudflare:sockets" {
-    function _connect(address: string | SocketAddress, options?: SocketOptions): Socket;
-    export { _connect as connect };
+    export function connect(address: string | SocketAddress, options?: SocketOptions): Socket;
 }
 /**
  * Binding entrypoint for Cloudflare Stream.

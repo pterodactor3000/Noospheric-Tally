@@ -16,7 +16,7 @@
     "deploy": "pnpm worker:build && pnpm worker:deploy",
     "upload": "pnpm worker:build && opennextjs-cloudflare upload",
     "preview": "pnpm worker:build && opennextjs-cloudflare preview",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts && node ./scripts/patch-cloudflare-env-types.mjs",
     "bump:patch": "pnpm version patch --no-git-tag-version",
     "bump:minor": "pnpm version minor --no-git-tag-version",
     "bump:major": "pnpm version major --no-git-tag-version"
