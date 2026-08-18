@@ -1,8 +1,9 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
+import { clsx } from 'clsx'
 
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
-import { clsx } from 'clsx'
+import { TallyLabel } from '@/components/tally-label'
 
 const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await loadCurrentUser()
@@ -35,18 +36,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
             'dark:bg-black/20',
           )}
         >
-          <p
-            className={clsx(
-              'mb-8',
-              'font-mono',
-              'font-semibold',
-              'tracking-[0.24em]',
-              'text-foreground/70',
-              'uppercase',
-            )}
-          >
-            Noospheric Tally
-          </p>
+          <TallyLabel />
           {children}
         </div>
       </div>

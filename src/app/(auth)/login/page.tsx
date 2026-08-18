@@ -36,7 +36,7 @@ const Login = () => {
           'sm:text-5xl',
         )}
       >
-        [ Credentials required ]
+        Cogitation unit login
       </h1>
       <p
         className={clsx(
@@ -49,7 +49,7 @@ const Login = () => {
           'text-base',
         )}
       >
-        [ Provide credentials to use your personal cogitation unit ]
+        Provide credentials to use your personal cogitation unit
       </p>
 
       <form
@@ -70,7 +70,6 @@ const Login = () => {
             autoComplete="email"
             aria-invalid={state?.field === 'email'}
             className={clsx('min-h-11', 'text-base', 'font-mono', 'uppercase')}
-            placeholder="Enter your email"
           />
         </div>
 
@@ -85,10 +84,9 @@ const Login = () => {
             type="password"
             name="password"
             id="password"
-            autoComplete="password"
+            autoComplete="current-password"
             aria-invalid={state?.field === 'password'}
             className={clsx('min-h-11', 'text-base', 'font-mono', 'uppercase')}
-            placeholder="Enter your password"
           />
         </div>
 

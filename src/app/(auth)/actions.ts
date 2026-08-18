@@ -12,9 +12,11 @@ interface AuthActionError {
   field?: 'email' | 'password'
 }
 
-const AUTH_FAILURE_MESSAGE = 'Could not sign in. Check email and password.'
-const SIGN_UP_FAILURE_MESSAGE = 'Could not create the account. Try again.'
-const EMAIL_ALREADY_REGISTERED_MESSAGE = 'Email already registered.'
+const AUTH_FAILURE_MESSAGE = '! Invalid credentials ! Try again !'
+const SIGN_UP_FAILURE_MESSAGE =
+  '! Cogitation unit requisition failed ! Pray to the Omnissiah and try later !'
+const EMAIL_ALREADY_REGISTERED_MESSAGE =
+  '! Cogitation unit already requisitioned for this user ! Investigate before continuing !'
 
 const getCredentialFields = (formData: FormData) => {
   const email = formData.get('email') as string
@@ -72,6 +74,14 @@ const signInWithPassword = async (
 ): Promise<AuthActionError> => {
   const parsedCredentials = getParsedCredentials(formData)
 
+  if ('status' in parsedCredentials && parsedCredentials.status === 'error') {
+    return {
+      status: 'error',
+      message: parsedCredentials.message,
+      field: parsedCredentials.field,
+    }
+  }
+
   const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword({
     email: parsedCredentials.email!,
@@ -90,6 +100,14 @@ const signUpWithPassword = async (
   formData: FormData,
 ): Promise<AuthActionError> => {
   const parsedCredentials = getParsedCredentials(formData)
+
+  if ('status' in parsedCredentials && parsedCredentials.status === 'error') {
+    return {
+      status: 'error',
+      message: parsedCredentials.message,
+      field: parsedCredentials.field,
+    }
+  }
 
   const supabase = await createClient()
   const { error } = await supabase.auth.signUp({

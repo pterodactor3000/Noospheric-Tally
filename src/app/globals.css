@@ -70,6 +70,21 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-kode-mono);
+
+  --animate-terminal-blink: terminal-blink 1s step-end infinite;
+  --animate-terminal-type: terminal-type 1.2s steps(16, end) forwards;
+}
+
+@keyframes terminal-blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+@keyframes terminal-type {
+  to {
+    max-width: 48rem;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -79,8 +94,31 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .terminal-type {
+    max-width: none;
+    animation: none;
+  }
+}
+
+.caret {
+  display: inline-block;
+  width: 0.55ch;
+  height: 1em;
+  margin-left: 0.2ch;
+  background: currentColor;
+  animation: caret-blink 1s step-end infinite;
+  vertical-align: -0.1em;
+}
+
+@keyframes caret-blink {
+  50% {
+    background: transparent;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-kode-mono), monospace;
 }
