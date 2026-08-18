@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 import { getSupabaseEnv } from '@/lib/env'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabaseEnv = getSupabaseEnv()
@@ -42,8 +42,6 @@ export async function middleware(request: NextRequest) {
 
   return supabaseResponse
 }
-
-export const runtime = 'experimental-edge'
 
 export const config = {
   matcher: ['/inventory', '/inventory/:path*', '/household/:path*'],
