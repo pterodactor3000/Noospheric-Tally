@@ -24,6 +24,7 @@ function Input({
           'min-w-0',
           'border',
           'border-input',
+          'border-primary',
           'bg-transparent',
           'px-2.5',
           'py-1',

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Kode_Mono } from 'next/font/google'
 
 import './globals.css'
 
@@ -8,8 +8,8 @@ const geistSans = Geist({
   subsets: ['latin'],
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const geistMono = Kode_Mono({
+  variable: '--font-kode-mono',
   subsets: ['latin'],
 })
 

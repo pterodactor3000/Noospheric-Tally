@@ -28,7 +28,6 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
           className={clsx(
             'border',
             'border-foreground/50',
-            'bg-white/70',
             'p-8',
             'shadow-sm',
             'backdrop-blur',
