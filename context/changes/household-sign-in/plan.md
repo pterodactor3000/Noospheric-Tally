@@ -529,17 +529,17 @@ Application rollback is a revert of the merge commit followed by the automatic r
 
 #### Automated
 
-- [ ] 5.1 `npm test` passes including credential validation tests
-- [ ] 5.2 `npm run lint`, `npm run typecheck`, and `npm run worker:check` exit zero
+- [x] 5.1 `npm test` passes including credential validation tests (10/10, verified 2026-08-23)
+- [x] 5.2 `npm run lint`, `npm run typecheck`, and `npm run worker:check` exit zero
 
 #### Manual
 
-- [ ] 5.3 Account creation on the live URL lands in the protected area
-- [ ] 5.4 Sign-out returns to `/` and `/inventory` redirects to `/login`
-- [ ] 5.5 Signing back in with the same credentials succeeds
-- [ ] 5.6 A wrong password shows a readable message with no internal detail
-- [ ] 5.7 A malformed email is rejected before any network call
-- [ ] 5.8 Forms are usable one-handed on a phone
+- [x] 5.3 Account creation on the live URL lands in the protected area (user verified 2026-08-23)
+- [x] 5.4 Sign-out returns to `/` and `/inventory` redirects to `/login` (user verified 2026-08-23)
+- [x] 5.5 Signing back in with the same credentials succeeds (user verified 2026-08-23)
+- [x] 5.6 A wrong password shows a readable message with no internal detail (user verified 2026-08-23)
+- [x] 5.7 A malformed email is rejected before any network call (user verified 2026-08-23)
+- [x] 5.8 Forms are usable one-handed on a phone (user verified 2026-08-23)
 
 ### Phase 6: Household creation step and empty inventory
 

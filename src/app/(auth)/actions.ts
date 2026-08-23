@@ -82,14 +82,25 @@ const signInWithPassword = async (
     }
   }
 
-  const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({
-    email: parsedCredentials.email!,
-    password: parsedCredentials.password!,
-  })
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.signInWithPassword({
+      email: parsedCredentials.email!,
+      password: parsedCredentials.password!,
+    })
 
-  if (error) {
-    return mapSupabaseAuthError(error.message)
+    if (error) {
+      return mapSupabaseAuthError(error.message)
+    }
+  } catch (error: unknown) {
+    console.error('signInWithPassword failed', {
+      email: parsedCredentials.email,
+      error,
+    })
+    return {
+      status: 'error',
+      message: AUTH_FAILURE_MESSAGE,
+    }
   }
 
   revalidatePath('/', 'layout')
@@ -109,29 +120,50 @@ const signUpWithPassword = async (
     }
   }
 
-  const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({
-    email: parsedCredentials.email!,
-    password: parsedCredentials.password!,
-  })
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.signUp({
+      email: parsedCredentials.email!,
+      password: parsedCredentials.password!,
+    })
 
-  if (error) {
-    const mappedError = mapSupabaseAuthError(error.message)
+    if (error) {
+      const mappedError = mapSupabaseAuthError(error.message)
 
-    if (mappedError.message === AUTH_FAILURE_MESSAGE) {
-      return { status: 'error', message: SIGN_UP_FAILURE_MESSAGE }
+      if (mappedError.message === AUTH_FAILURE_MESSAGE) {
+        return { status: 'error', message: SIGN_UP_FAILURE_MESSAGE }
+      }
+
+      return mappedError
     }
-
-    return mappedError
+  } catch (error: unknown) {
+    console.error('signUpWithPassword failed', {
+      email: parsedCredentials.email,
+      error,
+    })
+    return {
+      status: 'error',
+      message: SIGN_UP_FAILURE_MESSAGE,
+    }
   }
 
   revalidatePath('/', 'layout')
   redirect('/inventory')
 }
 
-const signOut = async () => {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
+const signOut = async (): Promise<void> => {
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.signOut()
+
+    if (error) {
+      console.error('signOut failed', error)
+      return
+    }
+  } catch (error: unknown) {
+    console.error('signOut failed', error)
+    return
+  }
 
   revalidatePath('/', 'layout')
   redirect('/')
