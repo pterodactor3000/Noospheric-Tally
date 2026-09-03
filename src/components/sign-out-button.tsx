@@ -6,10 +6,7 @@ import { Button } from './ui/button'
 
 const SignOutButton = () => {
   return (
-    <form
-      action={signOut}
-      className={clsx('mt-8', 'flex', 'flex-col', 'gap-4')}
-    >
+    <form action={signOut} className={clsx()}>
       <Button variant="outline" type="submit">
         Sign out
       </Button>

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Kode_Mono } from 'next/font/google'
+import { clsx } from 'clsx'
+
+import { Header } from '@/components/header'
 
 import './globals.css'
 
@@ -30,8 +33,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={clsx(geistSans.variable, geistMono.variable, 'antialiased')}
       >
+        <Header />
         {children}
       </body>
     </html>

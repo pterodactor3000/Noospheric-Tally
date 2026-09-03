@@ -46,5 +46,5 @@ export async function middleware(request: NextRequest) {
 export const runtime = 'experimental-edge'
 
 export const config = {
-  matcher: ['/inventory', '/inventory/:path*', '/household/:path*'],
+  matcher: ['/inventory', '/inventory/:path*', '/hab-unit', '/hab-unit/:path*'],
 }

@@ -1,12 +1,19 @@
-import React from 'react'
 import { redirect } from 'next/navigation'
-import { clsx } from 'clsx'
 
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
+import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
 
-const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
+import HabUnitNameForm from './hab-unit-name-form'
+import { clsx } from 'clsx'
+
+const NewHabUnit = async () => {
   const user = await loadCurrentUser()
-  if (user) {
+  if (!user) {
+    redirect('/login')
+  }
+
+  const habUnit = await loadCurrentHabUnit()
+  if (habUnit) {
     redirect('/inventory')
   }
 
@@ -35,11 +42,11 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
             'dark:bg-black/20',
           )}
         >
-          {children}
+          <HabUnitNameForm />
         </div>
       </div>
     </main>
   )
 }
 
-export default AuthLayout
+export default NewHabUnit

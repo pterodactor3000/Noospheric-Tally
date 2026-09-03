@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { clsx } from 'clsx'
 
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
-import { SignOutButton } from '@/components/sign-out-button'
+import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
 
 const InventoryPage = async () => {
   const user = await loadCurrentUser()
@@ -10,19 +10,24 @@ const InventoryPage = async () => {
     redirect('/login')
   }
 
+  const habUnit = await loadCurrentHabUnit()
+  if (!habUnit) {
+    redirect('/hab-unit/new')
+  }
+
   return (
     <main
       className={clsx(
         'flex',
+        'flex-col',
         'min-h-screen',
         'items-center',
         'justify-center',
         'px-6',
       )}
     >
-      <p>Awaiting input query</p>
+      <p>Your {habUnit.name} tally</p>
       <br />
-      <SignOutButton />
     </main>
   )
 }
