@@ -1,40 +1,51 @@
 {
   "name": "noospheric-tally",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
+  "packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit",
     "worker:build": "opennextjs-cloudflare build",
-    "worker:check": "npm run worker:build && wrangler deploy --dry-run",
+    "worker:check": "pnpm worker:build && wrangler deploy --dry-run",
     "worker:deploy": "opennextjs-cloudflare deploy",
-    "deploy": "npm run worker:build && npm run worker:deploy",
-    "upload": "npm run worker:build && opennextjs-cloudflare upload",
-    "preview": "npm run worker:build && opennextjs-cloudflare preview",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
-    "bump:patch": "npm version patch --no-git-tag-version",
-    "bump:minor": "npm version minor --no-git-tag-version",
-    "bump:major": "npm version major --no-git-tag-version"
+    "deploy": "pnpm worker:build && pnpm worker:deploy",
+    "upload": "pnpm worker:build && opennextjs-cloudflare upload",
+    "preview": "pnpm worker:build && opennextjs-cloudflare preview",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts && node ./scripts/patch-cloudflare-env-types.mjs",
+    "bump:patch": "pnpm version patch --no-git-tag-version",
+    "bump:minor": "pnpm version minor --no-git-tag-version",
+    "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
+    "@base-ui/react": "^1.7.0",
     "@opennextjs/cloudflare": "^1.19.9",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.2",
     "next": "16.2.11",
     "react": "^19.1.7",
-    "react-dom": "^19.1.7"
+    "react-aria-components": "^1.20.0",
+    "react-dom": "^19.1.7",
+    "shadcn": "^4.18.0"
   },
   "devDependencies": {
-    "@pterodactor3000/silica-animus": "^0.5.0",
+    "@pterodactor3000/silica-animus": "^0.6.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.43",
     "@types/react": "^19.1.7",
     "@types/react-dom": "^19.1.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
+    "supabase": "^2.114.0",
     "tailwindcss": "^4",
     "typescript": "^5.7.4",
+    "vitest": "^4.1.10",
     "wrangler": "^4.118.0"
   }
 }

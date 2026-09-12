@@ -1,0 +1,8 @@
+allowBuilds:
+  '@pterodactor3000/silica-animus': true
+  esbuild: false
+  sharp: false
+  unrs-resolver: false
+  workerd: false
+minimumReleaseAgeExclude:
+  - '@pterodactor3000/silica-animus@0.6.0 || 0.6.1 || 0.6.2'
