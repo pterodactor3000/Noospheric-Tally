@@ -3,8 +3,15 @@ import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
 import { TallyLabel } from '@/components/tally-label'
+import loadCurrentUser from '@/lib/auth/loadCurrentUser'
+import { redirect } from 'next/navigation'
 
-export default function Home() {
+export default async function Home() {
+  const user = await loadCurrentUser()
+  if (user) {
+    redirect('/inventory')
+  }
+
   return (
     <main
       className={clsx(
@@ -30,7 +37,6 @@ export default function Home() {
             'dark:bg-black/20',
           )}
         >
-          <TallyLabel />
           <h1
             className={clsx(
               'font-mono',
@@ -47,7 +53,6 @@ export default function Home() {
           <p
             className={clsx(
               'font-mono',
-              'uppercase',
               'mt-6',
               'text-pretty',
               'text-foreground/70',
@@ -65,9 +70,17 @@ export default function Home() {
               variant="outline"
               nativeButton={false}
               render={<Link href="/login" />}
-              className={clsx('font-mono', 'uppercase', 'min-h-11', 'w-full')}
+              className={clsx('font-mono', 'min-h-11', 'w-full')}
             >
               Sign in
+            </Button>
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/signup" />}
+              className={clsx('font-mono', 'min-h-11', 'w-full')}
+            >
+              Sign up
             </Button>
           </div>
 
@@ -77,7 +90,6 @@ export default function Home() {
               'text-sm',
               'text-foreground/70',
               'font-mono',
-              'uppercase',
             )}
           >
             No personal cogitation unit?{' '}
@@ -89,7 +101,6 @@ export default function Home() {
                 'underline-offset-4',
                 'hover:underline',
                 'font-mono',
-                'uppercase',
               )}
             >
               Requisite one
@@ -126,10 +137,9 @@ export default function Home() {
                   'leading-6',
                   'text-foreground/70',
                   'font-mono',
-                  'uppercase',
                 )}
               >
-                Sign in and create a household inventory.
+                Scan an unknown barcode and record it as a named item.
               </p>
             </section>
             <section>
@@ -151,7 +161,6 @@ export default function Home() {
                   'leading-6',
                   'text-foreground/70',
                   'font-mono',
-                  'uppercase',
                 )}
               >
                 Secure web delivery for phone-ready barcode scanning.

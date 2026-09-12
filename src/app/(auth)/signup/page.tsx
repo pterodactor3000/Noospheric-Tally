@@ -41,7 +41,6 @@ const Signup = () => {
       <p
         className={clsx(
           'font-mono',
-          'uppercase',
           'mt-6',
           'text-pretty',
           'text-foreground/70',
@@ -49,7 +48,7 @@ const Signup = () => {
           'text-base',
         )}
       >
-        Provide credentials to requisition your personal cogitation unit
+        Provide credentials to requisition your personal cogitation unit.
       </p>
 
       <form
@@ -59,7 +58,7 @@ const Signup = () => {
         <div className={clsx('flex', 'flex-col', 'gap-2')}>
           <Label
             htmlFor="email"
-            className={clsx('text-sm', 'font-medium', 'font-mono', 'uppercase')}
+            className={clsx('text-sm', 'font-medium', 'font-mono')}
           >
             Email
           </Label>
@@ -69,14 +68,14 @@ const Signup = () => {
             id="email"
             autoComplete="email"
             aria-invalid={state?.field === 'email'}
-            className={clsx('min-h-11', 'text-base', 'font-mono', 'uppercase')}
+            className={clsx('min-h-11', 'text-base', 'font-mono')}
           />
         </div>
 
         <div className={clsx('flex', 'flex-col', 'gap-2')}>
           <Label
             htmlFor="password"
-            className={clsx('text-sm', 'font-medium', 'font-mono', 'uppercase')}
+            className={clsx('text-sm', 'font-medium', 'font-mono')}
           >
             Password
           </Label>
@@ -86,7 +85,7 @@ const Signup = () => {
             id="password"
             autoComplete="new-password"
             aria-invalid={state?.field === 'password'}
-            className={clsx('min-h-11', 'text-base', 'font-mono', 'uppercase')}
+            className={clsx('min-h-11', 'text-base', 'font-mono')}
           />
         </div>
 
@@ -98,7 +97,6 @@ const Signup = () => {
             'text-sm',
             'text-red-700',
             'font-mono',
-            'uppercase',
             'font-semibold',
           )}
         >
@@ -109,21 +107,13 @@ const Signup = () => {
           variant="outline"
           type="submit"
           disabled={isPending}
-          className={clsx('font-mono', 'uppercase', 'min-h-11', 'w-full')}
+          className={clsx('font-mono', 'min-h-11', 'w-full')}
         >
           Sign up
         </Button>
       </form>
 
-      <p
-        className={clsx(
-          'mt-6',
-          'text-sm',
-          'text-foreground/70',
-          'font-mono',
-          'uppercase',
-        )}
-      >
+      <p className={clsx('mt-6', 'text-sm', 'text-foreground/70', 'font-mono')}>
         Cogitation unit already requisitioned?{' '}
         <Link
           href="/login"
@@ -133,7 +123,6 @@ const Signup = () => {
             'underline-offset-4',
             'hover:underline',
             'font-mono',
-            'uppercase',
           )}
         >
           Enter credentials
