@@ -31,5 +31,5 @@
     ".next/dev/types/**/*.ts",
     "vitest.config.mts"
   ],
-  "exclude": ["node_modules", "cloudflare-env.d.ts"]
+  "exclude": ["node_modules", "cloudflare-env.d.ts", "custom-worker.ts"]
 }
