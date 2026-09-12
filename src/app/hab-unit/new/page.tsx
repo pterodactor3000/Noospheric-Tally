@@ -42,7 +42,9 @@ const NewHabUnit = async () => {
             'dark:bg-black/20',
           )}
         >
-          <HabUnitNameForm />
+          <HabUnitNameForm
+            defaultName={user.email?.split('@')[0] ?? ''}
+          />
         </div>
       </div>
     </main>

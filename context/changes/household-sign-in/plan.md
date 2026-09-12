@@ -365,15 +365,15 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 #### 1. Household query and creation action
 
-**Files:** `src/lib/household/loadCurrentHousehold.ts`, `src/app/household/actions.ts`
+**Files:** `src/lib/hab-unit/load-current-hab-unit.ts`, `src/app/hab-unit/actions.ts`
 
 **Intent:** Read the caller's household from a lib loader, and create one through a route-colocated server action that calls the atomic function from Phase 3. Auth mutations already live under `src/app/(auth)/actions.ts`; household mutations follow the same convention.
 
-**Contract:** `loadCurrentHousehold()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load` rather than `get`because it performs database I/O and must not be treated as a pure query under team conventions.`src/app/household/actions.ts`exports`createHousehold`as a`"use server"`action calling`supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
+**Contract:** `loadCurrentHabUnit()` returns `{ id: string; name: string } | null` from a policy-scoped select. Named `load` rather than `get` because it performs database I/O and must not be treated as a pure query under team conventions. `src/app/hab-unit/actions.ts` exports `createHabUnit` as a `"use server"` action calling `supabase.rpc("create_household", ...)`, validating the name at the boundary, returning a discriminated error result on failure, and redirecting to `/inventory` on success.
 
 #### 2. Household name validation and tests
 
-**Files:** `src/lib/household/validateHouseholdName.ts`, `src/lib/household/validateHouseholdName.test.ts`
+**Files:** `src/lib/hab-unit/validate-hab-unit-name.ts`, `src/lib/hab-unit/validate-hab-unit-name.test.ts`
 
 **Intent:** Keep the name rule pure and covered.
 
@@ -381,11 +381,11 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 #### 3. Household creation page
 
-**File:** `src/app/household/new/page.tsx`
+**File:** `src/app/hab-unit/new/page.tsx`
 
 **Intent:** The explicit creation step, asking for a name only.
 
-**Contract:** A server component that redirects to `/inventory` when the caller already has a household, and otherwise renders a single-field form prefilled with a default derived from the account email. Submits to the `createHousehold` action from `src/app/household/actions.ts`, rendering inline validation errors.
+**Contract:** A server component that redirects to `/inventory` when the caller already has a household, and otherwise renders a single-field form prefilled with a default derived from the account email. Submits to the `createHabUnit` action from `src/app/hab-unit/actions.ts`, rendering inline validation errors. The request matcher covers `/hab-unit` and `/hab-unit/:path*`.
 
 #### 4. Inventory page
 
@@ -393,7 +393,7 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 **Intent:** Replace the Phase 4 placeholder with the real empty inventory view, and route members without a household to the creation step.
 
-**Contract:** Redirects to `/login` without a user, redirects to `/household/new` when `loadCurrentHousehold()` returns null, and otherwise renders the household name, an explicit empty state stating that nothing has been added yet, and the sign-out control. The empty state names scanning as the next step without implementing it.
+**Contract:** Redirects to `/login` without a user, redirects to `/hab-unit/new` when `loadCurrentHabUnit()` returns null, and otherwise renders the household name, an explicit empty state stating that nothing has been added yet, and the sign-out control. The empty state names scanning as the next step without implementing it.
 
 #### 5. Landing page update
 
@@ -407,15 +407,15 @@ Complete the S-01 outcome: a signed-in user names their household once and reach
 
 #### Automated Verification
 
-- `npm test` passes including the household name tests.
+- `npm test` passes including the hab-unit name tests.
 - `npm run lint`, `npm run typecheck`, and `npm run worker:check` exit zero.
 
 #### Manual Verification
 
-- A brand-new account signing in for the first time is sent to `/household/new`.
+- A brand-new account signing in for the first time is sent to `/hab-unit/new`.
 - Submitting a name creates the household and lands on `/inventory` showing that name and an empty state.
 - Reloading `/inventory` keeps the same household and does not create another.
-- Visiting `/household/new` again redirects to `/inventory`.
+- Visiting `/hab-unit/new` again redirects to `/inventory`.
 - A second account created from a different browser sees its own household creation step, then its own empty inventory, and never the first account's name.
 - The whole flow completes on a phone against the live HTTPS URL.
 
@@ -438,7 +438,7 @@ None automated in this slice. Supabase Auth and row-level security behavior are 
 1. Apply the migrations to the Supabase project and confirm both tables and the function exist.
 2. Deploy to the live HTTPS URL by merging to `main`, and confirm the deploy workflow passes lint, typecheck, tests, and Worker validation.
 3. On a phone, open the live URL and follow the sign-up link.
-4. Create an account with an email and password, and confirm arrival at `/household/new`.
+4. Create an account with an email and password, and confirm arrival at `/hab-unit/new`.
 5. Submit a household name and confirm `/inventory` shows that name with an empty state.
 6. Reload `/inventory` and confirm the household is unchanged and not duplicated.
 7. Sign out and confirm `/inventory` redirects to `/login`.
@@ -545,14 +545,14 @@ Application rollback is a revert of the merge commit followed by the automatic r
 
 #### Automated
 
-- [ ] 6.1 `npm test` passes including household name tests
-- [ ] 6.2 `npm run lint`, `npm run typecheck`, and `npm run worker:check` exit zero
+- [x] 6.1 `npm test` passes including hab-unit name tests
+- [x] 6.2 `npm run lint`, `npm run typecheck`, and `npm run worker:check` exit zero
 
 #### Manual
 
-- [ ] 6.3 A new account's first sign-in lands on `/household/new`
-- [ ] 6.4 Submitting a name lands on `/inventory` with that name and an empty state
-- [ ] 6.5 Reloading `/inventory` does not create a second household
-- [ ] 6.6 Revisiting `/household/new` redirects to `/inventory`
-- [ ] 6.7 A second account sees only its own household
-- [ ] 6.8 The whole flow completes on a phone against the live HTTPS URL
+- [x] 6.3 A new account's first sign-in lands on `/hab-unit/new`
+- [x] 6.4 Submitting a name lands on `/inventory` with that name and an empty state
+- [x] 6.5 Reloading `/inventory` does not create a second household
+- [x] 6.6 Revisiting `/hab-unit/new` redirects to `/inventory`
+- [x] 6.7 A second account sees only its own household
+- [x] 6.8 The whole flow completes on a phone against the live HTTPS URL

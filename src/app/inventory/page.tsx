@@ -28,6 +28,14 @@ const InventoryPage = async () => {
     >
       <p>Your {habUnit.name} tally</p>
       <br />
+      <p>Nothing is added here yet.</p>
+      <br />
+
+      <p>Next step</p>
+      <br />
+
+      <p>Scanning barcode.</p>
+      <br />
     </main>
   )
 }

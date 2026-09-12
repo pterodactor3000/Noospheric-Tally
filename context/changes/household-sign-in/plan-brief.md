@@ -23,9 +23,9 @@ A visitor can create an account with an email and password, sign in, name their 
 | Account creation | Self-serve `/signup` | App is complete on its own and the deferred spouse invite reuses it | Plan interview |
 | Email confirmation | Off for the first version | Removes the inbox round trip and confirm route from this slice | Plan interview |
 | Password reset | Out of scope | FR-001 asks only for sign-in; reset is available from the Supabase dashboard | Plan interview |
-| Household bootstrap | Explicit `/household/new` step, name only | User names the household once, deliberately, rather than by implicit creation | Plan interview |
+| Household bootstrap | Explicit `/hab-unit/new` step, name only | User names the household once, deliberately, rather than by implicit creation | Plan interview |
 | Household write path | Single `security definer` Postgres function | Two client-issued inserts leave an orphaned household window and force a policy that trusts an unowned row | Plan |
-| Routing | `/` public, `/login`, `/signup`, `/inventory`, `/household/new` | Clean proxy matcher and room for the scanning slices | Plan interview |
+| Routing | `/` public, `/login`, `/signup`, `/inventory`, `/hab-unit/new` | Clean proxy matcher and room for the scanning slices | Plan interview |
 | Membership model | Separate `household_members` table, no roles, `UNIQUE (user_id)` | Keeps deferred FR-011 possible without a rewrite; enforces one-account-one-household at the schema; PRD states all members are equal | PRD, plan interview |
 | Request interception | `src/proxy.ts` with a `proxy` export | Next.js 16 deprecates the `middleware` filename; runtime is Node.js and not configurable | Next.js 16 docs |
 | Verification | Vitest on pure modules plus manual browser checks | No test tooling exists; database and auth behavior verified manually against the real project | Plan interview |

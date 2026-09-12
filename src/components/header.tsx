@@ -16,7 +16,8 @@ const Header = async () => {
         'shadow-lg',
         'shadow-primary/40',
         'fixed',
-        'inset-0',
+        'inset-x-0',
+        'top-0',
       )}
     >
       <TallyLabel />

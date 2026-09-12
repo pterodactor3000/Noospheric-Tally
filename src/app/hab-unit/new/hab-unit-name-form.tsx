@@ -8,13 +8,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createHabUnit } from '../actions'
 
+interface HabUnitNameFormProps {
+  defaultName: string
+}
+
 type HabUnitFormState = {
   status: 'error' | 'success' | 'pending'
   message: string
   field?: 'name'
 } | null
 
-const HabUnitNameForm = () => {
+const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
   const [state, formAction, isPending] = useActionState(
     async (_prev: HabUnitFormState, formData: FormData) =>
       createHabUnit(formData),
@@ -66,6 +70,7 @@ const HabUnitNameForm = () => {
             name="name"
             id="name"
             autoComplete="name"
+            defaultValue={defaultName}
             aria-invalid={state?.field === 'name'}
             className={clsx('min-h-11', 'text-base', 'font-mono', 'uppercase')}
           />
