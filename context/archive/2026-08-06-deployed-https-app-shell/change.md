@@ -1,10 +1,10 @@
 ---
 change_id: deployed-https-app-shell
 title: Deployed HTTPS app shell
-status: in_progress
+status: archived
 created: 2026-08-06
-updated: 2026-08-06
-archived_at: null
+updated: 2026-09-13
+archived_at: 2026-09-13T09:36:44Z
 ---
 
 ## Notes
