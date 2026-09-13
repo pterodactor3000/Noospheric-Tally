@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-08-04
+updated: 2026-09-13
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -26,7 +26,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 | ID | Change ID | Outcome (user can ...) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | deployed-https-app-shell | (foundation) reach the running app from a phone over HTTPS, redeployed on merge | - | FR-002 | ready |
+| F-01 | deployed-https-app-shell | (foundation) reach the running app from a phone over HTTPS, redeployed on merge | - | FR-002 | done |
 | S-01 | household-sign-in | sign in and reach an empty household inventory | F-01 | FR-001 | ready |
 | S-02 | scan-to-create-item | scan an unknown barcode and record it as a named item | S-01 | FR-002, FR-005, FR-016 | ready |
 | S-03 | stocking-mode-increase | scan items in stocking mode to raise their counts | S-02 | FR-003, FR-012, US-01 | ready |
@@ -66,7 +66,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Blockers:** -
 - **Unknowns:** Whether local tooling can produce a working build with platform install scripts still blocked. Owner: user. Block: no.
 - **Risk:** Deferring this hides deployment surprises until the end, and every scanning slice would be verified only on a desktop browser, which is not where the product is used.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -200,3 +200,5 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Native app store distribution**: Why parked: PRD non-functional non-goal, the browser reaches the phone camera within the budget.
 
 ## Done
+
+- **F-01: (foundation) reach the running app from a phone over HTTPS, redeployed on merge** - Archived 2026-09-13 to `context/archive/2026-08-06-deployed-https-app-shell/`. Lesson: -.
