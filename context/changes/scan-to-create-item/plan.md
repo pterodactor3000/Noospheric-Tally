@@ -52,6 +52,7 @@ Product rows are shared. Household stock is not. Phases land data first, then a 
 **Household name is local.** `household_inventory.name` is what the user edits and what `/inventory` lists. `items.name` is the canonical name from first create or catalog. One household renaming a product must not rename it for another.
 
 **Three barcode outcomes.**
+
 1. This household already stocks the item: show `household_inventory.name`. No insert. No quantity change.
 2. The barcode exists globally, this household does not stock it: add `household_inventory` for that `items.id`. Do not insert a second `items` row.
 3. The barcode is unknown: create `items` + `item_barcodes` + `household_inventory`, or attach the barcode to a product this household already stocks (FR-005).
@@ -72,7 +73,7 @@ Product rows are shared. Household stock is not. Phases land data first, then a 
 
 **RPCs use `search_path = ''` and `public.`-qualified names**, same as `create_household` (`supabase/migrations/20260816083017_create_households.sql:53-76`).
 
-**`quantity` stays hidden.** It lives on `household_inventory`. S-02 neither displays nor updates it.
+`**quantity` stays hidden.** It lives on `household_inventory`. S-02 neither displays nor updates it.
 
 ---
 
@@ -160,7 +161,7 @@ A signed-in member can type a barcode and a name from `/inventory`. First househ
 
 **File:** `src/lib/items/load-household-item-by-barcode.ts`, `src/lib/items/find-global-item-by-barcode.ts`, `src/lib/items/load-household-items.ts`
 
-**Intent:** Household reads through RLS. Global reads through `find_item_by_barcode`. Keep I/O helpers named `load*` or `find*`.
+**Intent:** Household reads through RLS. Global reads through `find_item_by_barcode`. Keep I/O helpers named `load`* or `find*`.
 
 **Contract:** `loadHouseholdItemByBarcode(barcode)` calls `find_item_by_barcode`, then selects `household_inventory` for this household by that `item_id`. Returns `{ itemId, name }` or `null`. Do not join `household_inventory` to `item_barcodes` through PostgREST. `findGlobalItemByBarcode(barcode)` calls `find_item_by_barcode` and returns `{ itemId, canonicalName }` or `null`. `loadHouseholdItems({ limit }?)` returns `{ itemId, name }[]` from `household_inventory` ordered by name, no quantity. Omit `limit` on `/inventory`. Pass `{ limit: 20 }` only for the attach offer list. None redirect. Server client only (`src/lib/supabase/server.ts:6-29`).
 
@@ -348,18 +349,18 @@ Apply `supabase/migrations/<timestamp>_create_items.sql` with `pnpm exec supabas
 
 #### Automated
 
-- [ ] 1.1 The migration applies with `pnpm exec supabase db push` and no error
-- [ ] 1.2 Re-running the full migration set from empty reproduces the schema
-- [ ] 1.3 `pnpm test` passes including name and barcode validator cases, including UPC-E expansion
-- [ ] 1.4 `pnpm lint` and `pnpm typecheck` exit zero
+- [x] 1.1 The migration applies with `pnpm exec supabase db push` and no error
+- [ ] 1.2 Re-running the full migration set from empty reproduces the schema (skipped 2026-09-16: needs a throwaway empty project, not a second push on live)
+- [x] 1.3 `pnpm test` passes including name and barcode validator cases, including UPC-E expansion
+- [x] 1.4 `pnpm lint` and `pnpm typecheck` exit zero
 
 #### Manual
 
-- [ ] 1.5 `create_item` inserts one `items` row, one barcode, and one `household_inventory` row at quantity 0
-- [ ] 1.6 A second `create_item` with the same barcode is refused
-- [ ] 1.7 `attach_barcode` by that member adds a second barcode to the same `items.id`
-- [ ] 1.8 A second household `add_item_to_household` gets its own inventory row and cannot select the first household's stock
-- [ ] 1.9 Authenticated select on `items` or `item_barcodes` returns zero rows. Anon select on all three tables returns zero rows
+- [x] 1.5 `create_item` inserts one `items` row, one barcode, and one `household_inventory` row at quantity 0
+- [x] 1.6 A second `create_item` with the same barcode is refused
+- [x] 1.7 `attach_barcode` by that member adds a second barcode to the same `items.id`
+- [x] 1.8 A second household `add_item_to_household` gets its own inventory row and cannot select the first household's stock
+- [x] 1.9 Authenticated select on `items` or `item_barcodes` returns zero rows. Anon select on all three tables returns zero rows
 
 ### Phase 2: Manual create, stock, and attach
 

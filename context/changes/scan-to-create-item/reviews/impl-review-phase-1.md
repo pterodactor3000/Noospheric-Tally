@@ -88,6 +88,6 @@ At first review the commit only added a broken `create table` block. Triage land
 
 APPROVED after triage. F1-F6 FIXED. Phase 1 code matches the plan.
 
-Success Criteria remains WARNING because Progress 1.1 to 1.9 are still unchecked. Lint and `tsc --noEmit` passed before the validator files landed. `pnpm test` and `pnpm exec supabase db push` were not re-run after triage. Manual RPC checks 1.5 to 1.9 have no evidence yet.
+Success Criteria remains WARNING because 1.2 is skipped. 1.1, 1.3, and 1.4 passed after triage (`db push` applied `20260916120209_create_items.sql`; `pnpm test` 30/30; lint and typecheck exit 0). Manual 1.5 to 1.9 were checked by the user against the linked project. 1.2 still needs a throwaway empty project; a second push on live would skip already-applied files.
 
 <!-- End of report -->
