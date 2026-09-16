@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
-import { TallyLabel } from '@/components/tally-label'
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
 import { redirect } from 'next/navigation'
 

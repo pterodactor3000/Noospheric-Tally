@@ -40,7 +40,7 @@
     "@types/react-dom": "^19.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "eslint": "^10.10.0",
+    "eslint": "^9",
     "eslint-config-next": "16.2.11",
     "supabase": "^2.117.0",
     "tailwindcss": "^4.3.3",
