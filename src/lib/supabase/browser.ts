@@ -6,7 +6,7 @@ const createClient = () => {
 
   return createBrowserClient(
     supabaseEnv.supabaseUrl,
-    supabaseEnv.supabaseAnonKey,
+    supabaseEnv.supabasePublishableKey,
   )
 }
 export { createClient }

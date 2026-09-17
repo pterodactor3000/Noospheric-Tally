@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 
+import { DB_FUNCTION_CREATE_HOUSEHOLD } from '@/lib/db/entities'
 import {
   HabUnitNameValidationResult,
   validateHabUnitName,
@@ -35,7 +36,7 @@ const createHabUnit = async (
 
   try {
     const supabase = await createClient()
-    const { error } = await supabase.rpc('create_household', {
+    const { error } = await supabase.rpc(DB_FUNCTION_CREATE_HOUSEHOLD, {
       household_name: validationResult.name,
     })
 

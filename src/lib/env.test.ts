@@ -2,15 +2,21 @@ import { describe, expect, test, vi } from 'vitest'
 import { getSupabaseEnv } from './env'
 
 const NEXT_PUBLIC_SUPABASE_URL = 'https://test.supa.base'
+const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'publishable_key'
 const NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon_key'
 
 interface SupabaseEnvStub {
   supabaseUrl: string | undefined
-  supabaseAnonKey: string | undefined
+  supabasePublishableKey?: string | undefined
+  supabaseAnonKey?: string | undefined
 }
 
 const runWithSupabaseEnv = (env: SupabaseEnvStub, run: () => void) => {
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', env.supabaseUrl)
+  vi.stubEnv(
+    'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+    env.supabasePublishableKey,
+  )
   vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', env.supabaseAnonKey)
 
   try {
@@ -21,7 +27,22 @@ const runWithSupabaseEnv = (env: SupabaseEnvStub, run: () => void) => {
 }
 
 describe('getSupabaseEnv', () => {
-  test('returns both values when the environment is complete', () => {
+  test('returns the publishable key when that variable is set', () => {
+    runWithSupabaseEnv(
+      {
+        supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
+        supabasePublishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      },
+      () => {
+        expect(getSupabaseEnv()).toEqual({
+          supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
+          supabasePublishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+        })
+      },
+    )
+  })
+
+  test('falls back to the anon key when the publishable key is absent', () => {
     runWithSupabaseEnv(
       {
         supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
@@ -30,7 +51,23 @@ describe('getSupabaseEnv', () => {
       () => {
         expect(getSupabaseEnv()).toEqual({
           supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
-          supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+          supabasePublishableKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        })
+      },
+    )
+  })
+
+  test('prefers the publishable key when both keys are set', () => {
+    runWithSupabaseEnv(
+      {
+        supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
+        supabasePublishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+        supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      },
+      () => {
+        expect(getSupabaseEnv()).toEqual({
+          supabaseUrl: NEXT_PUBLIC_SUPABASE_URL,
+          supabasePublishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
         })
       },
     )
@@ -40,7 +77,7 @@ describe('getSupabaseEnv', () => {
     runWithSupabaseEnv(
       {
         supabaseUrl: undefined,
-        supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        supabasePublishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
       },
       () => {
         expect(() => getSupabaseEnv()).toThrow(
@@ -50,12 +87,12 @@ describe('getSupabaseEnv', () => {
     )
   })
 
-  test('throws naming the anon key variable when it is absent', () => {
+  test('throws naming both key variables when neither key is set', () => {
     runWithSupabaseEnv(
-      { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: undefined },
+      { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL },
       () => {
         expect(() => getSupabaseEnv()).toThrow(
-          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY',
+          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)',
         )
       },
     )
@@ -63,7 +100,10 @@ describe('getSupabaseEnv', () => {
 
   test('throws when a variable is present but empty', () => {
     runWithSupabaseEnv(
-      { supabaseUrl: '', supabaseAnonKey: NEXT_PUBLIC_SUPABASE_ANON_KEY },
+      {
+        supabaseUrl: '',
+        supabasePublishableKey: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      },
       () => {
         expect(() => getSupabaseEnv()).toThrow(
           'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_URL',
@@ -72,10 +112,10 @@ describe('getSupabaseEnv', () => {
     )
 
     runWithSupabaseEnv(
-      { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabaseAnonKey: '' },
+      { supabaseUrl: NEXT_PUBLIC_SUPABASE_URL, supabasePublishableKey: '' },
       () => {
         expect(() => getSupabaseEnv()).toThrow(
-          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY',
+          'Missing Supabase environment variable: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)',
         )
       },
     )

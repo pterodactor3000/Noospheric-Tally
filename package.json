@@ -33,7 +33,7 @@
     "shadcn": "^4.21.0"
   },
   "devDependencies": {
-    "@pterodactor3000/silica-animus": "^0.7.0",
+    "@pterodactor3000/silica-animus": "^0.8.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20.19.43",
     "@types/react": "^19.3.0",

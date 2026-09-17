@@ -195,8 +195,8 @@ importers:
         version: 4.21.0(supports-color@10.2.2)(typescript@5.9.3)
     devDependencies:
       '@pterodactor3000/silica-animus':
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.8.0
+        version: 0.8.0
       '@tailwindcss/postcss':
         specifier: ^4.3.3
         version: 4.3.3
@@ -1595,8 +1595,8 @@ packages:
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
 
-  '@pterodactor3000/silica-animus@0.7.0':
-    resolution: {integrity: sha512-2YY2czr0RSNPTECKvG+qgx9bzNvr0s7uYycrfsq2UmJfuhPYoMy2zqpGIcsEIGcuUUtVBjMAk7e30kUi0QTxSQ==, tarball: https://npm.pkg.github.com/download/@pterodactor3000/silica-animus/0.7.0/6c304ef8d5b3eb462f61c847e7660e513119aaec}
+  '@pterodactor3000/silica-animus@0.8.0':
+    resolution: {integrity: sha512-1vgN4duOpYOOfGzHrxbxbSCIeZ/Sd8MzID9pNjpdy9Hq6pd46hneb8zuVOxT3P6Srt7AJavO3h8P5oxekDlsLA==, tarball: https://npm.pkg.github.com/download/@pterodactor3000/silica-animus/0.8.0/6641cbf3b9c9fedcddc505d8f94f5368ad401d2f}
     engines: {node: '>=24'}
     hasBin: true
 
@@ -6389,7 +6389,7 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@pterodactor3000/silica-animus@0.7.0': {}
+  '@pterodactor3000/silica-animus@0.8.0': {}
 
   '@react-types/shared@3.36.1(react@19.3.0)':
     dependencies:

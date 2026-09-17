@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
+import { DB_FUNCTION_PING_DATABASE } from '../db/entities'
 import {
   checkSupabaseHealth,
   type SupabaseHealthClient,
@@ -9,7 +10,7 @@ const createHealthClientStub = (
   result: PromiseLike<{ error: { message: string } | null }>,
 ): SupabaseHealthClient => ({
   rpc(functionName) {
-    expect(functionName).toEqual('ping_database')
+    expect(functionName).toEqual(DB_FUNCTION_PING_DATABASE)
     return result
   },
 })
@@ -31,7 +32,7 @@ describe('checkSupabaseHealth', () => {
     await expect(checkSupabaseHealth(client)).resolves.toEqual({
       status: 'unhealthy',
       message:
-        'Supabase health check rpc failed for ping_database: permission denied',
+        `Supabase health check rpc failed for ${DB_FUNCTION_PING_DATABASE}: permission denied`,
     })
   })
 
@@ -43,7 +44,7 @@ describe('checkSupabaseHealth', () => {
     await expect(checkSupabaseHealth(client)).resolves.toEqual({
       status: 'unhealthy',
       message:
-        'Supabase health check rpc failed for ping_database: network timeout',
+        `Supabase health check rpc failed for ${DB_FUNCTION_PING_DATABASE}: network timeout`,
     })
   })
 })
