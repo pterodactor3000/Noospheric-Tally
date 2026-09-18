@@ -6,7 +6,7 @@ import { dbFindItemByBarcode, dbHabUnitInventory } from '../db/types'
 import { createClient } from '../supabase/server'
 import { Item } from '../types'
 
-const loadHouseholdItemByBarcode = async (
+const loadHabUnitItemByBarcode = async (
   barcode: string,
 ): Promise<Item | null> => {
   const supabase = await createClient()
@@ -34,4 +34,4 @@ const loadHouseholdItemByBarcode = async (
   }
 }
 
-export { loadHouseholdItemByBarcode }
+export { loadHabUnitItemByBarcode }

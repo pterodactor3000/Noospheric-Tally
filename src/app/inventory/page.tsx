@@ -1,19 +1,14 @@
-import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { clsx } from 'clsx'
 
-import loadCurrentUser from '@/lib/auth/loadCurrentUser'
-import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
+import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { loadHabUnitItems } from '@/lib/items/load-hab-unit-items'
+import { Button } from '@/components/ui/button'
 
 const InventoryPage = async () => {
-  const user = await loadCurrentUser()
-  if (!user) {
-    redirect('/login')
-  }
-
-  const habUnit = await loadCurrentHabUnit()
-  if (!habUnit) {
-    redirect('/hab-unit/new')
-  }
+  const user = await requireCurrentUser()
+  const habUnit = await requireCurrentHabUnit()
+  const items = (await loadHabUnitItems()) ?? []
 
   return (
     <main
@@ -28,14 +23,24 @@ const InventoryPage = async () => {
     >
       <p>Your {habUnit.name} tally</p>
       <br />
-      <p>Nothing is added here yet.</p>
+      {items.length === 0 ? (
+        <p>Nothing is added here yet.</p>
+      ) : (
+        <ul>
+          {items.map((item) => (
+            <li key={item.itemId}>{item.name}</li>
+          ))}
+        </ul>
+      )}
       <br />
-
-      <p>Next step</p>
-      <br />
-
-      <p>Scanning barcode.</p>
-      <br />
+      <Button
+        variant="outline"
+        nativeButton={false}
+        render={<Link href="/inventory/new" />}
+        className={clsx('font-mono', 'min-h-11')}
+      >
+        Add item
+      </Button>
     </main>
   )
 }

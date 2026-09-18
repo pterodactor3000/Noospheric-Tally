@@ -29,4 +29,8 @@ const validateHabUnitName = (name: string): HabUnitNameValidationResult => {
   }
 }
 
-export { validateHabUnitName, type HabUnitNameValidationResult }
+export {
+  validateHabUnitName,
+  type HabUnitNameValidationResult,
+  type ValidHabUnitName,
+}

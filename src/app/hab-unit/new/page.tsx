@@ -1,21 +1,10 @@
-import { redirect } from 'next/navigation'
-
-import loadCurrentUser from '@/lib/auth/loadCurrentUser'
-import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
-
 import HabUnitNameForm from './hab-unit-name-form'
 import { clsx } from 'clsx'
+import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 
 const NewHabUnit = async () => {
-  const user = await loadCurrentUser()
-  if (!user) {
-    redirect('/login')
-  }
-
-  const habUnit = await loadCurrentHabUnit()
-  if (habUnit) {
-    redirect('/inventory')
-  }
+  const user = await requireCurrentUser()
+  const habUnit = await requireCurrentHabUnit()
 
   return (
     <main
@@ -42,9 +31,7 @@ const NewHabUnit = async () => {
             'dark:bg-black/20',
           )}
         >
-          <HabUnitNameForm
-            defaultName={user.email?.split('@')[0] ?? ''}
-          />
+          <HabUnitNameForm defaultName={user.email?.split('@')[0] ?? ''} />
         </div>
       </div>
     </main>

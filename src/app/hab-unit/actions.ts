@@ -2,12 +2,11 @@
 
 import { redirect } from 'next/navigation'
 
-import { DB_FUNCTION_CREATE_HOUSEHOLD } from '@/lib/db/entities'
 import {
   HabUnitNameValidationResult,
   validateHabUnitName,
 } from '@/lib/hab-unit/validate-hab-unit-name'
-import { createClient } from '@/lib/supabase/server'
+import { createNewHabUnit } from '@/lib/hab-unit/create-hab-unit'
 
 interface HabUnitActionError {
   status: 'error'
@@ -35,22 +34,7 @@ const createHabUnit = async (
   }
 
   try {
-    const supabase = await createClient()
-    const { error } = await supabase.rpc(DB_FUNCTION_CREATE_HOUSEHOLD, {
-      household_name: validationResult.name,
-    })
-
-    if (error) {
-      console.error('Prayer of RPC failed. Could not create hab-unit data.', {
-        habUnitName: validationResult.name,
-        error,
-      })
-
-      return {
-        status: 'error',
-        message: CREATE_HAB_UNIT_FAILURE_MESSAGE,
-      }
-    }
+    await createNewHabUnit(validationResult.name)
   } catch (error: unknown) {
     console.error('Create hab-unit data function failed.', {
       habUnitName: validationResult.name,
@@ -61,6 +45,7 @@ const createHabUnit = async (
       message: CREATE_HAB_UNIT_FAILURE_MESSAGE,
     }
   }
+
   redirect('/inventory')
 }
 
