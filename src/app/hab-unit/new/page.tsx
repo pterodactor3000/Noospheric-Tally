@@ -1,10 +1,16 @@
 import HabUnitNameForm from './hab-unit-name-form'
 import { clsx } from 'clsx'
-import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { requireCurrentUser } from '@/lib/helpers'
+import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
+import { redirect } from 'next/navigation'
 
 const NewHabUnit = async () => {
   const user = await requireCurrentUser()
-  const habUnit = await requireCurrentHabUnit()
+  const habUnit = await loadCurrentHabUnit()
+
+  if (habUnit) {
+    redirect('/inventory')
+  }
 
   return (
     <main

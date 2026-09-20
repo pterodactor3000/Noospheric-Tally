@@ -6,7 +6,7 @@ const loadHabUnitItems = async ({
   limit,
 }: {
   limit?: number
-} = {}): Promise<Item[] | null> => {
+} = {}): Promise<Item[]> => {
   const supabase = await createClient()
 
   const query = supabase
@@ -18,12 +18,10 @@ const loadHabUnitItems = async ({
     ? query
     : query.limit(limit))
 
-  if (error) {
-    return null
-  }
-
-  if (!error && !data) {
-    return []
+  if (error || !data) {
+    throw new Error('household_inventory select failed', {
+      cause: error,
+    })
   }
 
   return data.map((item) => ({

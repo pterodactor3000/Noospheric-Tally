@@ -9,6 +9,7 @@ import { loadHabUnitItems } from '@/lib/items/load-hab-unit-items'
 
 import { AlreadyStocked } from './already-stocked'
 import { AddToHabUnitForm } from './add-to-hab-unit-form'
+import { BarcodeLookupForm } from './barcode-lookup-form'
 import { ItemCreateForm } from './item-create-form'
 
 const NewItemPage = async ({
@@ -16,8 +17,8 @@ const NewItemPage = async ({
 }: {
   searchParams: Promise<{ barcode?: string | string[] }>
 }) => {
-  const user = await requireCurrentUser()
-  const habUnit = await requireCurrentHabUnit()
+  await requireCurrentUser()
+  await requireCurrentHabUnit()
 
   const params = await searchParams
   const rawBarcode = typeof params.barcode === 'string' ? params.barcode : ''
@@ -25,9 +26,20 @@ const NewItemPage = async ({
   const barcode =
     validationResult?.status === 'valid' ? validationResult.barcode : null
 
-  let body: ReactNode = null
+  let body: ReactNode
 
-  if (barcode) {
+  if (!barcode) {
+    body = (
+      <BarcodeLookupForm
+        defaultBarcode={rawBarcode}
+        errorMessage={
+          validationResult?.status === 'invalid'
+            ? validationResult.message
+            : undefined
+        }
+      />
+    )
+  } else {
     const habUnitItem = await loadHabUnitItemByBarcode(barcode)
 
     if (habUnitItem) {
@@ -42,14 +54,11 @@ const NewItemPage = async ({
             canonicalName={globalItem.name}
           />
         )
+      } else {
+        const items = await loadHabUnitItems({ limit: 20 })
+        body = <ItemCreateForm barcode={barcode} habUnitItems={items} />
       }
     }
-  }
-
-  if (!body) {
-    const items = await loadHabUnitItems({ limit: 20 })
-
-    body = <ItemCreateForm barcode={barcode} habUnitItems={items ?? []} />
   }
 
   return (

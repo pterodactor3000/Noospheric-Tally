@@ -10,18 +10,12 @@ import { Item } from '@/lib/types'
 import { AlreadyStocked } from './already-stocked'
 
 interface ItemCreateFormProps {
-  barcode: string | null
+  barcode: string
   habUnitItems: Item[]
   defaultName?: string
 }
 
-type ItemCreateFormState = {
-  status: 'error' | 'exists'
-  message?: string
-  name?: string
-  field?: 'name' | 'barcode'
-} | null
-
+type ItemCreateFormState = Awaited<ReturnType<typeof createItem>> | null
 type ItemAttachFormState = Awaited<ReturnType<typeof attachBarcode>> | null
 
 const ItemCreateForm = ({
@@ -42,10 +36,6 @@ const ItemCreateForm = ({
   )
 
   const [filter, setFilter] = useState('')
-  const [typedBarcode, setTypedBarcode] = useState('')
-
-  const submittedBarcode = barcode ?? typedBarcode
-  const isBarcodeHidden = barcode !== null
   const normalizedFilter = filter.trim().toLowerCase()
   const offeredItems =
     normalizedFilter.length === 0
@@ -54,7 +44,7 @@ const ItemCreateForm = ({
           item.name.toLowerCase().includes(normalizedFilter),
         )
 
-  if (createState?.status === 'exists' && createState.name) {
+  if (createState?.status === 'exists') {
     return <AlreadyStocked name={createState.name} />
   }
 
@@ -85,36 +75,11 @@ const ItemCreateForm = ({
       >
         Provide name for the item
       </p>
-      {isBarcodeHidden ? null : (
-        <div className={clsx('mt-8', 'flex', 'flex-col', 'gap-2')}>
-          <Label
-            htmlFor="barcode"
-            className={clsx('text-sm', 'font-medium', 'font-mono')}
-          >
-            Barcode
-          </Label>
-          <Input
-            type="text"
-            id="barcode"
-            inputMode="numeric"
-            autoComplete="off"
-            value={typedBarcode}
-            onChange={(event) => setTypedBarcode(event.currentTarget.value)}
-            aria-invalid={
-              (createState?.status === 'error' &&
-                createState.field === 'barcode') ||
-              (attachState?.status === 'error' &&
-                attachState.field === 'barcode')
-            }
-            className={clsx('min-h-11', 'text-base', 'font-mono')}
-          />
-        </div>
-      )}
       <form
         action={createFormAction}
         className={clsx('mt-8', 'flex', 'flex-col', 'gap-4')}
       >
-        <input type="hidden" name="barcode" value={submittedBarcode} />
+        <input type="hidden" name="barcode" value={barcode} />
         <div className={clsx('flex', 'flex-col', 'gap-2')}>
           <Label
             htmlFor="name"
@@ -161,7 +126,7 @@ const ItemCreateForm = ({
           action={attachFormAction}
           className={clsx('mt-12', 'flex', 'flex-col', 'gap-4')}
         >
-          <input type="hidden" name="barcode" value={submittedBarcode} />
+          <input type="hidden" name="barcode" value={barcode} />
           <h2
             className={clsx(
               'font-mono',
@@ -206,7 +171,12 @@ const ItemCreateForm = ({
                   'font-mono',
                 )}
               >
-                <input type="radio" name="itemId" value={item.itemId} />
+                <input
+                  type="radio"
+                  name="itemId"
+                  value={item.itemId}
+                  required
+                />
                 {item.name}
               </label>
             ))}

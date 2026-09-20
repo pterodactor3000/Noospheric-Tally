@@ -2,10 +2,14 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
-import { requireCurrentUser } from '@/lib/helpers'
+import loadCurrentUser from '@/lib/auth/loadCurrentUser'
+import { redirect } from 'next/navigation'
 
 export default async function Home() {
-  const user = await requireCurrentUser()
+  const user = await loadCurrentUser()
+  if (user) {
+    redirect('/inventory')
+  }
 
   return (
     <main

@@ -64,29 +64,27 @@ const createItem = async (formData: FormData): Promise<ItemActionResult> => {
     const globalItem = await findGlobalItemByBarcode(barcode)
     if (globalItem) {
       await addItemToHabUnit(globalItem.itemId, name)
-      return redirectToInventory()
-    }
+    } else {
+      try {
+        await createNewItem(name, barcode)
+      } catch (error: unknown) {
+        console.error('create_item failed, looking up barcode again', {
+          barcode,
+          error,
+        })
 
-    try {
-      await createNewItem(name, barcode)
-    } catch (error: unknown) {
-      console.error('create_item failed, looking up barcode again', {
-        barcode,
-        error,
-      })
+        const householdItemAfterCreate = await loadHabUnitItemByBarcode(barcode)
+        if (householdItemAfterCreate) {
+          return { status: 'exists', name: householdItemAfterCreate.name }
+        }
 
-      const householdItemAfterCreate = await loadHabUnitItemByBarcode(barcode)
-      if (householdItemAfterCreate) {
-        return { status: 'exists', name: householdItemAfterCreate.name }
+        const globalItemAfterCreate = await findGlobalItemByBarcode(barcode)
+        if (globalItemAfterCreate) {
+          await addItemToHabUnit(globalItemAfterCreate.itemId, name)
+        } else {
+          return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+        }
       }
-
-      const globalItemAfterCreate = await findGlobalItemByBarcode(barcode)
-      if (globalItemAfterCreate) {
-        await addItemToHabUnit(globalItemAfterCreate.itemId, name)
-        return redirectToInventory()
-      }
-
-      return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
     }
   } catch (error: unknown) {
     console.error('createItem failed', { barcode, error })

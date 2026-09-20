@@ -6,9 +6,9 @@ import { loadHabUnitItems } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 
 const InventoryPage = async () => {
-  const user = await requireCurrentUser()
+  await requireCurrentUser()
   const habUnit = await requireCurrentHabUnit()
-  const items = (await loadHabUnitItems()) ?? []
+  const items = await loadHabUnitItems()
 
   return (
     <main
