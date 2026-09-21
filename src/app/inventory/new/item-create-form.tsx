@@ -73,7 +73,7 @@ const ItemCreateForm = ({
           'text-base',
         )}
       >
-        Provide name for the item
+        Provide name for the item with designated barcode // {barcode}
       </p>
       <form
         action={createFormAction}
