@@ -41,6 +41,14 @@ const InventoryPage = async () => {
       >
         Add item
       </Button>
+      <Button
+        variant="outline"
+        nativeButton={false}
+        render={<Link href="/inventory/scan" />}
+        className={clsx('font-mono', 'min-h-11')}
+      >
+        Scan item
+      </Button>
     </main>
   )
 }
