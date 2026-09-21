@@ -26,7 +26,12 @@ const ScanItemPage = async ({
   const validationResult = validateBarcode(rawBarcode)
 
   if (validationResult.status === 'invalid') {
-    return <ScanCapture />
+    return (
+      <ScanCapture
+        defaultBarcode={rawBarcode}
+        errorMessage={validationResult.message}
+      />
+    )
   }
 
   const barcode = validationResult.barcode

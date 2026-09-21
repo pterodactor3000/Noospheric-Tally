@@ -5,7 +5,15 @@ import { clsx } from 'clsx'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
 
-const ScanCapture = () => {
+interface ScanCaptureProps {
+  defaultBarcode?: string
+  errorMessage?: string
+}
+
+const ScanCapture = ({
+  defaultBarcode = '',
+  errorMessage,
+}: ScanCaptureProps) => {
   const router = useRouter()
 
   return (
@@ -23,6 +31,8 @@ const ScanCapture = () => {
         onDetect={(text) => {
           router.push(`/inventory/scan?barcode=${encodeURIComponent(text)}`)
         }}
+        defaultBarcode={defaultBarcode}
+        errorMessage={errorMessage}
       />
     </main>
   )

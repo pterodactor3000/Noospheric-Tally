@@ -18,6 +18,8 @@ import { Input } from './ui/input'
 
 interface BarcodeScannerProps {
   onDetect: (text: string) => void
+  defaultBarcode?: string
+  errorMessage?: string
 }
 
 const POSSIBLE_FORMATS = [
@@ -27,13 +29,23 @@ const POSSIBLE_FORMATS = [
   BarcodeFormat.UPC_E,
 ]
 
-const BarcodeScanner = ({ onDetect }: BarcodeScannerProps) => {
+const BarcodeScanner = ({
+  onDetect,
+  defaultBarcode = '',
+  errorMessage,
+}: BarcodeScannerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const onDetectEvent = useEffectEvent(onDetect)
-  const [cameraError, setCameraError] = useState<string | null>(null)
+  const [cameraError, setCameraError] = useState<string | null>(
+    errorMessage ?? null,
+  )
 
   useEffect(() => {
-    const hints = new Map()
+    if (errorMessage) {
+      return
+    }
+
+    const hints = new Map<DecodeHintType, unknown>()
 
     hints.set(DecodeHintType.POSSIBLE_FORMATS, POSSIBLE_FORMATS)
 
@@ -41,6 +53,7 @@ const BarcodeScanner = ({ onDetect }: BarcodeScannerProps) => {
 
     let controls: { stop: () => void } | undefined
     let hasDetected = false
+    let isDisposed = false
 
     const startScan = async () => {
       try {
@@ -50,11 +63,11 @@ const BarcodeScanner = ({ onDetect }: BarcodeScannerProps) => {
         )
         const deviceId = environmentDevice?.deviceId
 
-        controls = await reader.decodeFromVideoDevice(
+        const nextControls = await reader.decodeFromVideoDevice(
           deviceId,
           videoRef.current ?? undefined,
           (result, _error, scanControls) => {
-            if (!result || hasDetected) {
+            if (isDisposed || !result || hasDetected) {
               return
             }
 
@@ -75,7 +88,18 @@ const BarcodeScanner = ({ onDetect }: BarcodeScannerProps) => {
             onDetectEvent(text)
           },
         )
-      } catch {
+        if (isDisposed) {
+          nextControls.stop()
+          return
+        }
+
+        controls = nextControls
+      } catch (error) {
+        if (isDisposed) {
+          return
+        }
+
+        console.error('decodeFromVideoDevice failed', error)
         setCameraError(
           'Pict servitor failed. Perform appeasing rituals to calm machine spirit. Provide input manually.',
         )
@@ -84,8 +108,11 @@ const BarcodeScanner = ({ onDetect }: BarcodeScannerProps) => {
 
     void startScan()
 
-    return () => controls?.stop()
-  }, [])
+    return () => {
+      isDisposed = true
+      controls?.stop()
+    }
+  }, [errorMessage])
 
   if (cameraError) {
     return (
@@ -121,7 +148,8 @@ const BarcodeScanner = ({ onDetect }: BarcodeScannerProps) => {
             inputMode="numeric"
             autoComplete="off"
             required
-            defaultValue={''}
+            defaultValue={defaultBarcode}
+            aria-invalid={Boolean(cameraError)}
             className={clsx('min-h-11', 'text-base', 'font-mono')}
           />
         </div>

@@ -63,17 +63,17 @@ Product rows are shared. Household stock is not. Phases land data first, then a 
 
 **Offer existing household items (F1).** When this household has inventory rows, show up to 20 household names, then filter. Do not offer the global catalog.
 
-**iOS Safari does not expose `BarcodeDetector`.** Use `@zxing/browser` `BrowserMultiFormatReader.decodeFromVideoDevice` with `EAN_13`, `EAN_8`, `UPC_A`, `UPC_E`. Expand `UPC_E` text to UPC-A before lookup or save. Stop after the first successful decode.
+**iOS Safari does not expose** `BarcodeDetector`**.** Use `@zxing/browser` `BrowserMultiFormatReader.decodeFromVideoDevice` with `EAN_13`, `EAN_8`, `UPC_A`, `UPC_E`. Expand `UPC_E` text to UPC-A before lookup or save. Stop after the first successful decode.
 
 **Camera needs a secure context.** Verify on the live `workers.dev` HTTPS URL.
 
 **Open Food Facts is fail-open.** `GET https://world.openfoodfacts.org/api/v2/product/{barcode}?fields=product_name,product_name_en` with `User-Agent: NoosphericTally/0.1 (https://github.com/pterodactor3000/Noospheric-Tally)`. Failure leaves the household name empty.
 
-**Session reads use `getUser`, never `getSession`.** (`src/middleware.ts:33-35`)
+**Session reads use** `getUser`**, never** `getSession`**.** (`src/middleware.ts:33-35`)
 
-**RPCs use `search_path = ''` and `public.`-qualified names**, same as `create_household` (`supabase/migrations/20260816083017_create_households.sql:53-76`).
+**RPCs use** `search_path = ''` **and** `public.`**-qualified names**, same as `create_household` (`supabase/migrations/20260816083017_create_households.sql:53-76`).
 
-`**quantity` stays hidden.** It lives on `household_inventory`. S-02 neither displays nor updates it.
+`**quantity` stays hidden.\*\* It lives on `household_inventory`. S-02 neither displays nor updates it.
 
 ---
 
@@ -161,7 +161,7 @@ A signed-in member can type a barcode and a name from `/inventory`. First househ
 
 **File:** `src/lib/items/load-household-item-by-barcode.ts`, `src/lib/items/find-global-item-by-barcode.ts`, `src/lib/items/load-household-items.ts`
 
-**Intent:** Household reads through RLS. Global reads through `find_item_by_barcode`. Keep I/O helpers named `load`* or `find*`.
+**Intent:** Household reads through RLS. Global reads through `find_item_by_barcode`. Keep I/O helpers named `load`_ or `find`_.
 
 **Contract:** `loadHouseholdItemByBarcode(barcode)` calls `find_item_by_barcode`, then selects `household_inventory` for this household by that `item_id`. Returns `{ itemId, name }` or `null`. Do not join `household_inventory` to `item_barcodes` through PostgREST. `findGlobalItemByBarcode(barcode)` calls `find_item_by_barcode` and returns `{ itemId, canonicalName }` or `null`. `loadHouseholdItems({ limit }?)` returns `{ itemId, name }[]` from `household_inventory` ordered by name, no quantity. Omit `limit` on `/inventory`. Pass `{ limit: 20 }` only for the attach offer list. None redirect. Server client only (`src/lib/supabase/server.ts:6-29`).
 
@@ -366,30 +366,30 @@ Apply `supabase/migrations/<timestamp>_create_items.sql` with `pnpm exec supabas
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes including validators
-- [ ] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit zero
+- [x] 2.1 `pnpm test` passes including validators
+- [x] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit zero
 
 #### Manual
 
-- [ ] 2.3 First-item typed create lands on `/inventory` with the household name and no attach picker
-- [ ] 2.4 A second unknown barcode can attach to the first household product; both codes resolve to one `items.id`
-- [ ] 2.5 A barcode this household already stocks shows the household name and does not insert
-- [ ] 2.6 A second household submitting the first household's barcode adds inventory only. `items` count stays one
-- [ ] 2.7 Quantity never appears
-- [ ] 2.8 `/inventory/new` while signed out redirects to `/login`
+- [x] 2.3 First-item typed create lands on `/inventory` with the household name and no attach picker
+- [x] 2.4 A second unknown barcode can attach to the first household product; both codes resolve to one `items.id`
+- [x] 2.5 A barcode this household already stocks shows the household name and does not insert
+- [x] 2.6 A second household submitting the first household's barcode adds inventory only. `items` count stays one
+- [x] 2.7 Quantity never appears
+- [x] 2.8 `/inventory/new` while signed out redirects to `/login`
 
 ### Phase 3: Camera scan
 
 #### Automated
 
-- [ ] 3.1 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm worker:check` exit zero with ZXing installed
+- [x] 3.1 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm worker:check` exit zero with ZXing installed
 
 #### Manual
 
-- [ ] 3.2 Phone HTTPS decode reaches the name form, add-to-household form, or the already-stocked name
-- [ ] 3.3 Denied camera still completes through typed digits
-- [ ] 3.4 One physical scan produces one detect and the stream stops
-- [ ] 3.5 README states HTTP local dev is insufficient for the camera check
+- [x] 3.2 Phone HTTPS decode reaches the name form, add-to-household form, or the already-stocked name
+- [x] 3.3 Denied camera still completes through typed digits
+- [x] 3.4 One physical scan produces one detect and the stream stops
+- [x] 3.5 README states HTTP local dev is insufficient for the camera check
 
 ### Phase 4: Catalog prefill
 

@@ -13,6 +13,12 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000). Edit `src/app/page.tsx` and the page updates as you save.
 
+## Barcode camera
+
+Camera decode needs a secure context. Verify it on the live HTTPS URL, not `pnpm dev` at [http://localhost:3000](http://localhost:3000) or `pnpm preview` at [http://127.0.0.1:8787](http://127.0.0.1:8787). If the camera is denied, type the digits instead.
+
+Live URL: [https://noospheric-tally.eldritchcode-it.workers.dev](https://noospheric-tally.eldritchcode-it.workers.dev)
+
 ## Supabase environment and Auth
 
 Household sign-in needs a Supabase project. Copy [`.env.example`](./.env.example) to `.env.local` for Next.js, and set the same names in [`.dev.vars`](./.dev.vars) for Wrangler/OpenNext local runs:
