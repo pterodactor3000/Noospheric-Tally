@@ -4,6 +4,7 @@ import { clsx } from 'clsx'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitItems } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
+import { CSSProperties } from 'react'
 
 const InventoryPage = async () => {
   await requireCurrentUser()
@@ -22,10 +23,22 @@ const InventoryPage = async () => {
       )}
     >
       <div>
-        <h2>Your {habUnit.name} tally</h2>
+        <h1>Your {habUnit.name} tally</h1>
       </div>
 
-      <section>
+      <section
+        className={clsx(
+          'border',
+          'border-foreground/50',
+          'rounded-br-4xl',
+          'p-8',
+          'shadow-sm',
+          'backdrop-blur',
+          'sm:p-12',
+          'dark:bg-black/20',
+        )}
+        style={{ cornerShape: 'bevel' } as CSSProperties}
+      >
         {items.length === 0 ? (
           <p>Nothing is added here yet.</p>
         ) : (
