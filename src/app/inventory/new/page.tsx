@@ -11,6 +11,7 @@ import { AlreadyStocked } from './already-stocked'
 import { AddToHabUnitForm } from './add-to-hab-unit-form'
 import { BarcodeLookupForm } from './barcode-lookup-form'
 import { ItemCreateForm } from './item-create-form'
+import { lookupCatalogName } from '@/lib/catalog/lookup-catalog-name'
 
 const NewItemPage = async ({
   searchParams,
@@ -55,8 +56,18 @@ const NewItemPage = async ({
           />
         )
       } else {
+        const lookupProduct = await lookupCatalogName(barcode)
         const items = await loadHabUnitItems({ limit: 20 })
-        body = <ItemCreateForm barcode={barcode} habUnitItems={items} />
+        const defaultName =
+          lookupProduct.status === 'found' ? lookupProduct.name : ''
+
+        body = (
+          <ItemCreateForm
+            barcode={barcode}
+            habUnitItems={items}
+            defaultName={defaultName}
+          />
+        )
       }
     }
   }
