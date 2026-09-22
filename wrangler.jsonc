@@ -52,5 +52,9 @@
   "vars": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://nlceppgmzezmqutuvqpw.supabase.co",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_3CQq4SYKLCVBWgXGNalm9g_IpCbjTcx",
+    "OPENBEAUTYFACTS_API_URL": "https://world.openbeautyfacts.org/api/v2/product/",
+    "OPENFOODFACTS_API_URL": "https://world.openfoodfacts.org/api/v2/product/",
+    "OPENPETFOODFACTS_API_URL": "https://world.openpetfoodfacts.org/api/v2/product/",
+    "OPENPRODUCTSFACTS_API_URL": "https://world.openproductsfacts.org/api/v2/product/"
   },
 }

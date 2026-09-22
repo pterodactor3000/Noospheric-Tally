@@ -87,13 +87,13 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ### S-02: Record a new item from a scanned barcode
 
-- **Outcome:** user can scan a barcode the system has never seen and record it as a named item, with the name prefilled from an external catalog when one is found and typed by hand when it is not
+- **Outcome:** user can scan a barcode the system has never seen and record it as a named item, with the name prefilled from the first HTTP 200 among Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts, and typed by hand when every catalog misses
 - **Change ID:** scan-to-create-item
 - **PRD refs:** FR-002, FR-005, FR-016
 - **Prerequisites:** S-01
 - **Parallel with:** -
 - **Blockers:** -
-- **Unknowns:** Which external product catalog answers the lookup, and how poorly it covers European pet food and grocery barcodes. Owner: user. Block: no, because manual naming is the documented fallback and the slice can ship on that alone.
+- **Unknowns:** -
 - **Risk:** Camera capture in a mobile browser is the least predictable part of the product, so it is exercised before anything depends on a working scanner.
 - **Status:** ready
 
@@ -211,7 +211,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | --- | --- | --- | --- | --- |
 | F-01 | deployed-https-app-shell | Deploy the app over HTTPS with redeploy on merge | yes | Start here. Everything else is verified against it, and it settles the blocked platform install scripts. |
 | S-01 | household-sign-in | Sign in to a household inventory | yes | Plan after F-01 exists. Establishes the account that owns all later data. |
-| S-02 | scan-to-create-item | Record a new item from a scanned barcode | yes | Plan the catalog lookup as an enhancement over manual naming, not a dependency. |
+| S-02 | scan-to-create-item | Record a new item from a scanned barcode | yes | Four Open Facts calls in parallel. The first HTTP 200 prefills the name. Manual naming still ships if every call fails. |
 | S-03 | stocking-mode-increase | Raise counts by scanning in stocking mode | yes | Includes the visible mode indicator and its reset behavior. |
 | S-04 | using-mode-decrease-and-undo | Lower counts by scanning, with session undo | yes | Carries guardrail one: no silent double-count. |
 | S-05 | name-search-and-manual-adjust | Find an item by name and adjust it by hand | yes | Can be planned alongside stream B once items exist. |
@@ -224,10 +224,9 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ## Open Roadmap Questions
 
-1. **Which external product catalog answers unknown barcodes, and what is done when its coverage is poor**: Owner: user. Block: S-02, as an enhancement only, since manual naming ships regardless.
-2. **When the household invite is delivered, given it is the deferred original secondary criterion**: Owner: user. Block: roadmap-wide, currently parked.
-3. **When offline use becomes real work, given it was withdrawn to protect the four weeks**: Owner: user. Block: roadmap-wide, currently parked.
-4. **At what point the medium user-scale ambition turns into work, while separate households remain out of scope**: Owner: user. Block: roadmap-wide, currently parked.
+1. **When the household invite is delivered, given it is the deferred original secondary criterion**: Owner: user. Block: roadmap-wide, currently parked.
+2. **When offline use becomes real work, given it was withdrawn to protect the four weeks**: Owner: user. Block: roadmap-wide, currently parked.
+3. **At what point the medium user-scale ambition turns into work, while separate households remain out of scope**: Owner: user. Block: roadmap-wide, currently parked.
 
 ## Parked
 

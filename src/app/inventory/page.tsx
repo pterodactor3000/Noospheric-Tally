@@ -21,34 +21,38 @@ const InventoryPage = async () => {
         'px-6',
       )}
     >
-      <p>Your {habUnit.name} tally</p>
-      <br />
-      {items.length === 0 ? (
-        <p>Nothing is added here yet.</p>
-      ) : (
-        <ul>
-          {items.map((item) => (
-            <li key={item.itemId}>{item.name}</li>
-          ))}
-        </ul>
-      )}
-      <br />
-      <Button
-        variant="outline"
-        nativeButton={false}
-        render={<Link href="/inventory/new" />}
-        className={clsx('font-mono', 'min-h-11')}
-      >
-        Add item
-      </Button>
-      <Button
-        variant="outline"
-        nativeButton={false}
-        render={<Link href="/inventory/scan" />}
-        className={clsx('font-mono', 'min-h-11')}
-      >
-        Scan item
-      </Button>
+      <div>
+        <h2>Your {habUnit.name} tally</h2>
+      </div>
+
+      <section>
+        {items.length === 0 ? (
+          <p>Nothing is added here yet.</p>
+        ) : (
+          <ul>
+            {items.map((item) => (
+              <li key={item.itemId}>{item.name}</li>
+            ))}
+          </ul>
+        )}
+        <br />
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link href="/inventory/new" />}
+          className={clsx('font-mono', 'min-h-11')}
+        >
+          Add item
+        </Button>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link href="/inventory/scan" />}
+          className={clsx('font-mono', 'min-h-11')}
+        >
+          Scan item
+        </Button>
+      </section>
     </main>
   )
 }

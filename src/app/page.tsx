@@ -127,7 +127,7 @@ export default async function Home() {
                   'uppercase',
                 )}
               >
-                Next milestone
+                Inventory
               </h2>
               <p
                 className={clsx(
@@ -138,7 +138,8 @@ export default async function Home() {
                   'font-mono',
                 )}
               >
-                Scan an unknown barcode and record it as a named item.
+                A signed-in member can scan an unknown barcode and save a
+                household name.
               </p>
             </section>
             <section>

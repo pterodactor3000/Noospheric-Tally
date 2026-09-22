@@ -1,8 +1,9 @@
 import { describe, expect, test, vi } from 'vitest'
 
+import packageJson from '../../../package.json'
+
 const BARCODE = '3017620422003'
-const PROJECT_VERSION = '0.2.0'
-const USER_AGENT = `NoosphericTally/${PROJECT_VERSION} (pterodactor@pm.me)`
+const USER_AGENT = `NoosphericTally/${packageJson.version} (pterodactor@pm.me)`
 
 const BEAUTY_CATALOG_URL = 'https://beauty.example/api/v2/product/'
 const FOOD_CATALOG_URL = 'https://food.example/api/v2/product/'
@@ -57,7 +58,6 @@ const runWithCatalogEnv = async (
   vi.stubEnv('OPENFOODFACTS_API_URL', FOOD_CATALOG_URL)
   vi.stubEnv('OPENPETFOODFACTS_API_URL', PET_CATALOG_URL)
   vi.stubEnv('OPENPRODUCTSFACTS_API_URL', PRODUCTS_CATALOG_URL)
-  vi.stubEnv('npm_package_version', PROJECT_VERSION)
 
   try {
     const catalogModule = await import('./lookup-catalog-name')
@@ -108,7 +108,7 @@ describe('lookupCatalogName', () => {
     })
   })
 
-  test('returns the full product name when it is longer than 120 characters', async () => {
+  test('truncates a product name longer than 120 characters', async () => {
     const productName = 'n'.repeat(121)
 
     await runWithCatalogEnv(async (lookupCatalogName) => {
@@ -119,8 +119,53 @@ describe('lookupCatalogName', () => {
 
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
-        name: productName,
+        name: 'n'.repeat(120),
       })
+    })
+  })
+
+  test('uses product_name_en when product_name is blank', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () =>
+          Response.json({
+            code: BARCODE,
+            product: {
+              product_name: '   ',
+              product_name_en: '  English name  ',
+            },
+            status: 1,
+            status_verbose: 'product found',
+          }),
+        ),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'found',
+        name: 'English name',
+      })
+    })
+  })
+
+  test('returns empty when both catalog names are blank', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () =>
+          Response.json({
+            code: BARCODE,
+            product: {
+              product_name: ' ',
+              product_name_en: '',
+            },
+            status: 1,
+            status_verbose: 'product found',
+          }),
+        ),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual(emptyLookup)
     })
   })
 
@@ -262,4 +307,21 @@ describe('lookupCatalogName', () => {
       ])
     })
   })
+
+  test('returns empty when every catalog request times out', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn((_url: string, init: CatalogFetchInit) => {
+          return new Promise<Response>((_resolve, reject) => {
+            init.signal.addEventListener('abort', () => {
+              reject(init.signal.reason)
+            })
+          })
+        }),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual(emptyLookup)
+    })
+  }, 10000)
 })
