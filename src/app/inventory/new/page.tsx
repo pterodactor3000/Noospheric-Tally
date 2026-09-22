@@ -56,8 +56,10 @@ const NewItemPage = async ({
           />
         )
       } else {
-        const lookupProduct = await lookupCatalogName(barcode)
-        const items = await loadHabUnitItems({ limit: 20 })
+        const [lookupProduct, items] = await Promise.all([
+          lookupCatalogName(barcode),
+          loadHabUnitItems(),
+        ])
         const defaultName =
           lookupProduct.status === 'found' ? lookupProduct.name : ''
 
