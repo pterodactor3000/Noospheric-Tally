@@ -37,7 +37,7 @@ const lookupCatalogName = async (barcode: string): Promise<LookupStatus> => {
 
     abortControllers.forEach((controller) => controller.abort())
 
-    const data = JSON.parse(await response.json()) as unknown as OpenProduct
+    const data = (await response.json()) as unknown as OpenProduct
 
     return {
       status: 'found',
