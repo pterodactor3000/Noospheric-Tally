@@ -37,8 +37,22 @@ describe('validateBarcode', () => {
     })
   })
 
-  test('expands an 8-digit UPC-E code to UPC-A', () => {
+  test('preserves an 8-digit barcode that starts with 0', () => {
     expect(validateBarcode('04252614')).toEqual({
+      status: 'valid',
+      barcode: '04252614',
+    })
+  })
+
+  test('preserves an 8-digit barcode that starts with 1', () => {
+    expect(validateBarcode('14252614')).toEqual({
+      status: 'valid',
+      barcode: '14252614',
+    })
+  })
+
+  test('expands an 8-digit UPC-E code to UPC-A when marked as UPC-E', () => {
+    expect(validateBarcode('04252614', { isUpcE: true })).toEqual({
       status: 'valid',
       barcode: '042100005264',
     })

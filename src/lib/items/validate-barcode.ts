@@ -10,6 +10,10 @@ interface InvalidBarcode {
 
 type BarcodeValidationResult = ValidBarcode | InvalidBarcode
 
+interface ValidateBarcodeOptions {
+  readonly isUpcE?: boolean
+}
+
 const VALIDATION_INVALID_BARCODE = 'Barcode does not match restrictions'
 
 /**
@@ -90,9 +94,14 @@ const expandUpcEToUpcA = (digits: string): string => {
   return digits
 }
 
-const validateBarcode = (barcode: string): BarcodeValidationResult => {
+const validateBarcode = (
+  barcode: string,
+  options: ValidateBarcodeOptions = {},
+): BarcodeValidationResult => {
   const trimmed = barcode.trim()
-  const expanded = expandUpcEToUpcA(trimmed)
+  const shouldExpandUpcE =
+    options.isUpcE || trimmed.length === 6 || trimmed.length === 7
+  const expanded = shouldExpandUpcE ? expandUpcEToUpcA(trimmed) : trimmed
 
   if (!/^\d{8,14}$/.test(expanded)) {
     return {

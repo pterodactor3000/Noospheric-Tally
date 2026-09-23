@@ -78,7 +78,9 @@ const BarcodeScanner = ({
             const text =
               result.getBarcodeFormat() === BarcodeFormat.UPC_E
                 ? (() => {
-                    const validationResult = validateBarcode(rawText)
+                    const validationResult = validateBarcode(rawText, {
+                      isUpcE: true,
+                    })
                     return validationResult.status === 'valid'
                       ? validationResult.barcode
                       : rawText
