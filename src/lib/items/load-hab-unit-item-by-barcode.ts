@@ -14,7 +14,13 @@ const loadHabUnitItemByBarcode = async (
     .rpc(DB_FUNCTION_FIND_ITEM_BY_BARCODE, { item_barcode: barcode })
     .maybeSingle<dbFindItemByBarcode>()
 
-  if (error || !findItem) {
+  if (error) {
+    throw new Error(
+      `find_item_by_barcode function returned error: ${error.message}`,
+    )
+  }
+
+  if (!findItem) {
     return null
   }
 
@@ -24,7 +30,13 @@ const loadHabUnitItemByBarcode = async (
     .eq('item_id', findItem.item_id)
     .maybeSingle<dbHabUnitInventory>()
 
-  if (itemError || !habUnitItem) {
+  if (itemError) {
+    throw new Error(
+      `select from household_inventory returned error: ${itemError.message}`,
+    )
+  }
+
+  if (!habUnitItem) {
     return null
   }
 
