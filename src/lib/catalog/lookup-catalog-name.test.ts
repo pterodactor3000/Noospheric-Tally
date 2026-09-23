@@ -31,10 +31,7 @@ interface CatalogFetchInit {
 type LookupCatalogName =
   typeof import('./lookup-catalog-name').lookupCatalogName
 
-type CatalogFetch = (
-  url: string,
-  init: CatalogFetchInit,
-) => Promise<Response>
+type CatalogFetch = (url: string, init: CatalogFetchInit) => Promise<Response>
 
 const catalogRequestUrl = (catalogUrl: string) =>
   `${catalogUrl}${BARCODE}?fields=product_name,product_name_en`
@@ -49,6 +46,52 @@ const createProductResponse = (productName: string) =>
     status: 1,
     status_verbose: 'product found',
   })
+
+const throwIfRequestAborted = (signal: AbortSignal) => {
+  if (!signal.aborted) {
+    return
+  }
+
+  if (signal.reason instanceof Error) {
+    throw signal.reason
+  }
+
+  throw new Error('Catalog request aborted before its body was read')
+}
+
+const createSignalBoundProductResponse = (signal: AbortSignal) => {
+  const encodedBody = new TextEncoder().encode(
+    JSON.stringify({
+      code: BARCODE,
+      product: {
+        product_name: 'Nutella',
+        product_name_en: 'Nutella en',
+      },
+      status: 1,
+      status_verbose: 'product found',
+    }),
+  )
+
+  return new Response(
+    new ReadableStream({
+      async pull(controller) {
+        throwIfRequestAborted(signal)
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0)
+        })
+        throwIfRequestAborted(signal)
+        controller.enqueue(encodedBody)
+        controller.close()
+      },
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  )
+}
 
 const runWithCatalogEnv = async (
   run: (lookupCatalogName: LookupCatalogName) => Promise<void>,
@@ -305,6 +348,28 @@ describe('lookupCatalogName', () => {
         true,
         true,
       ])
+    })
+  })
+
+  test('returns the found name when the winning body waits on its request signal', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn((url: string, init: CatalogFetchInit) => {
+          if (url.startsWith(FOOD_CATALOG_URL)) {
+            return Promise.resolve(
+              createSignalBoundProductResponse(init.signal),
+            )
+          }
+
+          return new Promise<Response>(() => undefined)
+        }),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'found',
+        name: 'Nutella',
+      })
     })
   })
 

@@ -52,21 +52,32 @@ const lookupCatalogName = async (barcode: string): Promise<LookupStatus> => {
   const abortControllers = catalogUrls.map(() => new AbortController())
 
   try {
-    const response = await Promise.any(
-      catalogUrls.map((url, index) =>
-        fetchHttp200(
+    const winningCatalog = await Promise.any(
+      catalogUrls.map(async (url, index) => {
+        const response = await fetchHttp200(
           url,
           AbortSignal.any([
             abortControllers[index].signal,
             AbortSignal.timeout(CATALOG_TIMEOUT_MS),
           ]),
-        ),
-      ),
+        )
+
+        return {
+          index,
+          response,
+        }
+      }),
     )
 
-    abortControllers.forEach((controller) => controller.abort())
+    abortControllers.forEach((controller, index) => {
+      if (index !== winningCatalog.index) {
+        controller.abort()
+      }
+    })
 
-    const data: unknown = await response.json()
+    const data: unknown = await winningCatalog.response.json()
+    abortControllers[winningCatalog.index].abort()
+
     const name = readCatalogName(data)
     if (!name) {
       return {
@@ -78,16 +89,12 @@ const lookupCatalogName = async (barcode: string): Promise<LookupStatus> => {
       status: 'found',
       name,
     }
-  } catch (error) {
-    abortControllers.forEach((controller) => controller.abort())
-    if (error instanceof AggregateError) {
-      return {
-        status: 'empty',
-      }
-    }
+  } catch {
     return {
       status: 'empty',
     }
+  } finally {
+    abortControllers.forEach((controller) => controller.abort())
   }
 }
 
