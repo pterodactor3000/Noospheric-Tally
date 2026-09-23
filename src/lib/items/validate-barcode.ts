@@ -17,9 +17,9 @@ interface ValidateBarcodeOptions {
 const VALIDATION_INVALID_BARCODE = 'Barcode does not match restrictions'
 
 /**
- * Calculates the GS1 check digit for GTIN data digits.
- * @param dataDigits - The digits of the barcode without the check digit.
- * @returns The check digit.
+ * Returns the GS1 check digit for GTIN digits that do not include a check digit.
+ * @param dataDigits - Barcode digits without the check digit.
+ * @returns The one-digit GS1 check value.
  */
 const getGtinCheckDigit = (dataDigits: string): string => {
   let sum = 0
@@ -33,17 +33,27 @@ const getGtinCheckDigit = (dataDigits: string): string => {
   return String((10 - (sum % 10)) % 10)
 }
 
+/**
+ * Returns true if the last digit is the GS1 GTIN check digit for the rest of the code.
+ * @param digits - Full barcode digits, last digit included.
+ * @returns True if the last digit matches the GS1 check digit.
+ */
 const isValidGtinCheckDigit = (digits: string): boolean =>
   digits[digits.length - 1] === getGtinCheckDigit(digits.slice(0, -1))
 
+/**
+ * Returns true if the barcode length is 8, 12, 13, or 14.
+ * @param length - Digit count of the barcode.
+ * @returns True if the length is 8, 12, 13, or 14.
+ */
 const isFixedLengthGtin = (length: number): boolean =>
   length === 8 || length === 12 || length === 13 || length === 14
 
 /**
- * Expands a UPC-E barcode into a UPC-A barcode.
- * @param numberSystem - The number system of the barcode.
- * @param compactDigits - The compact digits of the barcode.
- * @returns The expanded UPC-A barcode.
+ * Returns the 11-digit UPC-A body for a number system and six compact UPC-E digits.
+ * @param numberSystem - UPC number system digit, 0 or 1.
+ * @param compactDigits - The six compact UPC-E digits.
+ * @returns The 11-digit UPC-A body with no check digit.
  */
 const expandUpcEBody = (
   numberSystem: string,
@@ -77,6 +87,11 @@ const expandUpcEBody = (
   return numberSystem + compactDigits.slice(0, 5) + '0000' + lastDigit
 }
 
+/**
+ * Returns the 11-digit UPC-A body for 6, 7, or 8 digit UPC-E input.
+ * @param digits - UPC-E digits.
+ * @returns The 11-digit UPC-A body, or null if the input is not UPC-E.
+ */
 const getExpandedUpcEBody = (digits: string): string | null => {
   if (digits.length === 6) {
     return expandUpcEBody('0', digits)
@@ -94,9 +109,9 @@ const getExpandedUpcEBody = (digits: string): string | null => {
 }
 
 /**
- * Expands a UPC-E barcode into a UPC-A barcode.
- * @param digits - The digits of the barcode.
- * @returns The expanded UPC-A barcode.
+ * Returns a 12-digit UPC-A code for UPC-E input.
+ * @param digits - UPC-E digits.
+ * @returns The 12-digit UPC-A code, or the original digits if they are not UPC-E.
  */
 const expandUpcEToUpcA = (digits: string): string => {
   const body = getExpandedUpcEBody(digits)
@@ -107,6 +122,11 @@ const expandUpcEToUpcA = (digits: string): string => {
   return body + getGtinCheckDigit(body)
 }
 
+/**
+ * Returns true if the last digit of an 8-digit UPC-E code matches the expanded UPC-A check digit.
+ * @param digits - Eight UPC-E digits, last digit included.
+ * @returns True if the last digit matches the UPC-A check digit of the expansion.
+ */
 const isValidUpcECheckDigit = (digits: string): boolean => {
   const body = getExpandedUpcEBody(digits)
   if (!body || digits.length !== 8) {
