@@ -136,6 +136,18 @@ const isValidUpcECheckDigit = (digits: string): boolean => {
   return digits[7] === getGtinCheckDigit(body)
 }
 
+/**
+ * Trims and validates a barcode, expanding UPC-E input to UPC-A when needed.
+ *
+ * Six- and seven-digit values are treated as UPC-E. Eight-digit values are
+ * treated as GTIN-8 unless `options.isUpcE` is true. Numeric values from 8 to
+ * 14 digits are accepted, with check digits verified for lengths 8, 12, 13,
+ * and 14.
+ *
+ * @param barcode - Barcode text to normalize and validate.
+ * @param options.isUpcE - Whether an eight-digit value came from a UPC-E scan.
+ * @returns A valid result with the normalized barcode, or an invalid result.
+ */
 const validateBarcode = (
   barcode: string,
   options: ValidateBarcodeOptions = {},
