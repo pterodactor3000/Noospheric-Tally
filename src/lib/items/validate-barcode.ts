@@ -151,8 +151,17 @@ const validateBarcode = (
     }
   }
 
+  const isUnmarkedUpcE =
+    !options.isUpcE &&
+    /^\d{8}$/.test(trimmed) &&
+    !isValidGtinCheckDigit(trimmed) &&
+    isValidUpcECheckDigit(trimmed)
+
   const shouldExpandUpcE =
-    options.isUpcE || trimmed.length === 6 || trimmed.length === 7
+    options.isUpcE ||
+    isUnmarkedUpcE ||
+    trimmed.length === 6 ||
+    trimmed.length === 7
   const expanded = shouldExpandUpcE ? expandUpcEToUpcA(trimmed) : trimmed
 
   if (!/^\d{8,14}$/.test(expanded)) {
