@@ -85,7 +85,7 @@ describe('validateBarcode', () => {
   })
 
   test('returns an invalid result when the GTIN-8 check digit is wrong', () => {
-    expect(validateBarcode('04252614')).toEqual(invalidResponse)
+    expect(validateBarcode('01234566')).toEqual(invalidResponse)
   })
 
   test('expands an 8-digit UPC-E code to UPC-A when marked as UPC-E', () => {
