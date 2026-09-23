@@ -22,7 +22,7 @@ On the live HTTPS URL, a member can scan or type a barcode, confirm or type a ho
 | Product vs stock | Shared `items` + `item_barcodes`. `household_inventory` links household to item | Same EAN is one product for every household | Plan interview F3 |
 | Quantity | On `household_inventory`, default 0, hidden | Increment is S-03. Quantity is per household | Plan interview |
 | Household name | `household_inventory.name`. `items.name` is canonical only | A rename must not leak across households | Replan |
-| Catalog | Manual name first. Open Food Facts last in this slice. Trim and truncate prefill to 120 | Roadmap treats catalog as enhancement. Long names must still save | Plan interview, roadmap, plan review F4 |
+| Catalog | Manual name first. Four Open Facts calls in parallel. The first HTTP 200 prefills the name. Trim and truncate prefill to 120 | Roadmap treats catalog as enhancement. Long names must still save | Plan interview, roadmap, plan review F4, impl review F2 |
 | Decode | `@zxing/browser` plus typed digits. Expand `UPC_E` to UPC-A before lookup or save | `BarcodeDetector` is off on iOS Safari. Validator is 8 to 14 digits | Plan interview, Can I Use, plan review F5 |
 | Attach | Skip picker when this household has zero stock. Later, show up to 20 household names and filter | FR-005. F1 | Plan review F1 |
 | Inventory list | `loadHouseholdItems()` with no limit. Attach offer passes `{ limit: 20 }` | A hard cap would hide stock after 20 rows | Plan review F2 |
@@ -41,7 +41,7 @@ On the live HTTPS URL, a member can scan or type a barcode, confirm or type a ho
 - `items`, `item_barcodes`, `household_inventory`, RLS, RPCs
 - Typed create, add-to-household, and attach UI from `/inventory`
 - ZXing camera scan with typed-digits fallback
-- Open Food Facts name prefill, editable, fail-open
+- Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts name prefill, editable, fail-open. The first HTTP 200 wins
 - Household name list after the first stock row
 
 **Out of scope:**
@@ -49,7 +49,7 @@ On the live HTTPS URL, a member can scan or type a barcode, confirm or type a ho
 - Counts, modes, undo, minimums, restock lists (S-03 through S-08)
 - FR-006 name search as the camera-failure path
 - Barcode-less items (FR-013)
-- Offline scan, other catalog vendors, browser E2E tests
+- Offline scan, catalog vendors other than the four Open Facts hosts, browser E2E tests
 - Client listing of all global products
 
 ## Approach
@@ -63,12 +63,12 @@ Copy S-01: validate in server actions, mutate through `security definer` RPCs. L
 | 1. Shared item identity and household inventory | Three tables, RLS, four functions, validators | Client select on `items` would leak the global catalog |
 | 2. Manual create, stock, and attach | `/inventory/new`, household name list | Creating a second `items` row for a known EAN |
 | 3. Camera scan | `/inventory/scan`, ZXing | iOS camera and HTTPS secure context |
-| 4. Catalog prefill | Open Food Facts lookup | A down or empty catalog blocking save |
+| 4. Catalog prefill | Four Open Facts lookups in parallel | A down or empty catalog blocking save |
 
 ## Risks and Assumptions
 
 - Camera checks assume the live `workers.dev` HTTPS URL. Local HTTP is not that check.
-- Open Food Facts coverage of Zooplus pet food is weak. Manual name is the real path for those codes.
+- Open Facts coverage of Zooplus pet food can be weak. Manual name is the real path when every catalog misses.
 - Shared `items.name` is canonical. Household display name can differ. First writer sets the canonical name.
 - RLS and RPCs are verified by hand against the linked Supabase project.
 - Roadmap still lists S-01 as `ready`. Live code already provides sign-in and `/inventory`.

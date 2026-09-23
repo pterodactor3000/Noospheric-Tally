@@ -13,15 +13,16 @@ const Header = async () => {
         'px-6',
         'py-12',
         'sm:px-10',
-        'shadow-lg',
-        'shadow-primary/40',
         'fixed',
         'inset-x-0',
         'top-0',
+        'border-b-2',
+        'border-ring/75',
+        'shadow-lg',
+        'shadow-primary/25',
       )}
     >
       <TallyLabel />
-
       {user !== null ? <SignOutButton /> : null}
     </header>
   )

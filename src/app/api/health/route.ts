@@ -14,7 +14,7 @@ export async function GET() {
     const supabaseEnv = getSupabaseEnv()
     const supabase = createClient(
       supabaseEnv.supabaseUrl,
-      supabaseEnv.supabaseAnonKey,
+      supabaseEnv.supabasePublishableKey,
     )
     const result = await checkSupabaseHealth(supabase)
 

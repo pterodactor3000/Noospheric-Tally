@@ -1,3 +1,5 @@
+import { DB_FUNCTION_PING_DATABASE } from '../db/entities'
+
 interface HealthyCheck {
   status: 'ok'
 }
@@ -10,23 +12,21 @@ interface UnhealthyCheck {
 type HealthCheckResult = HealthyCheck | UnhealthyCheck
 
 interface SupabaseHealthClient {
-  rpc(functionName: 'ping_database'): PromiseLike<{
+  rpc(functionName: typeof DB_FUNCTION_PING_DATABASE): PromiseLike<{
     error: { message: string } | null
   }>
 }
-
-const PING_DATABASE_RPC = 'ping_database'
 
 const checkSupabaseHealth = async (
   client: SupabaseHealthClient,
 ): Promise<HealthCheckResult> => {
   try {
-    const { error } = await client.rpc(PING_DATABASE_RPC)
+    const { error } = await client.rpc(DB_FUNCTION_PING_DATABASE)
 
     if (error) {
       return {
         status: 'unhealthy',
-        message: `Supabase health check rpc failed for ${PING_DATABASE_RPC}: ${error.message}`,
+        message: `Supabase health check rpc failed for ${DB_FUNCTION_PING_DATABASE}: ${error.message}`,
       }
     }
 
@@ -35,7 +35,7 @@ const checkSupabaseHealth = async (
     const detail = error instanceof Error ? error.message : 'unknown error'
     return {
       status: 'unhealthy',
-      message: `Supabase health check rpc failed for ${PING_DATABASE_RPC}: ${detail}`,
+      message: `Supabase health check rpc failed for ${DB_FUNCTION_PING_DATABASE}: ${detail}`,
     }
   }
 }

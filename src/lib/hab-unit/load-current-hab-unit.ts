@@ -1,3 +1,4 @@
+import { DB_TABLE_HOUSEHOLDS } from '../db/entities'
 import { createClient } from '../supabase/server'
 
 interface CurrentHabUnit {
@@ -9,7 +10,7 @@ const loadCurrentHabUnit = async (): Promise<CurrentHabUnit | null> => {
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
-      .from('households')
+      .from(DB_TABLE_HOUSEHOLDS)
       .select('id, name')
       .maybeSingle()
 

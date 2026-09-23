@@ -6,7 +6,6 @@ const TallyLabel = () => {
     <Link href={'/'}>
       <p
         className={clsx(
-          'mb-8',
           'font-mono',
           'font-semibold',
           'tracking-[0.24em]',

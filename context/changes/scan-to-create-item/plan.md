@@ -2,7 +2,7 @@
 
 ## Overview
 
-Deliver roadmap slice S-02 (`scan-to-create-item`): a signed-in household member can scan a barcode the household has never stored, record it as a named item, attach that barcode to an existing product when it is the same good, and accept a catalog prefill when Open Food Facts has a name. This satisfies FR-002, FR-005, FR-016, and guardrail 3.
+Deliver roadmap slice S-02 (`scan-to-create-item`): a signed-in household member can scan a barcode the household has never stored, record it as a named item, attach that barcode to an existing product when it is the same good, and accept a catalog prefill when one of the four Open Facts catalogs has a name. This satisfies FR-002, FR-005, FR-016, and guardrail 3.
 
 The slice adds the first inventory write and the first camera capture. Product identity is shared: one `items` row per product, many barcodes, many households. `household_inventory` is what this household stocks. Counts, scan direction, and undo stay in S-03 and S-04. Quantity lives on `household_inventory` as `0` and is not shown or changed here.
 
@@ -23,7 +23,7 @@ The slice adds the first inventory write and the first camera capture. Product i
 
 ## Desired End State
 
-A member signed in on a phone over HTTPS can open scan from `/inventory`, point the camera at a grocery barcode or type the digits, and add that product to this household when the household does not already stock it. Open Food Facts may prefill the household name. The user can edit that name before save. If the household already has products, the user can attach a new barcode to one of them. The inventory page lists this household's names. Quantity stays `0` and is not shown.
+A member signed in on a phone over HTTPS can open scan from `/inventory`, point the camera at a grocery barcode or type the digits, and add that product to this household when the household does not already stock it. Open Beauty Facts, Open Food Facts, Open Pet Food Facts, or Open Products Facts may prefill the household name. The user can edit that name before save. If the household already has products, the user can attach a new barcode to one of them. The inventory page lists this household's names. Quantity stays `0` and is not shown.
 
 A barcode this household already stocks shows the household name and does not insert. A barcode another household already stored, that this household has not, adds a `household_inventory` row for the same `items.id`. It does not create a second product.
 
@@ -35,7 +35,7 @@ Verify on the live HTTPS URL from a phone, and with `pnpm lint`, `pnpm typecheck
 - Showing quantity, minimums, or restock flags (S-06, FR-007, FR-008).
 - Name search as a replacement for a failed camera (FR-006). Typed digits are the camera-failure path in this slice.
 - Items with no barcode (FR-013, S-05). `items` has no required barcode column. Barcodes live on `item_barcodes`.
-- Offline scanning, native apps, catalog vendors other than Open Food Facts, write access to Open Food Facts.
+- Offline scanning, native apps, catalog vendors other than Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts, and write access to those catalogs.
 - Browser-level end-to-end tests.
 - Listing every global product to clients. Global lookup is by barcode through a `security definer` function only.
 
@@ -43,7 +43,7 @@ Verify on the live HTTPS URL from a phone, and with `pnpm lint`, `pnpm typecheck
 
 Copy the S-01 write pattern: validate at the action boundary, mutate through `security definer` RPCs, keep table policies select-only where a client read exists, load household context with `loadCurrentHabUnit()`, and protect new routes under the existing `/inventory/:path*` matcher.
 
-Product rows are shared. Household stock is not. Phases land data first, then a typed create, add-to-household, and attach path, then the reusable ZXing scanner, then Open Food Facts.
+Product rows are shared. Household stock is not. Phases land data first, then a typed create, add-to-household, and attach path, then the reusable ZXing scanner, then the four Open Facts catalogs.
 
 ## Critical Implementation Details
 
@@ -52,6 +52,7 @@ Product rows are shared. Household stock is not. Phases land data first, then a 
 **Household name is local.** `household_inventory.name` is what the user edits and what `/inventory` lists. `items.name` is the canonical name from first create or catalog. One household renaming a product must not rename it for another.
 
 **Three barcode outcomes.**
+
 1. This household already stocks the item: show `household_inventory.name`. No insert. No quantity change.
 2. The barcode exists globally, this household does not stock it: add `household_inventory` for that `items.id`. Do not insert a second `items` row.
 3. The barcode is unknown: create `items` + `item_barcodes` + `household_inventory`, or attach the barcode to a product this household already stocks (FR-005).
@@ -62,17 +63,17 @@ Product rows are shared. Household stock is not. Phases land data first, then a 
 
 **Offer existing household items (F1).** When this household has inventory rows, show up to 20 household names, then filter. Do not offer the global catalog.
 
-**iOS Safari does not expose `BarcodeDetector`.** Use `@zxing/browser` `BrowserMultiFormatReader.decodeFromVideoDevice` with `EAN_13`, `EAN_8`, `UPC_A`, `UPC_E`. Expand `UPC_E` text to UPC-A before lookup or save. Stop after the first successful decode.
+**iOS Safari does not expose** `BarcodeDetector`**.** Use `@zxing/browser` `BrowserMultiFormatReader.decodeFromVideoDevice` with `EAN_13`, `EAN_8`, `UPC_A`, `UPC_E`. Expand `UPC_E` text to UPC-A before lookup or save. Stop after the first successful decode.
 
 **Camera needs a secure context.** Verify on the live `workers.dev` HTTPS URL.
 
-**Open Food Facts is fail-open.** `GET https://world.openfoodfacts.org/api/v2/product/{barcode}?fields=product_name,product_name_en` with `User-Agent: NoosphericTally/0.1 (https://github.com/pterodactor3000/Noospheric-Tally)`. Failure leaves the household name empty.
+**Four Open Facts catalogs are fail-open.** `lookupCatalogName` requests Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts in parallel. Each call is `GET {base}{barcode}?fields=product_name,product_name_en`. The base URLs are `OPENBEAUTYFACTS_API_URL`, `OPENFOODFACTS_API_URL`, `OPENPETFOODFACTS_API_URL`, and `OPENPRODUCTSFACTS_API_URL`. The first HTTP 200 supplies the name. The User-Agent is `NoosphericTally/<version> (pterodactor@pm.me)`, where `<version>` is the `package.json` version inlined by the worker build. Each request times out after about three seconds. If every request fails, the household name stays empty.
 
-**Session reads use `getUser`, never `getSession`.** (`src/middleware.ts:33-35`)
+**Session reads use** `getUser`**, never** `getSession`**.** (`src/middleware.ts:33-35`)
 
-**RPCs use `search_path = ''` and `public.`-qualified names**, same as `create_household` (`supabase/migrations/20260816083017_create_households.sql:53-76`).
+**RPCs use** `search_path = ''` **and** `public.`**-qualified names**, same as `create_household` (`supabase/migrations/20260816083017_create_households.sql:53-76`).
 
-**`quantity` stays hidden.** It lives on `household_inventory`. S-02 neither displays nor updates it.
+`**quantity` stays hidden.\*\* It lives on `household_inventory`. S-02 neither displays nor updates it.
 
 ---
 
@@ -160,7 +161,7 @@ A signed-in member can type a barcode and a name from `/inventory`. First househ
 
 **File:** `src/lib/items/load-household-item-by-barcode.ts`, `src/lib/items/find-global-item-by-barcode.ts`, `src/lib/items/load-household-items.ts`
 
-**Intent:** Household reads through RLS. Global reads through `find_item_by_barcode`. Keep I/O helpers named `load*` or `find*`.
+**Intent:** Household reads through RLS. Global reads through `find_item_by_barcode`. Keep I/O helpers named `load`_ or `find`_.
 
 **Contract:** `loadHouseholdItemByBarcode(barcode)` calls `find_item_by_barcode`, then selects `household_inventory` for this household by that `item_id`. Returns `{ itemId, name }` or `null`. Do not join `household_inventory` to `item_barcodes` through PostgREST. `findGlobalItemByBarcode(barcode)` calls `find_item_by_barcode` and returns `{ itemId, canonicalName }` or `null`. `loadHouseholdItems({ limit }?)` returns `{ itemId, name }[]` from `household_inventory` ordered by name, no quantity. Omit `limit` on `/inventory`. Pass `{ limit: 20 }` only for the attach offer list. None redirect. Server client only (`src/lib/supabase/server.ts:6-29`).
 
@@ -266,7 +267,7 @@ Add a reusable ZXing scanner on `/inventory/scan` with a typed-digits fallback. 
 
 ### Overview
 
-When the barcode is unknown globally, ask Open Food Facts for a name. Prefill is the household name, editable. Failure leaves the field empty. A global hit uses `items.name` as the default household name and does not need catalog.
+When the barcode is unknown globally, ask the four Open Facts catalogs for a name. The first HTTP 200 wins. Prefill is the household name, editable. Failure of every catalog leaves the field empty. A global hit uses `items.name` as the default household name and does not need catalog.
 
 ### Changes Required
 
@@ -276,7 +277,7 @@ When the barcode is unknown globally, ask Open Food Facts for a name. Prefill is
 
 **Intent:** Server-side public fetch under `global_fetch_strictly_public` (`wrangler.jsonc:10`).
 
-**Contract:** `lookupCatalogName(barcode)` returns `{ status: 'found', name: string }` or `{ status: 'empty' }`. `GET https://world.openfoodfacts.org/api/v2/product/{barcode}?fields=product_name,product_name_en` with the User-Agent above and a short timeout (about three seconds). Use `product_name` or `product_name_en`. Trim the chosen name and truncate it to 120 characters before returning `found`. Treat missing product, blank names, HTTP failure, abort, and thrown fetch as `empty`. Tests mock `fetch` for found, missing, failed, and over-length names, and assert the User-Agent header. No API key. No new Worker var.
+**Contract:** `lookupCatalogName(barcode)` returns `{ status: 'found', name: string }` or `{ status: 'empty' }`. It requests the four Open Facts URLs above in parallel. The first HTTP 200 supplies the name. Use the User-Agent above and a short timeout of about three seconds on each request. Use `product_name` or `product_name_en`. Trim the chosen name and truncate it to 120 characters before returning `found`. Treat missing product, blank names, HTTP failure, abort, and thrown fetch on every host as `empty`. Tests mock `fetch` for a found name, a missing product, a failed request, an over-length name, the User-Agent header, all four URLs, the first HTTP 200, and every host failed. No API key. The four base URLs are environment variables.
 
 #### 2. Prefill on the create page
 
@@ -295,8 +296,8 @@ When the barcode is unknown globally, ask Open Food Facts for a name. Prefill is
 
 #### Manual Verification
 
-- A grocery EAN that Open Food Facts knows prefills a name. Editing it and saving stores the edited household name.
-- A pet-food barcode with no catalog hit leaves the name blank. Typing a name still saves.
+- A barcode that one of the four catalogs knows prefills a name. Editing it and saving stores the edited household name.
+- A barcode with no hit in any of the four catalogs leaves the name blank. Typing a name still saves.
 - A failed or slow lookup still allows a typed name and save.
 
 ---
@@ -306,7 +307,7 @@ When the barcode is unknown globally, ask Open Food Facts for a name. Prefill is
 ### Unit Tests
 
 - Item name and barcode validators: empty, whitespace, too long, non-digit, UPC-E expansion, valid.
-- Catalog client: found name, missing product, HTTP error, abort, User-Agent header, name longer than 120 truncated.
+- Catalog client: found name, missing product, HTTP error, abort, User-Agent header, name longer than 120 truncated, four URLs requested, first HTTP 200 wins, every host failed returns empty.
 
 ### Integration Tests
 
@@ -348,54 +349,54 @@ Apply `supabase/migrations/<timestamp>_create_items.sql` with `pnpm exec supabas
 
 #### Automated
 
-- [ ] 1.1 The migration applies with `pnpm exec supabase db push` and no error
-- [ ] 1.2 Re-running the full migration set from empty reproduces the schema
-- [ ] 1.3 `pnpm test` passes including name and barcode validator cases, including UPC-E expansion
-- [ ] 1.4 `pnpm lint` and `pnpm typecheck` exit zero
+- [x] 1.1 The migration applies with `pnpm exec supabase db push` and no error
+- [ ] 1.2 Re-running the full migration set from empty reproduces the schema (skipped 2026-09-16: needs a throwaway empty project, not a second push on live)
+- [x] 1.3 `pnpm test` passes including name and barcode validator cases, including UPC-E expansion
+- [x] 1.4 `pnpm lint` and `pnpm typecheck` exit zero
 
 #### Manual
 
-- [ ] 1.5 `create_item` inserts one `items` row, one barcode, and one `household_inventory` row at quantity 0
-- [ ] 1.6 A second `create_item` with the same barcode is refused
-- [ ] 1.7 `attach_barcode` by that member adds a second barcode to the same `items.id`
-- [ ] 1.8 A second household `add_item_to_household` gets its own inventory row and cannot select the first household's stock
-- [ ] 1.9 Authenticated select on `items` or `item_barcodes` returns zero rows. Anon select on all three tables returns zero rows
+- [x] 1.5 `create_item` inserts one `items` row, one barcode, and one `household_inventory` row at quantity 0
+- [x] 1.6 A second `create_item` with the same barcode is refused
+- [x] 1.7 `attach_barcode` by that member adds a second barcode to the same `items.id`
+- [x] 1.8 A second household `add_item_to_household` gets its own inventory row and cannot select the first household's stock
+- [x] 1.9 Authenticated select on `items` or `item_barcodes` returns zero rows. Anon select on all three tables returns zero rows
 
 ### Phase 2: Manual create, stock, and attach
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes including validators
-- [ ] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit zero
+- [x] 2.1 `pnpm test` passes including validators
+- [x] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit zero
 
 #### Manual
 
-- [ ] 2.3 First-item typed create lands on `/inventory` with the household name and no attach picker
-- [ ] 2.4 A second unknown barcode can attach to the first household product; both codes resolve to one `items.id`
-- [ ] 2.5 A barcode this household already stocks shows the household name and does not insert
-- [ ] 2.6 A second household submitting the first household's barcode adds inventory only. `items` count stays one
-- [ ] 2.7 Quantity never appears
-- [ ] 2.8 `/inventory/new` while signed out redirects to `/login`
+- [x] 2.3 First-item typed create lands on `/inventory` with the household name and no attach picker
+- [x] 2.4 A second unknown barcode can attach to the first household product; both codes resolve to one `items.id`
+- [x] 2.5 A barcode this household already stocks shows the household name and does not insert
+- [x] 2.6 A second household submitting the first household's barcode adds inventory only. `items` count stays one
+- [x] 2.7 Quantity never appears
+- [x] 2.8 `/inventory/new` while signed out redirects to `/login`
 
 ### Phase 3: Camera scan
 
 #### Automated
 
-- [ ] 3.1 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm worker:check` exit zero with ZXing installed
+- [x] 3.1 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm worker:check` exit zero with ZXing installed
 
 #### Manual
 
-- [ ] 3.2 Phone HTTPS decode reaches the name form, add-to-household form, or the already-stocked name
-- [ ] 3.3 Denied camera still completes through typed digits
-- [ ] 3.4 One physical scan produces one detect and the stream stops
-- [ ] 3.5 README states HTTP local dev is insufficient for the camera check
+- [x] 3.2 Phone HTTPS decode reaches the name form, add-to-household form, or the already-stocked name
+- [x] 3.3 Denied camera still completes through typed digits
+- [x] 3.4 One physical scan produces one detect and the stream stops
+- [x] 3.5 README states HTTP local dev is insufficient for the camera check
 
 ### Phase 4: Catalog prefill
 
 #### Automated
 
-- [ ] 4.1 `pnpm test` passes including catalog client cases (found, missing, failed, User-Agent, over-length truncated)
-- [ ] 4.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit zero
+- [x] 4.1 `pnpm test` passes including catalog client cases (found, missing, failed, User-Agent, over-length truncated)
+- [x] 4.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit zero
 
 #### Manual
 

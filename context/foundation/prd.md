@@ -57,7 +57,7 @@ Separate, unrelated households are a possible future direction, not a first-vers
 
 ### Primary
 
-The user scans a barcode when unpacking a delivery, scans the same barcode when opening a unit, then sees a current count for that item and whether it is below its minimum quantity.
+The user scans a barcode when unpacking a delivery, scans the same barcode when opening a unit, then sees a current count for that item and a CRITICAL, WARNING, or IN STOCK label from that count and the item's minimum.
 
 ### Secondary
 
@@ -85,7 +85,19 @@ Weak-connectivity usability was raised as a fourth guardrail, then withdrawn to 
 
 - **Given** an item already exists in the household inventory with a minimum quantity set
 - **When** the user sets the app to using mode, scans the item's barcode as he opens it, then views the item
-- **Then** the count has decreased by one and the item shows whether it is at or below its minimum
+- **Then** the count has decreased by one and the item shows CRITICAL, WARNING, or IN STOCK from its quantity and minimum
+
+### US-03: Check a shop barcode against household stock
+
+- **Given** the user is signed in and is deciding whether to buy an item
+- **When** he uses the separate lookup scan on its barcode
+- **Then** the app shows whether that item is already in the household inventory, and a barcode that is not in the inventory is blocked
+
+### US-04: Review stock by category
+
+- **Given** items have a category from the first Open Facts response, or uncategorized when no catalog responded
+- **When** the user opens the inventory
+- **Then** items are listed in collapsible panels, a panel shows a warning icon when it contains a WARNING or CRITICAL item, and the user can move an item to another category
 
 ## Functional Requirements
 
@@ -113,13 +125,13 @@ Weak-connectivity usability was raised as a fourth guardrail, then withdrawn to 
 
 > Challenge: search hurts if inconsistent naming makes items unfindable. Risk accepted for the first version.
 
-- FR-007: User can set a minimum quantity for an item. Priority: must-have
+- FR-007: User can set a minimum quantity for an item. When no minimum is saved, the minimum is 3. A quantity is never below 0. Priority: must-have
 
-> Challenge: a badly chosen minimum produces a flag the user learns to ignore. Risk accepted, since the minimum is editable.
+> Challenge: a badly chosen minimum produces a flag the user learns to ignore. Risk accepted, since the minimum is editable, and an unset minimum starts at 3.
 
-- FR-008: User can see an item's current count and whether it is below its minimum. Priority: must-have
+- FR-008: User can see an item's current count and a stock label. The label is CRITICAL, in red, when the quantity is from 0 through the minimum. The label is WARNING, in yellow/gold, when the quantity is greater than the minimum and less than twice the minimum. The label is IN STOCK, in green, when the quantity is at least twice the minimum. Priority: must-have
 
-> Challenge: a count the user does not trust is worse than no count. Risk accepted, and addressed by the guardrails on wrong counts and data loss.
+> Challenge: WARNING can appear while the item is still above its minimum, and the user may treat it as a false alarm. Risk accepted, because CRITICAL remains the at-or-below-minimum band.
 
 - FR-009: User can reverse the most recent quantity change for an item. Priority: must-have
 
@@ -153,6 +165,14 @@ Weak-connectivity usability was raised as a fourth guardrail, then withdrawn to 
 
 > Challenge: an external catalog hurts when it returns a wrong or foreign-language name that the user then trusts, and when a lookup delay slows a bulk unpack. Resolution: the prefilled name is editable before it is saved, and FR-005 manual naming remains the fallback.
 
+- FR-017: User can scan a barcode from a separate lookup control and see whether that item is in the household inventory. A barcode that is not in that inventory is blocked. The lookup reads only the household inventory. Priority: must-have
+
+> Challenge: a lookup that also reads a global item record or an external catalog would treat a shop barcode the household does not hold as present. Resolution: that scan is blocked in the lookup view.
+
+- FR-018: User can see inventory items in collapsible category panels, and can edit an item's category. Panels exist for pet food, food, beauty, other, and uncategorized. A panel shows a warning icon when it contains at least one WARNING or CRITICAL item. Priority: must-have
+
+> Challenge: the first catalog response can file the same barcode under a different category on another scan. Resolution: the user can edit the category, and the panels follow the edited value.
+
 ## Non-Functional Requirements
 
 - Recording one item during a bulk unpack takes a few seconds, and one confirmation per scan is acceptable.
@@ -163,9 +183,17 @@ Weak-connectivity usability was raised as a fourth guardrail, then withdrawn to 
 
 An item needs restocking when its counted quantity is at or below the minimum quantity the user set for it, and items needing restocking are ranked by how far they fall below their minimum, so the largest shortfall is presented first.
 
-Urgency is computed from the shortfall alone. The user does not set a priority or category, and none is stored in the first version.
+Urgency is computed from the shortfall alone. The user does not set a priority. Category does not change this ranking.
 
 This rule is carried by FR-014.
+
+An item with no saved minimum uses 3. Its quantity is never below 0. The stock label is CRITICAL when the quantity is from 0 through the minimum, WARNING when the quantity is greater than the minimum and less than twice the minimum, and IN STOCK when the quantity is at least twice the minimum. CRITICAL is red, WARNING is yellow/gold, and IN STOCK is green.
+
+This rule is carried by FR-007 and FR-008.
+
+The category comes from the first Open Facts catalog response for that barcode. Open Pet Food Facts sets pet food, Open Food Facts sets food, Open Beauty Facts sets beauty, and Open Products Facts sets other. No response sets uncategorized. The user can replace the category. The inventory shows one collapsible panel for each of those categories, including uncategorized. A panel shows a warning icon when at least one of its items is WARNING or CRITICAL.
+
+This rule is carried by FR-018.
 
 ## Non-Goals
 
@@ -189,7 +217,7 @@ Non-functional non-goals:
 1. When FR-011 (inviting the wife to the household) should be delivered is unresolved. It sits immediately after the first version, with no date. Owner: user. Resolution date: unknown.
 2. Offline support is a stated later goal with no target date. Owner: user. Resolution date: unknown.
 3. Target scale is recorded as medium, meaning many households eventually, while separate households are a first-version non-goal. The point at which that ambition becomes work is unresolved. Owner: user. Resolution date: unknown.
-4. Which external product catalog FR-016 uses, and what happens when it covers a barcode poorly, is unresolved at the product level. Owner: user. Resolution date: unknown.
+4. What the product does when the Open Facts catalogs cover a barcode's name poorly is unresolved. The catalogs are Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts. The first returned response sets the category under FR-018. Owner: user. Resolution date: unknown.
 
 Resolved during discovery cross-check, kept for traceability:
 
@@ -198,3 +226,6 @@ Resolved during discovery cross-check, kept for traceability:
 - Consumption history accepted as nice-to-have FR-015 rather than a non-goal.
 - Unknown barcodes resolved against an external catalog with manual naming as fallback, recorded as FR-016.
 - The secondary success criterion replaced, because the original one depended on deferred FR-011.
+- Shop lookup reads only the household inventory, and a barcode outside it is blocked, recorded as FR-017.
+- The default minimum is 3, quantity is never below 0, and the stock labels are CRITICAL, WARNING, and IN STOCK, recorded on FR-007 and FR-008.
+- Category comes from the first Open Facts response, with uncategorized as the default and a user edit, recorded as FR-018.
