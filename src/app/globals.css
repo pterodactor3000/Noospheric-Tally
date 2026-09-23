@@ -73,6 +73,7 @@
 
   --animate-terminal-blink: terminal-blink 1s step-end infinite;
   --animate-terminal-type: terminal-type 1.2s steps(16, end) forwards;
+  --animate-scan-line: scan-line 1.8s ease-in-out infinite;
 }
 
 @keyframes terminal-blink {
@@ -84,6 +85,16 @@
 @keyframes terminal-type {
   to {
     max-width: 48rem;
+  }
+}
+
+@keyframes scan-line {
+  0%,
+  100% {
+    top: 8%;
+  }
+  50% {
+    top: 92%;
   }
 }
 

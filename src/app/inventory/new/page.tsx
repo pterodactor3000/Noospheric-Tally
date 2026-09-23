@@ -28,7 +28,7 @@ const NewItemPage = async ({
     validationResult?.status === 'valid' ? validationResult.barcode : null
 
   let body: ReactNode
-
+  console.log('new item page', barcode)
   if (!barcode) {
     body = (
       <BarcodeLookupForm

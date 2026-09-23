@@ -18,6 +18,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
 const readCatalogName = (value: unknown): string | null => {
+  debugger
   if (!isRecord(value) || !isRecord(value.product)) {
     return null
   }
@@ -52,6 +53,7 @@ const lookupCatalogName = async (barcode: string): Promise<LookupStatus> => {
   const abortControllers = catalogUrls.map(() => new AbortController())
 
   try {
+    console.log('lookup catalog name', barcode)
     const winningCatalog = await Promise.any(
       catalogUrls.map(async (url, index) => {
         const response = await fetchHttp200(
@@ -62,6 +64,7 @@ const lookupCatalogName = async (barcode: string): Promise<LookupStatus> => {
           ]),
         )
 
+        console.log('lookup catalog name fetch', response)
         return {
           index,
           response,

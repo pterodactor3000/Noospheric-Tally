@@ -6,7 +6,7 @@ import { clsx } from 'clsx'
 import {
   BarcodeFormat,
   BrowserCodeReader,
-  BrowserMultiFormatReader,
+  BrowserMultiFormatOneDReader,
 } from '@zxing/browser'
 import { DecodeHintType } from '@zxing/library'
 
@@ -49,7 +49,9 @@ const BarcodeScanner = ({
 
     hints.set(DecodeHintType.POSSIBLE_FORMATS, POSSIBLE_FORMATS)
 
-    const reader = new BrowserMultiFormatReader(hints)
+    // BrowserMultiFormatReader logs NotFoundException on every empty frame
+    // in @zxing/library 0.23. Product barcodes are 1D.
+    const reader = new BrowserMultiFormatOneDReader(hints)
 
     let controls: { stop: () => void } | undefined
     let hasDetected = false
@@ -166,7 +168,108 @@ const BarcodeScanner = ({
     )
   }
 
-  return <video ref={videoRef} />
+  return (
+    <section
+      className={clsx(
+        'relative',
+        'mx-auto',
+        'aspect-3/4',
+        'w-full',
+        'max-w-sm',
+        'overflow-hidden',
+        'bg-black',
+      )}
+    >
+      <video
+        ref={videoRef}
+        muted
+        playsInline
+        className={clsx('absolute', 'inset-0', 'h-full', 'w-full', 'object-cover')}
+      />
+      <div className={clsx('pointer-events-none', 'absolute', 'inset-0')}>
+        <div
+          className={clsx(
+            'absolute',
+            'top-1/2',
+            'left-1/2',
+            'h-28',
+            'w-[86%]',
+            '-translate-x-1/2',
+            '-translate-y-1/2',
+            'shadow-[0_0_0_999px_rgb(0_0_0/0.55)]',
+          )}
+        >
+          <span
+            className={clsx(
+              'absolute',
+              '-top-px',
+              '-left-px',
+              'size-5',
+              'border-t-2',
+              'border-l-2',
+              'border-ring',
+            )}
+          />
+          <span
+            className={clsx(
+              'absolute',
+              '-top-px',
+              '-right-px',
+              'size-5',
+              'border-t-2',
+              'border-r-2',
+              'border-ring',
+            )}
+          />
+          <span
+            className={clsx(
+              'absolute',
+              '-bottom-px',
+              '-left-px',
+              'size-5',
+              'border-b-2',
+              'border-l-2',
+              'border-ring',
+            )}
+          />
+          <span
+            className={clsx(
+              'absolute',
+              '-right-px',
+              '-bottom-px',
+              'size-5',
+              'border-r-2',
+              'border-b-2',
+              'border-ring',
+            )}
+          />
+          <span
+            className={clsx(
+              'absolute',
+              'inset-x-3',
+              'top-1/2',
+              'h-0.5',
+              'bg-ring',
+              'motion-safe:animate-scan-line',
+            )}
+          />
+        </div>
+        <p
+          className={clsx(
+            'absolute',
+            'inset-x-4',
+            'bottom-6',
+            'text-center',
+            'font-mono',
+            'text-sm',
+            'text-white',
+          )}
+        >
+          Align the barcode in the frame
+        </p>
+      </div>
+    </section>
+  )
 }
 
 export { BarcodeScanner }

@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-09-22
+updated: 2026-09-23
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -38,6 +38,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-09 | shop-barcode-hab-unit-lookup | scan a shop barcode and see if it is in the hab unit | S-02 | FR-017 | ready |
 | S-10 | shortage-threshold-labels | set a shortage threshold and see IN STOCK, WARNING, or CRITICAL | S-06 | FR-007, FR-008, US-02 | ready |
 | S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-10 | FR-018 | ready |
+| S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | ready |
 
 ## Streams
 
@@ -205,6 +206,18 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Risk:** The same barcode can be filed under different categories on another scan when a different catalog answers first.
 - **Status:** ready
 
+### S-12: Create-flow lookup feedback
+
+- **Outcome:** user can see when a scanned barcode is missing from our database and when it is missing from the external catalogs, wait on a loading animation, scroll with the fixed header still readable, and read a bold barcode on the item create form
+- **Change ID:** create-flow-lookup-feedback
+- **PRD refs:** FR-005, FR-016
+- **Prerequisites:** S-02
+- **Parallel with:** -
+- **Blockers:** -
+- **Unknowns:** -
+- **Risk:** A household miss and a catalog miss on the same screen read as one failure if the two messages are not distinct.
+- **Status:** ready
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for planning | Notes |
@@ -221,6 +234,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-09 | shop-barcode-hab-unit-lookup | Look up a shop barcode in the hab unit | yes | Lookup view blocks a barcode that is not in the hab unit. |
 | S-10 | shortage-threshold-labels | Set a shortage threshold and stock label | yes | Expands S-06. Default threshold 3. Quantity is 0 or greater. |
 | S-11 | inventory-category-panels | Group inventory into collapsible categories | yes | The first returned Open Facts hit sets the category. Default panel is uncategorized. User can edit it. |
+| S-12 | create-flow-lookup-feedback | Show lookup misses, loading, and a clear header | yes | Run `/rites-of-true-aim create-flow-lookup-feedback` |
 
 ## Open Roadmap Questions
 
