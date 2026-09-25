@@ -4,6 +4,16 @@ import { useActionState } from 'react'
 import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
+import {
+  fieldControl,
+  fieldLabel,
+  fieldStack,
+  formError,
+  formStack,
+  fullWidthButton,
+  pageLead,
+  pageTitle,
+} from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createHabUnit } from '../actions'
@@ -27,41 +37,21 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
 
   return (
     <>
-      <h1
-        className={clsx(
-          'font-mono',
-          'uppercase',
-          'text-balance',
-          'text-4xl',
-          'font-semibold',
-          'tracking-tight',
-          'sm:text-5xl',
-        )}
-      >
+      <h1 className={pageTitle}>
         Hab-unit data creation
       </h1>
-      <p
-        className={clsx(
-          'font-mono',
-          'uppercase',
-          'mt-6',
-          'text-pretty',
-          'text-foreground/70',
-          'leading-7',
-          'text-base',
-        )}
-      >
+      <p className={clsx(pageLead, 'uppercase')}>
         Provide your hab-unit designation
       </p>
 
       <form
         action={formAction}
-        className={clsx('mt-8', 'flex', 'flex-col', 'gap-4')}
+        className={formStack}
       >
-        <div className={clsx('flex', 'flex-col', 'gap-2')}>
+        <div className={fieldStack}>
           <Label
             htmlFor="name"
-            className={clsx('text-sm', 'font-medium', 'font-mono', 'uppercase')}
+            className={clsx(fieldLabel, 'uppercase')}
           >
             Hab-unit designation
           </Label>
@@ -72,20 +62,13 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
             autoComplete="name"
             defaultValue={defaultName}
             aria-invalid={state?.field === 'name'}
-            className={clsx('min-h-11', 'text-base', 'font-mono', 'uppercase')}
+            className={clsx(fieldControl, 'uppercase')}
           />
         </div>
         <div
           role="alert"
           aria-live="polite"
-          className={clsx(
-            'min-h-6',
-            'text-sm',
-            'text-red-700',
-            'font-mono',
-            'uppercase',
-            'font-semibold',
-          )}
+          className={clsx(formError, 'uppercase')}
         >
           {state?.status === 'error' && state?.message}
         </div>
@@ -94,7 +77,7 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
           variant="outline"
           type="submit"
           disabled={isPending}
-          className={clsx('font-mono', 'uppercase', 'min-h-11', 'w-full')}
+          className={clsx(fullWidthButton, 'uppercase')}
         >
           Apply
         </Button>

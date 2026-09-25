@@ -1,4 +1,4 @@
-import { clsx } from 'clsx'
+import { pageLead, pageTitle } from '@/app/styles/class-names'
 
 interface AlreadyStockedProps {
   name: string
@@ -6,29 +6,10 @@ interface AlreadyStockedProps {
 const AlreadyStocked = ({ name }: AlreadyStockedProps) => {
   return (
     <>
-      <h1
-        className={clsx(
-          'font-mono',
-          'uppercase',
-          'text-balance',
-          'text-4xl',
-          'font-semibold',
-          'tracking-tight',
-          'sm:text-5xl',
-        )}
-      >
+      <h1 className={pageTitle}>
         Already stocked
       </h1>
-      <p
-        className={clsx(
-          'font-mono',
-          'mt-6',
-          'text-pretty',
-          'text-foreground/70',
-          'leading-7',
-          'text-base',
-        )}
-      >
+      <p className={pageLead}>
         {name}
       </p>
     </>

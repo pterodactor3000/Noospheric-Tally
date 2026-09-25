@@ -1,9 +1,22 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
+import {
+  contentWidth,
+  footnote,
+  formStack,
+  fullWidthButton,
+  pageLead,
+  pageShell,
+  pageTitle,
+  panel,
+  sectionCopy,
+  sectionHeading,
+  textLink,
+} from '@/app/styles/class-names'
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
-import { redirect } from 'next/navigation'
 
 export default async function Home() {
   const user = await loadCurrentUser()
@@ -12,64 +25,24 @@ export default async function Home() {
   }
 
   return (
-    <main
-      className={clsx(
-        'flex',
-        'min-h-screen',
-        'items-center',
-        'bg-background',
-        'px-6',
-        'py-12',
-        'text-foreground',
-        'sm:px-10',
-      )}
-    >
-      <div className={clsx('mx-auto', 'w-full', 'max-w-4xl')}>
-        <div
-          className={clsx(
-            'border',
-            'border-foreground/50',
-            'p-8',
-            'shadow-sm',
-            'backdrop-blur',
-            'sm:p-12',
-            'dark:bg-black/20',
-          )}
-        >
-          <h1
-            className={clsx(
-              'font-mono',
-              'uppercase',
-              'text-balance',
-              'text-4xl',
-              'font-semibold',
-              'tracking-tight',
-              'sm:text-5xl',
-            )}
-          >
+    <main className={pageShell}>
+      <div className={contentWidth}>
+        <div className={panel}>
+          <h1 className={pageTitle}>
             Know what is at home before you shop.
           </h1>
-          <p
-            className={clsx(
-              'font-mono',
-              'mt-6',
-              'text-pretty',
-              'text-foreground/70',
-              'leading-7',
-              'text-base',
-            )}
-          >
+          <p className={pageLead}>
             Noospheric Tally keeps everyday supplies visible at the moment stock
             changes. The deployment foundation is in place for the inventory
             experience to follow.
           </p>
 
-          <div className={clsx('mt-8', 'flex', 'flex-col', 'gap-4')}>
+          <div className={formStack}>
             <Button
               variant="outline"
               nativeButton={false}
               render={<Link href="/login" />}
-              className={clsx('font-mono', 'min-h-11', 'w-full')}
+              className={fullWidthButton}
             >
               Sign in
             </Button>
@@ -77,31 +50,15 @@ export default async function Home() {
               variant="outline"
               nativeButton={false}
               render={<Link href="/signup" />}
-              className={clsx('font-mono', 'min-h-11', 'w-full')}
+              className={fullWidthButton}
             >
               Sign up
             </Button>
           </div>
 
-          <p
-            className={clsx(
-              'mt-6',
-              'text-sm',
-              'text-foreground/70',
-              'font-mono',
-            )}
-          >
+          <p className={footnote}>
             No personal cogitation unit?{' '}
-            <Link
-              href="/signup"
-              className={clsx(
-                'font-medium',
-                'text-foreground',
-                'underline-offset-4',
-                'hover:underline',
-                'font-mono',
-              )}
-            >
+            <Link href="/signup" className={textLink}>
               Requisite one
             </Link>
           </p>
@@ -118,51 +75,15 @@ export default async function Home() {
             )}
           >
             <section>
-              <h2
-                className={clsx(
-                  'font-mono',
-                  'font-semibold',
-                  'tracking-[0.18em]',
-                  'text-foreground/70',
-                  'uppercase',
-                )}
-              >
-                Inventory
-              </h2>
-              <p
-                className={clsx(
-                  'mt-2',
-                  'text-sm',
-                  'leading-6',
-                  'text-foreground/70',
-                  'font-mono',
-                )}
-              >
+              <h2 className={sectionHeading}>Inventory</h2>
+              <p className={sectionCopy}>
                 A signed-in member can scan an unknown barcode and save a
                 household name.
               </p>
             </section>
             <section>
-              <h2
-                className={clsx(
-                  'font-mono',
-                  'font-semibold',
-                  'tracking-[0.18em]',
-                  'text-foreground/70',
-                  'uppercase',
-                )}
-              >
-                Platform
-              </h2>
-              <p
-                className={clsx(
-                  'mt-2',
-                  'text-sm',
-                  'leading-6',
-                  'text-foreground/70',
-                  'font-mono',
-                )}
-              >
+              <h2 className={sectionHeading}>Platform</h2>
+              <p className={sectionCopy}>
                 Secure web delivery for phone-ready barcode scanning.
               </p>
             </section>

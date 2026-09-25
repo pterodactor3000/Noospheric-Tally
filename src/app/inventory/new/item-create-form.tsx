@@ -4,6 +4,16 @@ import { useActionState, useState } from 'react'
 import { attachBarcode, createItem } from '../actions'
 import { clsx } from 'clsx'
 import { Button } from '@/components/ui/button'
+import {
+  fieldControl,
+  fieldLabel,
+  fieldStack,
+  formError,
+  formStack,
+  fullWidthButton,
+  pageLead,
+  pageTitle,
+} from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Item } from '@/lib/types'
@@ -50,40 +60,21 @@ const ItemCreateForm = ({
 
   return (
     <>
-      <h1
-        className={clsx(
-          'font-mono',
-          'uppercase',
-          'text-balance',
-          'text-4xl',
-          'font-semibold',
-          'tracking-tight',
-          'sm:text-5xl',
-        )}
-      >
+      <h1 className={pageTitle}>
         Item data creation
       </h1>
-      <p
-        className={clsx(
-          'font-mono',
-          'mt-6',
-          'text-pretty',
-          'text-foreground/70',
-          'leading-7',
-          'text-base',
-        )}
-      >
+      <p className={pageLead}>
         Provide name for the item with designated barcode // {barcode}
       </p>
       <form
         action={createFormAction}
-        className={clsx('mt-8', 'flex', 'flex-col', 'gap-4')}
+        className={formStack}
       >
         <input type="hidden" name="barcode" value={barcode} />
-        <div className={clsx('flex', 'flex-col', 'gap-2')}>
+        <div className={fieldStack}>
           <Label
             htmlFor="name"
-            className={clsx('text-sm', 'font-medium', 'font-mono')}
+            className={fieldLabel}
           >
             Item name
           </Label>
@@ -96,19 +87,13 @@ const ItemCreateForm = ({
             aria-invalid={
               createState?.status === 'error' && createState.field === 'name'
             }
-            className={clsx('min-h-11', 'text-base', 'font-mono')}
+            className={fieldControl}
           />
         </div>
         <div
           role="alert"
           aria-live="polite"
-          className={clsx(
-            'min-h-6',
-            'text-sm',
-            'text-red-700',
-            'font-mono',
-            'font-semibold',
-          )}
+          className={formError}
         >
           {createState?.status === 'error' && createState.message}
         </div>
@@ -116,7 +101,7 @@ const ItemCreateForm = ({
           variant="outline"
           type="submit"
           disabled={isCreatePending}
-          className={clsx('font-mono', 'min-h-11', 'w-full')}
+          className={fullWidthButton}
         >
           Apply
         </Button>
@@ -137,10 +122,10 @@ const ItemCreateForm = ({
           >
             Attach to existing item
           </h2>
-          <div className={clsx('flex', 'flex-col', 'gap-2')}>
+          <div className={fieldStack}>
             <Label
               htmlFor="filter"
-              className={clsx('text-sm', 'font-medium', 'font-mono')}
+              className={fieldLabel}
             >
               Filter
             </Label>
@@ -150,14 +135,14 @@ const ItemCreateForm = ({
               autoComplete="off"
               value={filter}
               onChange={(event) => setFilter(event.currentTarget.value)}
-              className={clsx('min-h-11', 'text-base', 'font-mono')}
+              className={fieldControl}
             />
           </div>
           <fieldset
-            className={clsx('flex', 'flex-col', 'gap-2')}
+            className={fieldStack}
             aria-invalid={attachState?.status === 'error'}
           >
-            <legend className={clsx('text-sm', 'font-medium', 'font-mono')}>
+            <legend className={fieldLabel}>
               Household items
             </legend>
             {offeredItems.map((item) => (
@@ -184,13 +169,7 @@ const ItemCreateForm = ({
           <div
             role="alert"
             aria-live="polite"
-            className={clsx(
-              'min-h-6',
-              'text-sm',
-              'text-red-700',
-              'font-mono',
-              'font-semibold',
-            )}
+            className={formError}
           >
             {attachState?.status === 'error' && attachState.message}
           </div>
@@ -198,7 +177,7 @@ const ItemCreateForm = ({
             variant="outline"
             type="submit"
             disabled={isAttachPending}
-            className={clsx('font-mono', 'min-h-11', 'w-full')}
+            className={fullWidthButton}
           >
             Attach
           </Button>

@@ -13,6 +13,14 @@ import { DecodeHintType } from '@zxing/library'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 
 import { Button } from './ui/button'
+import {
+  fieldControl,
+  fieldLabel,
+  fieldStack,
+  formError,
+  formStack,
+  fullWidthButton,
+} from '@/app/styles/class-names'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 
@@ -123,25 +131,19 @@ const BarcodeScanner = ({
       <form
         action="/inventory/scan"
         method="get"
-        className={clsx('mt-8', 'flex', 'flex-col', 'gap-4')}
+        className={formStack}
       >
         <div
           role="alert"
           aria-live="polite"
-          className={clsx(
-            'min-h-6',
-            'text-sm',
-            'text-red-700',
-            'font-mono',
-            'font-semibold',
-          )}
+          className={formError}
         >
           {cameraError}
         </div>
-        <div className={clsx('flex', 'flex-col', 'gap-2')}>
+        <div className={fieldStack}>
           <Label
             htmlFor="barcode"
-            className={clsx('text-sm', 'font-medium', 'font-mono')}
+            className={fieldLabel}
           >
             Barcode
           </Label>
@@ -154,13 +156,13 @@ const BarcodeScanner = ({
             required
             defaultValue={defaultBarcode}
             aria-invalid={Boolean(cameraError)}
-            className={clsx('min-h-11', 'text-base', 'font-mono')}
+            className={fieldControl}
           />
         </div>
         <Button
           variant="outline"
           type="submit"
-          className={clsx('font-mono', 'min-h-11', 'w-full')}
+          className={fullWidthButton}
         >
           Apply
         </Button>

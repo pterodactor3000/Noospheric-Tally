@@ -1,9 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { clsx } from 'clsx'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
+import { centeredPage } from '@/app/styles/class-names'
 
 interface ScanCaptureProps {
   defaultBarcode?: string
@@ -18,14 +18,7 @@ const ScanCapture = ({
 
   return (
     <main
-      className={clsx(
-        'flex',
-        'flex-col',
-        'min-h-screen',
-        'items-center',
-        'justify-center',
-        'px-6',
-      )}
+      className={centeredPage}
     >
       <BarcodeScanner
         onDetect={(text) => {
