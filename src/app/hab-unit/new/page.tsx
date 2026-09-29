@@ -1,5 +1,5 @@
 import HabUnitNameForm from './hab-unit-name-form'
-import { clsx } from 'clsx'
+import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
 import { requireCurrentUser } from '@/lib/helpers'
 import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
 import { redirect } from 'next/navigation'
@@ -13,30 +13,9 @@ const NewHabUnit = async () => {
   }
 
   return (
-    <main
-      className={clsx(
-        'flex',
-        'min-h-screen',
-        'items-center',
-        'bg-background',
-        'px-6',
-        'py-12',
-        'text-foreground',
-        'sm:px-10',
-      )}
-    >
-      <div className={clsx('mx-auto', 'w-full', 'max-w-4xl')}>
-        <div
-          className={clsx(
-            'border',
-            'border-foreground/50',
-            'p-8',
-            'shadow-sm',
-            'backdrop-blur',
-            'sm:p-12',
-            'dark:bg-black/20',
-          )}
-        >
+    <main className={pageShell}>
+      <div className={contentWidth}>
+        <div className={panel}>
           <HabUnitNameForm defaultName={user.email?.split('@')[0] ?? ''} />
         </div>
       </div>

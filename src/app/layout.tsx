@@ -4,7 +4,7 @@ import { clsx } from 'clsx'
 
 import { Header } from '@/components/header'
 
-import './globals.css'
+import './styles/globals.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

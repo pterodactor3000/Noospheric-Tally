@@ -1,5 +1,6 @@
-import { clsx } from 'clsx'
 import { ReactNode } from 'react'
+
+import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
 
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
@@ -28,7 +29,7 @@ const NewItemPage = async ({
     validationResult?.status === 'valid' ? validationResult.barcode : null
 
   let body: ReactNode
-
+  console.log('new item page', barcode)
   if (!barcode) {
     body = (
       <BarcodeLookupForm
@@ -75,30 +76,9 @@ const NewItemPage = async ({
   }
 
   return (
-    <main
-      className={clsx(
-        'flex',
-        'min-h-screen',
-        'items-center',
-        'bg-background',
-        'px-6',
-        'py-12',
-        'text-foreground',
-        'sm:px-10',
-      )}
-    >
-      <div className={clsx('mx-auto', 'w-full', 'max-w-4xl')}>
-        <div
-          className={clsx(
-            'border',
-            'border-foreground/50',
-            'p-8',
-            'shadow-sm',
-            'backdrop-blur',
-            'sm:p-12',
-            'dark:bg-black/20',
-          )}
-        >
+    <main className={pageShell}>
+      <div className={contentWidth}>
+        <div className={panel}>
           {body}
         </div>
       </div>
