@@ -1,10 +1,10 @@
 ---
 change_id: scan-to-create-item
 title: Scan to create item
-status: impl_reviewed
+status: archived
 created: 2026-09-13
-updated: 2026-09-22
-archived_at: null
+updated: 2026-09-29
+archived_at: 2026-09-29T11:57:32Z
 ---
 
 ## Notes
