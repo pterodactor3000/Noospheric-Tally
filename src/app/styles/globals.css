@@ -74,6 +74,9 @@
   --animate-terminal-blink: terminal-blink 1s step-end infinite;
   --animate-terminal-type: terminal-type 1.2s steps(16, end) forwards;
   --animate-scan-line: scan-line 1.8s ease-in-out infinite;
+  --animate-loading-inner: loading-inner 5s infinite;
+  --animate-loading-middle: loading-middle 5s infinite;
+  --animate-loading-outer: loading-outer 5s infinite;
 }
 
 @keyframes terminal-blink {
@@ -98,6 +101,104 @@
   }
 }
 
+@keyframes loading-inner {
+  0% {
+    transform: rotate(-360deg);
+    animation-timing-function: ease-in;
+  }
+  20% {
+    transform: rotate(-240deg);
+    animation-timing-function: linear;
+  }
+  30% {
+    transform: rotate(-240deg);
+    animation-timing-function: ease-in;
+  }
+  50% {
+    transform: rotate(-120deg);
+    animation-timing-function: linear;
+  }
+  60% {
+    transform: rotate(-120deg);
+    animation-timing-function: ease-in;
+  }
+  80% {
+    transform: rotate(0deg);
+    animation-timing-function: linear;
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes loading-middle {
+  0% {
+    transform: rotate(360deg);
+    animation-timing-function: linear;
+  }
+  5.19% {
+    transform: rotate(360deg);
+    animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+  }
+  25.19% {
+    transform: rotate(240deg);
+    animation-timing-function: linear;
+  }
+  35% {
+    transform: rotate(240deg);
+    animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+  }
+  55% {
+    transform: rotate(120deg);
+    animation-timing-function: linear;
+  }
+  65% {
+    transform: rotate(120deg);
+    animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+  }
+  85% {
+    transform: rotate(0deg);
+    animation-timing-function: linear;
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes loading-outer {
+  0% {
+    transform: rotate(-360deg);
+    animation-timing-function: linear;
+  }
+  10% {
+    transform: rotate(-360deg);
+    animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+  }
+  30% {
+    transform: rotate(-240deg);
+    animation-timing-function: linear;
+  }
+  40% {
+    transform: rotate(-240deg);
+    animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+  }
+  60% {
+    transform: rotate(-120deg);
+    animation-timing-function: linear;
+  }
+  70% {
+    transform: rotate(-120deg);
+    animation-timing-function: cubic-bezier(0.45, 1.45, 0.8, 1);
+  }
+  90% {
+    transform: rotate(0deg);
+    animation-timing-function: linear;
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #101512;
@@ -108,6 +209,12 @@
 @media (prefers-reduced-motion: reduce) {
   .terminal-type {
     max-width: none;
+    animation: none;
+  }
+
+  .animate-loading-inner,
+  .animate-loading-middle,
+  .animate-loading-outer {
     animation: none;
   }
 }
