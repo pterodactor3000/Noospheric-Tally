@@ -49,6 +49,10 @@ These conventions apply to all code in this repository. Adapt names, framework r
 - Cover edge cases: empty, null, boundary values and error paths
 <!-- END @pterodactor3000/silica-animus -->
 
+## Delegation
+
+For hard implementation, planning, research, and similar work, split the task across multiple subagents. Give every subagent your model tier or a lower tier.
+
 ## Repository and tracker
 
 - **GitHub repo (canonical):** `pterodactor3000/Noospheric-Tally` (`https://github.com/pterodactor3000/Noospheric-Tally`)
