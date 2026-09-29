@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-09-23
+updated: 2026-09-29
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -39,6 +39,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-10 | shortage-threshold-labels | set a shortage threshold and see IN STOCK, WARNING, or CRITICAL | S-06 | FR-007, FR-008, US-02 | ready |
 | S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-10 | FR-018 | ready |
 | S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | ready |
+| S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
 
 ## Streams
 
@@ -218,6 +219,18 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Risk:** A household miss and a catalog miss on the same screen read as one failure if the two messages are not distinct.
 - **Status:** ready
 
+### S-13: Softer green interface
+
+- **Outcome:** user can read every screen in a muted green palette, with shadcn/ui default controls, Geist Sans for body text, Kode Mono for mono text, and square corners
+- **Change ID:** softer-green-interface
+- **PRD refs:** FR-019
+- **Prerequisites:** -
+- **Parallel with:** S-08
+- **Blockers:** -
+- **Unknowns:** -
+- **Risk:** A muted chrome green can be hard to tell apart from the IN STOCK label.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for planning | Notes |
@@ -235,6 +248,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-10 | shortage-threshold-labels | Set a shortage threshold and stock label | yes | Expands S-06. Default threshold 3. Quantity is 0 or greater. |
 | S-11 | inventory-category-panels | Group inventory into collapsible categories | yes | The first returned Open Facts hit sets the category. Default panel is uncategorized. User can edit it. |
 | S-12 | create-flow-lookup-feedback | Show lookup misses, loading, and a clear header | yes | Run `/rites-of-true-aim create-flow-lookup-feedback` |
+| S-13 | softer-green-interface | Restyle the app in muted green | no | Run `/rites-of-true-aim softer-green-interface` |
 
 ## Open Roadmap Questions
 

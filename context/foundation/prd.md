@@ -173,6 +173,10 @@ Weak-connectivity usability was raised as a fourth guardrail, then withdrawn to 
 
 > Challenge: the first catalog response can file the same barcode under a different category on another scan. Resolution: the user can edit the category, and the panels follow the edited value.
 
+- FR-019: User can read every screen in a muted green palette. Controls follow shadcn/ui defaults. Body text uses Geist Sans. Mono text uses Kode Mono. Corner radius is 0. A control may use a small radius only when a square corner breaks it. Stock labels stay as FR-008 defines them. Priority: must-have
+
+> Challenge: a muted chrome green can sit too close to the IN STOCK green. Resolution: chrome tokens and stock-label colors stay separate. FR-008 label colors do not change.
+
 ## Non-Functional Requirements
 
 - Recording one item during a bulk unpack takes a few seconds, and one confirmation per scan is acceptable.
@@ -229,3 +233,4 @@ Resolved during discovery cross-check, kept for traceability:
 - Shop lookup reads only the household inventory, and a barcode outside it is blocked, recorded as FR-017.
 - The default minimum is 3, quantity is never below 0, and the stock labels are CRITICAL, WARNING, and IN STOCK, recorded on FR-007 and FR-008.
 - Category comes from the first Open Facts response, with uncategorized as the default and a user edit, recorded as FR-018.
+- The interface uses a muted green palette, shadcn/ui default controls, Geist Sans for body text, Kode Mono for mono text, and a corner radius of 0, recorded as FR-019.
