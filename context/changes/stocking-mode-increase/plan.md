@@ -70,7 +70,7 @@ A member can add 1 to the quantity of an item this household already stocks. A b
 
 #### 1. Increment RPC
 
-**File:** `supabase/migrations/20260929190000_increment_household_quantity.sql`
+**File:** `supabase/migrations/20260930092020_increment_household_quantity.sql`
 
 **Intent:** Add the only write path for a stocking scan. Follow `create_item`: `security definer`, `search_path = ''`, `auth.uid()`, household from `household_members`, `revoke all` from `public`, `grant execute` to `authenticated`.
 
@@ -105,7 +105,7 @@ A member can add 1 to the quantity of an item this household already stocks. A b
 
 #### Manual Verification
 
-- `pnpm exec supabase db push` applies `20260929190000_increment_household_quantity.sql`. `README.md` lines 46-48.
+- `pnpm exec supabase db push` applies `20260930092020_increment_household_quantity.sql`. `README.md` lines 46-48.
 - For a barcode this household stocks, two calls return 1 then 2 when the row started at 0.
 - For a barcode this household does not stock, the call raises and inserts no `household_inventory` row.
 
@@ -273,7 +273,7 @@ A stocking scan adds 1 and shows the new count with no extra quantity step. A us
 
 ## Migration and Rollback
 
-Apply `supabase/migrations/20260929190000_increment_household_quantity.sql` with `pnpm exec supabase db push`. The migration adds a function only. Existing quantities stay as they are. Rollback is a later migration that runs `drop function if exists public.increment_household_quantity(text);`. Dropping the function restores the current scan behavior once the app code that calls it is removed. Leave `household_inventory` in place.
+Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with `pnpm exec supabase db push`. The migration adds a function only. Existing quantities stay as they are. Rollback is a later migration that runs `drop function if exists public.increment_household_quantity(text);`. Dropping the function restores the current scan behavior once the app code that calls it is removed. Leave `household_inventory` in place.
 
 ## References
 
@@ -299,7 +299,7 @@ Apply `supabase/migrations/20260929190000_increment_household_quantity.sql` with
 
 #### Manual
 
-- [ ] 1.3 `pnpm exec supabase db push` applies `20260929190000_increment_household_quantity.sql`. `README.md` lines 46-48.
+- [ ] 1.3 `pnpm exec supabase db push` applies `20260930092020_increment_household_quantity.sql`. `README.md` lines 46-48.
 - [ ] 1.4 For a barcode this household stocks, two calls return 1 then 2 when the row started at 0.
 - [ ] 1.5 For a barcode this household does not stock, the call raises and inserts no `household_inventory` row.
 
