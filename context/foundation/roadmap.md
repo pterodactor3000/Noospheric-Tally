@@ -27,8 +27,8 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | ID | Change ID | Outcome (user can ...) | Prerequisites | PRD refs | Status |
 | --- | --- | --- | --- | --- | --- |
 | F-01 | deployed-https-app-shell | (foundation) reach the running app from a phone over HTTPS, redeployed on merge | - | FR-002 | done |
-| S-01 | household-sign-in | sign in and reach an empty household inventory | F-01 | FR-001 | ready |
-| S-02 | scan-to-create-item | scan an unknown barcode and record it as a named item | S-01 | FR-002, FR-005, FR-016 | ready |
+| S-01 | household-sign-in | sign in and reach an empty household inventory | F-01 | FR-001 | done |
+| S-02 | scan-to-create-item | scan an unknown barcode and record it as a named item | S-01 | FR-002, FR-005, FR-016 | done |
 | S-03 | stocking-mode-increase | scan items in stocking mode to raise their counts | S-02 | FR-003, FR-012, US-01 | ready |
 | S-04 | using-mode-decrease-and-undo | scan items in using mode to lower counts, and undo a mis-scan | S-03 | FR-004, FR-009, US-02 | ready |
 | S-05 | name-search-and-manual-adjust | find an item by name and adjust it by hand, including items with no barcode | S-02 | FR-006, FR-013 | ready |
@@ -85,7 +85,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Every later slice writes data that belongs to a household, so establishing the owning account first avoids reworking every write once identity arrives.
-- **Status:** ready
+- **Status:** done
 
 ### S-02: Record a new item from a scanned barcode
 
@@ -97,7 +97,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** Camera capture in a mobile browser is the least predictable part of the product, so it is exercised before anything depends on a working scanner.
-- **Status:** ready
+- **Status:** done
 
 ### S-03: Raise counts by scanning in stocking mode
 
@@ -271,3 +271,5 @@ The household's main grocery buyer does not know how much pet food or cooking st
 ## Done
 
 - **F-01: (foundation) reach the running app from a phone over HTTPS, redeployed on merge** - Archived 2026-09-13 to `context/archive/2026-08-06-deployed-https-app-shell/`. Lesson: -.
+- **S-01: sign in and reach an empty household inventory** - Archived 2026-09-29 to `context/archive/2026-08-09-household-sign-in/`. Lesson: -.
+- **S-02: scan an unknown barcode and record it as a named item** - Archived 2026-09-29 to `context/archive/2026-09-13-scan-to-create-item/`. Lesson: -.
