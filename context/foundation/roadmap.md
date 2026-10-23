@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-09-29
+updated: 2026-10-05
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -40,6 +40,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-10 | FR-018 | ready |
 | S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | ready |
 | S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
+| S-14 | compact-attach-item-picker | choose an existing item for a new barcode from a compact selectable list | S-02 | FR-005 | ready |
 
 ## Streams
 
@@ -231,6 +232,18 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Risk:** A muted chrome green can be hard to tell apart from the IN STOCK label.
 - **Status:** proposed
 
+### S-14: Compact attach item picker
+
+- **Outcome:** user can choose an existing household item to attach a new barcode from a compact selectable list of item rows, with single-select behavior and no native radio styling
+- **Change ID:** compact-attach-item-picker
+- **PRD refs:** FR-005
+- **Prerequisites:** S-02
+- **Parallel with:** S-12
+- **Blockers:** -
+- **Unknowns:** -
+- **Risk:** Touch targets that are too small make the attach list hard to use on a phone during unpack.
+- **Status:** ready
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for planning | Notes |
@@ -249,6 +262,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-11 | inventory-category-panels | Group inventory into collapsible categories | yes | The first returned Open Facts hit sets the category. Default panel is uncategorized. User can edit it. |
 | S-12 | create-flow-lookup-feedback | Show lookup misses, loading, and a clear header | yes | Run `/rites-of-true-aim create-flow-lookup-feedback` |
 | S-13 | softer-green-interface | Restyle the app in muted green | no | Run `/rites-of-true-aim softer-green-interface` |
+| S-14 | compact-attach-item-picker | Replace attach radios with a compact selectable item list | yes | Run `/rites-of-true-aim compact-attach-item-picker` |
 
 ## Open Roadmap Questions
 
