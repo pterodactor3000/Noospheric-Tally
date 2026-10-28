@@ -178,7 +178,7 @@ const BarcodeScanner = ({
           }
           void onSubmitBarcode(barcode)
         }}
-        className={formStack}
+        className={clsx(formStack, 'pt-24')}
       >
         <div
           role="alert"

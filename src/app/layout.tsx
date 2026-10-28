@@ -3,6 +3,7 @@ import { Geist, Kode_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
 
 import { Header } from '@/components/header'
+import { HeaderGate } from '@/components/header-gate'
 
 import './styles/globals.css'
 
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body
         className={clsx(geistSans.variable, geistMono.variable, 'antialiased')}
       >
-        <Header />
+        <HeaderGate>
+          <Header />
+        </HeaderGate>
         {children}
       </body>
     </html>
