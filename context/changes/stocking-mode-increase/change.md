@@ -1,7 +1,7 @@
 ---
 change_id: stocking-mode-increase
 title: Stocking mode increase
-status: implementing
+status: implemented
 created: 2026-09-29
 updated: 2026-10-28
 archived_at: null

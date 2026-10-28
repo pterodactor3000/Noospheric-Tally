@@ -326,8 +326,8 @@ Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with
 #### Manual
 
 - [x] 3.3 Select stocking and scan a stocked barcode. The count shown is 1 higher than before. There is no quantity field. A toast reads `Item {name} {barcode} was added to inventory.` verified 2026-10-28
-- [ ] 3.4 Hold that same barcode in frame. The count stays the same. Move it out of frame for at least 500ms, then present it again. The count is 1 higher, and the toast shows again.
+- [x] 3.4 Hold that same barcode in frame. The count stays the same. Move it out of frame for at least 500ms, then present it again. The count is 1 higher, and the toast shows again. verified 2026-10-28
 - [x] 3.5 Refresh that result URL. The shown count stays the same, the database quantity stays the same, and the toast does not show. verified 2026-10-28
 - [x] 3.6 Select using and scan a stocked barcode. The name shows. The database quantity stays the same. verified 2026-10-28
 - [x] 3.7 In either direction, scan a barcode this household does not stock. The existing create flow opens. Saving it leaves quantity at 0. verified 2026-10-28
-- [ ] 3.8 After a stocking result, using and stocking are still visible, stocking is still selected, and a different barcode counts without waiting out the 500ms miss.
+- [x] 3.8 After a stocking result, using and stocking are still visible, stocking is still selected, and a different barcode counts without waiting out the 500ms miss. verified 2026-10-28
