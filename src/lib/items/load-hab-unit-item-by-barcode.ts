@@ -2,13 +2,25 @@ import {
   DB_FUNCTION_FIND_ITEM_BY_BARCODE,
   DB_TABLE_HOUSEHOLD_INVENTORY,
 } from '../db/entities'
-import { dbFindItemByBarcode, dbHabUnitInventory } from '../db/types'
+import { dbFindItemByBarcode } from '../db/types'
 import { createClient } from '../supabase/server'
 import { Item } from '../types'
 
+interface HabUnitStockedItem extends Item {
+  readonly quantity: number
+}
+
+// Local row type: the shared dbHabUnitInventory type stays quantity-free
+// so loadHabUnitItems remains name-only.
+interface HabUnitItemRow {
+  readonly item_id: string
+  readonly name: string
+  readonly quantity: number
+}
+
 const loadHabUnitItemByBarcode = async (
   barcode: string,
-): Promise<Item | null> => {
+): Promise<HabUnitStockedItem | null> => {
   const supabase = await createClient()
   const { data: findItem, error } = await supabase
     .rpc(DB_FUNCTION_FIND_ITEM_BY_BARCODE, { item_barcode: barcode })
@@ -26,9 +38,9 @@ const loadHabUnitItemByBarcode = async (
 
   const { data: habUnitItem, error: itemError } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name')
+    .select('item_id, name, quantity')
     .eq('item_id', findItem.item_id)
-    .maybeSingle<dbHabUnitInventory>()
+    .maybeSingle<HabUnitItemRow>()
 
   if (itemError) {
     throw new Error(
@@ -43,7 +55,9 @@ const loadHabUnitItemByBarcode = async (
   return {
     itemId: habUnitItem.item_id,
     name: habUnitItem.name,
+    quantity: habUnitItem.quantity,
   }
 }
 
 export { loadHabUnitItemByBarcode }
+export type { HabUnitStockedItem }

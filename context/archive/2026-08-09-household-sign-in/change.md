@@ -1,10 +1,10 @@
 ---
 change_id: household-sign-in
 title: Household sign in
-status: impl_reviewed
+status: archived
 created: 2026-08-09
-updated: 2026-09-12
-archived_at: null
+updated: 2026-09-29
+archived_at: 2026-09-29T11:57:32Z
 ---
 
 ## Notes
