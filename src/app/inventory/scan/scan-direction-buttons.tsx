@@ -19,26 +19,30 @@ const SCAN_DIRECTIONS: readonly ScanDirection[] = [
 
 const scanDirectionListeners = new Set<() => void>()
 
+let hasLoggedScanDirectionReadFailure = false
+
 const subscribeToScanDirection = (listener: () => void) => {
   scanDirectionListeners.add(listener)
+  try {
+    window.sessionStorage.getItem(SCAN_DIRECTION_STORAGE_KEY)
+  } catch (error) {
+    if (!hasLoggedScanDirectionReadFailure) {
+      hasLoggedScanDirectionReadFailure = true
+      console.error(
+        `readScanDirection failed for storage key ${SCAN_DIRECTION_STORAGE_KEY}`,
+        error,
+      )
+    }
+  }
   return () => {
     scanDirectionListeners.delete(listener)
   }
 }
 
-let hasLoggedScanDirectionReadFailure = false
-
 const getScanDirectionSnapshot = (): ScanDirection => {
   try {
     return readScanDirection(window.sessionStorage)
-  } catch (error) {
-    if (!hasLoggedScanDirectionReadFailure) {
-      hasLoggedScanDirectionReadFailure = true
-      console.error(
-        `read_scan_direction failed for storage key ${SCAN_DIRECTION_STORAGE_KEY}`,
-        error,
-      )
-    }
+  } catch {
     return SCAN_DIRECTION_USING
   }
 }
@@ -57,7 +61,7 @@ const ScanDirectionButtons = () => {
       writeScanDirection(window.sessionStorage, direction)
     } catch (error) {
       console.error(
-        `write_scan_direction failed for storage key ${SCAN_DIRECTION_STORAGE_KEY} and direction ${direction}`,
+        `writeScanDirection failed for storage key ${SCAN_DIRECTION_STORAGE_KEY} and direction ${direction}`,
         error,
       )
       return
