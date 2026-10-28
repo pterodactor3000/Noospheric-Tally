@@ -40,14 +40,22 @@ const ScanCapture = ({
   const router = useRouter()
   const [submitError, setSubmitError] = useState<string | undefined>()
   const [submittedBarcode, setSubmittedBarcode] = useState<string | undefined>()
+  const [scanRound, setScanRound] = useState(0)
 
   const handleSubmitBarcode = (barcode: string) => {
     const encodedBarcode = encodeURIComponent(barcode)
+    // Resubmitting the held barcode keeps this ScanCapture key, so the scanner
+    // needs a new round to restart its one-shot camera. A different barcode
+    // changes the key and remounts instead.
+    const isSameBarcodeAsHold = barcode === holdBarcode
 
     if (readSubmitDirection() !== SCAN_DIRECTION_STOCKING) {
       router.push(
         `/inventory/scan?barcode=${encodedBarcode}&direction=${SCAN_DIRECTION_USING}`,
       )
+      if (isSameBarcodeAsHold) {
+        setScanRound((round) => round + 1)
+      }
       return
     }
 
@@ -64,6 +72,10 @@ const ScanCapture = ({
         console.error(`stockScannedItem failed for barcode ${barcode}`, error)
         setSubmittedBarcode(barcode)
         setSubmitError(STOCK_SUBMIT_FAILURE_MESSAGE)
+      } finally {
+        if (isSameBarcodeAsHold) {
+          setScanRound((round) => round + 1)
+        }
       }
     })
   }
@@ -78,6 +90,7 @@ const ScanCapture = ({
         defaultBarcode={submittedBarcode ?? defaultBarcode}
         errorMessage={submitError ?? errorMessage}
         holdBarcode={holdBarcode}
+        scanRound={scanRound}
       />
     </main>
   )

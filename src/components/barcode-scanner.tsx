@@ -29,6 +29,7 @@ interface BarcodeScannerProps {
   defaultBarcode?: string
   errorMessage?: string
   holdBarcode?: string
+  scanRound?: number
 }
 
 const HOLD_MISS_DURATION_MS = 500
@@ -47,6 +48,7 @@ const BarcodeScanner = ({
   defaultBarcode = '',
   errorMessage,
   holdBarcode,
+  scanRound = 0,
 }: BarcodeScannerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const onSubmitBarcodeEvent = useEffectEvent(onSubmitBarcode)
@@ -70,6 +72,9 @@ const BarcodeScanner = ({
     })
 
     let controls: { stop: () => void } | undefined
+    // scanRound is a dependency only: a new round creates a fresh reader and
+    // resets hasSubmitted and the hold.
+    void scanRound
     let hasSubmitted = false
     let isDisposed = false
     let isHeld = holdBarcode !== undefined
@@ -160,7 +165,7 @@ const BarcodeScanner = ({
       clearTimeout(missTimer)
       controls?.stop()
     }
-  }, [errorMessage, holdBarcode])
+  }, [errorMessage, holdBarcode, scanRound])
 
   if (displayedError) {
     return (
