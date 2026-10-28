@@ -320,8 +320,8 @@ Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with
 
 #### Automated
 
-- [ ] 3.1 `pnpm test` passes the `resolveScanDisplay` cases in `src/lib/items/scan-direction.test.ts`: stocking with a row returns quantity, using with a row returns name, and a null row returns create for both directions.
-- [ ] 3.2 `pnpm lint` and `pnpm exec tsc --noEmit` exit 0.
+- [x] 3.1 `pnpm test` passes the `resolveScanDisplay` cases in `src/lib/items/scan-direction.test.ts`: stocking with a row returns quantity, using with a row returns name, and a null row returns create for both directions. f920c1c
+- [x] 3.2 `pnpm lint` and `pnpm exec tsc --noEmit` exit 0. f920c1c
 
 #### Manual
 
