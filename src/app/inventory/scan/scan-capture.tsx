@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
 import { centeredPage } from '@/app/styles/class-names'
+import { ScanDirectionButtons } from './scan-direction-buttons'
 
 interface ScanCaptureProps {
   defaultBarcode?: string
@@ -20,6 +21,7 @@ const ScanCapture = ({
     <main
       className={centeredPage}
     >
+      <ScanDirectionButtons />
       <BarcodeScanner
         onDetect={(text) => {
           router.push(`/inventory/scan?barcode=${encodeURIComponent(text)}`)
