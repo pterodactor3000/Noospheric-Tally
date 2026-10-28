@@ -29,7 +29,8 @@ const panel = clsx(
   'shadow-sm',
   'backdrop-blur',
   'sm:p-12',
-  'dark:bg-black/20',
+  'bg-card',
+  'text-card-foreground',
 )
 
 const pageTitle = clsx(
@@ -88,7 +89,7 @@ const fieldControl = clsx('min-h-11', 'text-base', 'font-mono')
 const formError = clsx(
   'min-h-6',
   'text-sm',
-  'text-red-700',
+  'text-destructive',
   'font-mono',
   'font-semibold',
 )
