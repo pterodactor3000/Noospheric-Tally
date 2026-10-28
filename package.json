@@ -23,12 +23,12 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
-    "@opennextjs/cloudflare": "^1.20.7",
+    "@opennextjs/cloudflare": "^1.20.13",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "@zxing/browser": "^0.2.1",
     "@zxing/library": "^0.23.0",
-    "next": "16.2.11",
+    "next": "16.4.3",
     "react": "^19.3.0",
     "react-aria-components": "^1.21.1",
     "react-dom": "^19.3.0",
@@ -43,11 +43,11 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eslint": "^9.39.5",
-    "eslint-config-next": "16.2.11",
+    "eslint-config-next": "16.4.3",
     "supabase": "^2.118.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11",
-    "wrangler": "^4.143.0"
+    "wrangler": "^4.148.0"
   }
 }
