@@ -5,6 +5,7 @@ import { useSyncExternalStore } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   SCAN_DIRECTION_STOCKING,
+  SCAN_DIRECTION_STORAGE_KEY,
   SCAN_DIRECTION_USING,
   readScanDirection,
   writeScanDirection,
@@ -25,8 +26,22 @@ const subscribeToScanDirection = (listener: () => void) => {
   }
 }
 
-const getScanDirectionSnapshot = (): ScanDirection =>
-  readScanDirection(window.sessionStorage)
+let hasLoggedScanDirectionReadFailure = false
+
+const getScanDirectionSnapshot = (): ScanDirection => {
+  try {
+    return readScanDirection(window.sessionStorage)
+  } catch (error) {
+    if (!hasLoggedScanDirectionReadFailure) {
+      hasLoggedScanDirectionReadFailure = true
+      console.error(
+        `read_scan_direction failed for storage key ${SCAN_DIRECTION_STORAGE_KEY}`,
+        error,
+      )
+    }
+    return SCAN_DIRECTION_USING
+  }
+}
 
 const getScanDirectionServerSnapshot = (): ScanDirection => SCAN_DIRECTION_USING
 
@@ -38,7 +53,15 @@ const ScanDirectionButtons = () => {
   )
 
   const handleSelectDirection = (direction: ScanDirection) => {
-    writeScanDirection(window.sessionStorage, direction)
+    try {
+      writeScanDirection(window.sessionStorage, direction)
+    } catch (error) {
+      console.error(
+        `write_scan_direction failed for storage key ${SCAN_DIRECTION_STORAGE_KEY} and direction ${direction}`,
+        error,
+      )
+      return
+    }
     scanDirectionListeners.forEach((listener) => listener())
   }
 
