@@ -299,9 +299,9 @@ Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with
 
 #### Manual
 
-- [ ] 1.3 `pnpm exec supabase db push` applies `20260930092020_increment_household_quantity.sql`. `README.md` lines 46-48.
-- [ ] 1.4 For a barcode this household stocks, two calls return 1 then 2 when the row started at 0.
-- [ ] 1.5 For a barcode this household does not stock, the call raises and inserts no `household_inventory` row.
+- [x] 1.3 `pnpm exec supabase db push` applies `20260930092020_increment_household_quantity.sql`. `README.md` lines 46-48. 49a260c
+- [x] 1.4 For a barcode this household stocks, two calls return 1 then 2 when the row started at 0. 49a260c
+- [x] 1.5 For a barcode this household does not stock, the call raises and inserts no `household_inventory` row. 49a260c
 
 ### Phase 2: Scan direction buttons
 
@@ -312,9 +312,9 @@ Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with
 
 #### Manual
 
-- [ ] 2.3 Open `/inventory/scan` in a tab with no stored direction. using is selected. Both controls are normal buttons.
-- [ ] 2.4 Click stocking, open `/inventory`, then use Scan item. stocking is still selected in that tab.
-- [ ] 2.5 Open a new tab session and open `/inventory/scan`. using is selected.
+- [x] 2.3 Open `/inventory/scan` in a tab with no stored direction. using is selected. Both controls are normal buttons. 8682674
+- [x] 2.4 Click stocking, open `/inventory`, then use Scan item. stocking is still selected in that tab. 8682674
+- [x] 2.5 Open a new tab session and open `/inventory/scan`. using is selected. 8682674
 
 ### Phase 3: Scan applies the selected direction
 
