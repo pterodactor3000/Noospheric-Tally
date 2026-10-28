@@ -294,8 +294,8 @@ Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes `src/lib/items/increment-hab-unit-quantity.test.ts`: a successful rpc returns its number, including `0`, and an rpc error throws an `Error` whose message names the barcode.
-- [ ] 1.2 `pnpm lint` and `pnpm exec tsc --noEmit` exit 0.
+- [x] 1.1 `pnpm test` passes `src/lib/items/increment-hab-unit-quantity.test.ts`: a successful rpc returns its number, including `0`, and an rpc error throws an `Error` whose message names the barcode. 49a260c
+- [x] 1.2 `pnpm lint` and `pnpm exec tsc --noEmit` exit 0. 49a260c
 
 #### Manual
 
@@ -307,8 +307,8 @@ Apply `supabase/migrations/20260930092020_increment_household_quantity.sql` with
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes `src/lib/items/scan-direction.test.ts`: missing and unknown stored values resolve to using, `stocking` resolves to stocking, and a write then read returns the written direction.
-- [ ] 2.2 `pnpm lint` and `pnpm exec tsc --noEmit` exit 0.
+- [x] 2.1 `pnpm test` passes `src/lib/items/scan-direction.test.ts`: missing and unknown stored values resolve to using, `stocking` resolves to stocking, and a write then read returns the written direction. 8682674
+- [x] 2.2 `pnpm lint` and `pnpm exec tsc --noEmit` exit 0. 8682674
 
 #### Manual
 
