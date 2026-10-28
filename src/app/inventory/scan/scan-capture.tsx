@@ -1,6 +1,6 @@
 'use client'
 
-import { startTransition, useState } from 'react'
+import { startTransition, useRef, useState } from 'react'
 import { unstable_rethrow, useRouter } from 'next/navigation'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
@@ -24,6 +24,18 @@ interface ScanCaptureProps {
 const STOCK_SUBMIT_FAILURE_MESSAGE =
   'Item write failed. Purify the Machine Spirit and try again.'
 
+interface IdleSubmitState {
+  readonly status: 'idle'
+}
+
+interface FailedSubmitState {
+  readonly status: 'failure'
+  readonly barcode: string
+  readonly message: string
+}
+
+type SubmitState = IdleSubmitState | FailedSubmitState
+
 const readSubmitDirection = (): ScanDirection => {
   try {
     return readScanDirection(window.sessionStorage)
@@ -38,9 +50,9 @@ const ScanCapture = ({
   holdBarcode,
 }: ScanCaptureProps) => {
   const router = useRouter()
-  const [submitError, setSubmitError] = useState<string | undefined>()
-  const [submittedBarcode, setSubmittedBarcode] = useState<string | undefined>()
+  const [submitState, setSubmitState] = useState<SubmitState>({ status: 'idle' })
   const [scanRound, setScanRound] = useState(0)
+  const isStockSubmitInFlight = useRef(false)
 
   const handleSubmitBarcode = (barcode: string) => {
     const encodedBarcode = encodeURIComponent(barcode)
@@ -59,26 +71,44 @@ const ScanCapture = ({
       return
     }
 
+    if (isStockSubmitInFlight.current) {
+      return
+    }
+
+    isStockSubmitInFlight.current = true
+
     startTransition(async () => {
       try {
         const result = await stockScannedItem(barcode)
         if (result.status === 'error') {
-          setSubmittedBarcode(barcode)
-          setSubmitError(result.message)
+          setSubmitState({
+            status: 'failure',
+            barcode,
+            message: result.message,
+          })
         }
       } catch (error: unknown) {
         // A successful stock redirects, which rejects with a redirect error.
         unstable_rethrow(error)
         console.error(`stockScannedItem failed for barcode ${barcode}`, error)
-        setSubmittedBarcode(barcode)
-        setSubmitError(STOCK_SUBMIT_FAILURE_MESSAGE)
+        setSubmitState({
+          status: 'failure',
+          barcode,
+          message: STOCK_SUBMIT_FAILURE_MESSAGE,
+        })
       } finally {
+        isStockSubmitInFlight.current = false
         if (isSameBarcodeAsHold) {
           setScanRound((round) => round + 1)
         }
       }
     })
   }
+
+  const submittedBarcode =
+    submitState.status === 'failure' ? submitState.barcode : undefined
+  const submitError =
+    submitState.status === 'failure' ? submitState.message : undefined
 
   return (
     <main
