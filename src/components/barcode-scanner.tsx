@@ -32,6 +32,8 @@ interface BarcodeScannerProps {
 }
 
 const HOLD_MISS_DURATION_MS = 500
+// Poll faster than the hold length so a steady hold keeps resetting the miss timer.
+const SCAN_DELAY_MS = 100
 
 const POSSIBLE_FORMATS = [
   BarcodeFormat.EAN_13,
@@ -62,7 +64,10 @@ const BarcodeScanner = ({
 
     // BrowserMultiFormatReader logs NotFoundException on every empty frame
     // in @zxing/library 0.23. Product barcodes are 1D.
-    const reader = new BrowserMultiFormatOneDReader(hints)
+    const reader = new BrowserMultiFormatOneDReader(hints, {
+      delayBetweenScanAttempts: SCAN_DELAY_MS,
+      delayBetweenScanSuccess: SCAN_DELAY_MS,
+    })
 
     let controls: { stop: () => void } | undefined
     let hasSubmitted = false
@@ -71,17 +76,14 @@ const BarcodeScanner = ({
     let missTimer: ReturnType<typeof setTimeout> | undefined
 
     // The hold releases only after HOLD_MISS_DURATION_MS with no decode of the
-    // held code. Empty frames neither reset nor release the timer.
+    // held code. The timer is first armed on the first reader callback, so
+    // camera startup cannot expire it. Empty frames never reset or release it.
     const armMissTimer = () => {
       clearTimeout(missTimer)
       missTimer = setTimeout(() => {
         isHeld = false
         missTimer = undefined
       }, HOLD_MISS_DURATION_MS)
-    }
-
-    if (isHeld) {
-      armMissTimer()
     }
 
     const startScan = async () => {
@@ -96,7 +98,15 @@ const BarcodeScanner = ({
           deviceId,
           videoRef.current ?? undefined,
           (result, _error, scanControls) => {
-            if (isDisposed || !result || hasSubmitted) {
+            if (isDisposed || hasSubmitted) {
+              return
+            }
+
+            if (isHeld && missTimer === undefined) {
+              armMissTimer()
+            }
+
+            if (!result) {
               return
             }
 

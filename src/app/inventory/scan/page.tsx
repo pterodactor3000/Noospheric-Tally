@@ -68,7 +68,7 @@ const ScanItemPage = async ({
     return (
       <>
         <AlreadyStocked name={display.name} />
-        <ScanCapture key={barcode} />
+        <ScanCapture key={barcode} holdBarcode={barcode} />
         <Link href="/inventory">Back to inventory</Link>
       </>
     )

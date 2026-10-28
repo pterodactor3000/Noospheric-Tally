@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { startTransition, useState } from 'react'
+import { unstable_rethrow, useRouter } from 'next/navigation'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
 import { centeredPage } from '@/app/styles/class-names'
@@ -41,7 +41,7 @@ const ScanCapture = ({
   const [submitError, setSubmitError] = useState<string | undefined>()
   const [submittedBarcode, setSubmittedBarcode] = useState<string | undefined>()
 
-  const handleSubmitBarcode = async (barcode: string) => {
+  const handleSubmitBarcode = (barcode: string) => {
     const encodedBarcode = encodeURIComponent(barcode)
 
     if (readSubmitDirection() !== SCAN_DIRECTION_STOCKING) {
@@ -51,18 +51,21 @@ const ScanCapture = ({
       return
     }
 
-    try {
-      const result = await stockScannedItem(barcode)
-      // A redirect from the action resolves with no result and navigates.
-      if (result?.status === 'error') {
+    startTransition(async () => {
+      try {
+        const result = await stockScannedItem(barcode)
+        if (result.status === 'error') {
+          setSubmittedBarcode(barcode)
+          setSubmitError(result.message)
+        }
+      } catch (error: unknown) {
+        // A successful stock redirects, which rejects with a redirect error.
+        unstable_rethrow(error)
+        console.error(`stockScannedItem failed for barcode ${barcode}`, error)
         setSubmittedBarcode(barcode)
-        setSubmitError(result.message)
+        setSubmitError(STOCK_SUBMIT_FAILURE_MESSAGE)
       }
-    } catch (error: unknown) {
-      console.error(`stockScannedItem failed for barcode ${barcode}`, error)
-      setSubmittedBarcode(barcode)
-      setSubmitError(STOCK_SUBMIT_FAILURE_MESSAGE)
-    }
+    })
   }
 
   return (

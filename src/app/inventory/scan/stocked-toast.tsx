@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 interface StockedToastProps {
@@ -13,6 +13,11 @@ const StockedToast = ({ name, barcode, show }: StockedToastProps) => {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isVisible, setIsVisible] = useState(show)
+
+  if (show && !isVisible) {
+    setIsVisible(true)
+  }
 
   useEffect(() => {
     if (!show) {
@@ -25,7 +30,7 @@ const StockedToast = ({ name, barcode, show }: StockedToastProps) => {
     router.replace(query ? `${pathname}?${query}` : pathname)
   }, [show, pathname, searchParams, router])
 
-  if (!show) {
+  if (!isVisible) {
     return null
   }
 
