@@ -74,6 +74,8 @@
   --animate-terminal-blink: terminal-blink 1s step-end infinite;
   --animate-terminal-type: terminal-type 1.2s steps(16, end) forwards;
   --animate-scan-line: scan-line 1.8s ease-in-out infinite;
+  --animate-scan-notice-in: scan-notice-in 280ms ease-out both;
+  --animate-scan-notice-out: scan-notice-out 280ms ease-in both;
   --animate-loading-inner: loading-inner 5s infinite;
   --animate-loading-middle: loading-middle 5s infinite;
   --animate-loading-outer: loading-outer 5s infinite;
@@ -98,6 +100,24 @@
   }
   50% {
     top: 92%;
+  }
+}
+
+@keyframes scan-notice-in {
+  from {
+    transform: translateY(calc(-100% - 0.75rem));
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes scan-notice-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - 0.75rem));
   }
 }
 
