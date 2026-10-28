@@ -5,6 +5,7 @@ import {
   SCAN_DIRECTION_STORAGE_KEY,
   SCAN_DIRECTION_USING,
   readScanDirection,
+  resolveScanDisplay,
   writeScanDirection,
   type ScanDirectionStorage,
 } from './scan-direction'
@@ -72,5 +73,42 @@ describe('writeScanDirection', () => {
     writeScanDirection(storage, SCAN_DIRECTION_USING)
 
     expect(readScanDirection(storage)).toEqual(SCAN_DIRECTION_USING)
+  })
+})
+
+describe('resolveScanDisplay', () => {
+  const stock = { name: 'Lho sticks', quantity: 4 }
+
+  test('returns quantity when stocking with a stock row', () => {
+    expect(resolveScanDisplay(SCAN_DIRECTION_STOCKING, stock)).toEqual({
+      status: 'quantity',
+      name: 'Lho sticks',
+      quantity: 4,
+    })
+  })
+
+  test('returns quantity 0 when stocking with a zero quantity stock row', () => {
+    expect(
+      resolveScanDisplay(SCAN_DIRECTION_STOCKING, { name: 'Lho sticks', quantity: 0 }),
+    ).toEqual({ status: 'quantity', name: 'Lho sticks', quantity: 0 })
+  })
+
+  test('returns name when using with a stock row', () => {
+    expect(resolveScanDisplay(SCAN_DIRECTION_USING, stock)).toEqual({
+      status: 'name',
+      name: 'Lho sticks',
+    })
+  })
+
+  test('returns create when stocking with a null stock row', () => {
+    expect(resolveScanDisplay(SCAN_DIRECTION_STOCKING, null)).toEqual({
+      status: 'create',
+    })
+  })
+
+  test('returns create when using with a null stock row', () => {
+    expect(resolveScanDisplay(SCAN_DIRECTION_USING, null)).toEqual({
+      status: 'create',
+    })
   })
 })

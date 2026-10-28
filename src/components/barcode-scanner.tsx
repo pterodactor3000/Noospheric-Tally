@@ -25,10 +25,13 @@ import { Label } from './ui/label'
 import { Input } from './ui/input'
 
 interface BarcodeScannerProps {
-  onDetect: (text: string) => void
+  onSubmitBarcode: (barcode: string) => void | Promise<void>
   defaultBarcode?: string
   errorMessage?: string
+  holdBarcode?: string
 }
+
+const HOLD_MISS_DURATION_MS = 500
 
 const POSSIBLE_FORMATS = [
   BarcodeFormat.EAN_13,
@@ -38,15 +41,15 @@ const POSSIBLE_FORMATS = [
 ]
 
 const BarcodeScanner = ({
-  onDetect,
+  onSubmitBarcode,
   defaultBarcode = '',
   errorMessage,
+  holdBarcode,
 }: BarcodeScannerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const onDetectEvent = useEffectEvent(onDetect)
-  const [cameraError, setCameraError] = useState<string | null>(
-    errorMessage ?? null,
-  )
+  const onSubmitBarcodeEvent = useEffectEvent(onSubmitBarcode)
+  const [cameraError, setCameraError] = useState<string | null>(null)
+  const displayedError = errorMessage ?? cameraError
 
   useEffect(() => {
     if (errorMessage) {
@@ -62,8 +65,24 @@ const BarcodeScanner = ({
     const reader = new BrowserMultiFormatOneDReader(hints)
 
     let controls: { stop: () => void } | undefined
-    let hasDetected = false
+    let hasSubmitted = false
     let isDisposed = false
+    let isHeld = holdBarcode !== undefined
+    let missTimer: ReturnType<typeof setTimeout> | undefined
+
+    // The hold releases only after HOLD_MISS_DURATION_MS with no decode of the
+    // held code. Empty frames neither reset nor release the timer.
+    const armMissTimer = () => {
+      clearTimeout(missTimer)
+      missTimer = setTimeout(() => {
+        isHeld = false
+        missTimer = undefined
+      }, HOLD_MISS_DURATION_MS)
+    }
+
+    if (isHeld) {
+      armMissTimer()
+    }
 
     const startScan = async () => {
       try {
@@ -77,12 +96,9 @@ const BarcodeScanner = ({
           deviceId,
           videoRef.current ?? undefined,
           (result, _error, scanControls) => {
-            if (isDisposed || !result || hasDetected) {
+            if (isDisposed || !result || hasSubmitted) {
               return
             }
-
-            hasDetected = true
-            scanControls.stop()
 
             const rawText = result.getText()
             const text =
@@ -97,7 +113,16 @@ const BarcodeScanner = ({
                   })()
                 : rawText
 
-            onDetectEvent(text)
+            if (isHeld && text === holdBarcode) {
+              armMissTimer()
+              return
+            }
+
+            hasSubmitted = true
+            clearTimeout(missTimer)
+            scanControls.stop()
+
+            void onSubmitBarcodeEvent(text)
           },
         )
         if (isDisposed) {
@@ -122,15 +147,22 @@ const BarcodeScanner = ({
 
     return () => {
       isDisposed = true
+      clearTimeout(missTimer)
       controls?.stop()
     }
-  }, [errorMessage])
+  }, [errorMessage, holdBarcode])
 
-  if (cameraError) {
+  if (displayedError) {
     return (
       <form
-        action="/inventory/scan"
-        method="get"
+        onSubmit={(event) => {
+          event.preventDefault()
+          const barcode = new FormData(event.currentTarget).get('barcode')
+          if (typeof barcode !== 'string') {
+            return
+          }
+          void onSubmitBarcode(barcode)
+        }}
         className={formStack}
       >
         <div
@@ -138,7 +170,7 @@ const BarcodeScanner = ({
           aria-live="polite"
           className={formError}
         >
-          {cameraError}
+          {displayedError}
         </div>
         <div className={fieldStack}>
           <Label
@@ -155,7 +187,7 @@ const BarcodeScanner = ({
             autoComplete="off"
             required
             defaultValue={defaultBarcode}
-            aria-invalid={Boolean(cameraError)}
+            aria-invalid={Boolean(displayedError)}
             className={fieldControl}
           />
         </div>
