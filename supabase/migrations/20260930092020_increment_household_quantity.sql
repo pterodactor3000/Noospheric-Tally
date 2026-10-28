@@ -47,5 +47,5 @@ begin
 end;
 $$;
 
-revoke all on function public.increment_household_quantity(text) from public;
+revoke all on function public.increment_household_quantity(text) from public, anon;
 grant execute on function public.increment_household_quantity(text) to authenticated;
