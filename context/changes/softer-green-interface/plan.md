@@ -394,18 +394,18 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes, including `src/app/styles/theme-tokens.test.ts`
-- [ ] 1.2 `pnpm lint` passes
-- [ ] 1.3 `pnpm typecheck` passes
-- [ ] 1.4 `rg -n "custom-variant dark|\.dark \{|#[0-9a-fA-F]{6}" src/app/styles/globals.css` returns no match
-- [ ] 1.5 `rg -n "rounded-(xs|full|br-4xl)|cornerShape" src --glob '!src/components/ui/**'` returns no match
+- [x] 1.1 `pnpm test` passes, including `src/app/styles/theme-tokens.test.ts` bba5050
+- [x] 1.2 `pnpm lint` passes bba5050
+- [x] 1.3 `pnpm typecheck` passes bba5050
+- [x] 1.4 `rg -n "custom-variant dark|\.dark \{|#[0-9a-fA-F]{6}" src/app/styles/globals.css` returns no match bba5050
+- [x] 1.5 `rg -n "rounded-(xs|full|br-4xl)|cornerShape" src --glob '!src/components/ui/**'` returns no match bba5050
 
 #### Manual
 
-- [ ] 1.6 Light mode on `/`, `/login`, `/inventory` shows sage off-white background, dark green-gray text, no beige or neon green
-- [ ] 1.7 Dark mode on the same routes shows deep green-gray background, soft text, muted green borders and rings, no neon
-- [ ] 1.8 Inventory panel, buttons, inputs, and focus rings are square in both modes
-- [ ] 1.9 A `/login` form error reads in destructive red in both modes
+- [x] 1.6 Light mode on `/`, `/login`, `/inventory` shows sage off-white background, dark green-gray text, no beige or neon green bba5050
+- [x] 1.7 Dark mode on the same routes shows deep green-gray background, soft text, muted green borders and rings, no neon bba5050
+- [x] 1.8 Inventory panel, buttons, inputs, and focus rings are square in both modes bba5050
+- [x] 1.9 A `/login` form error reads in destructive red in both modes bba5050
 
 ### Phase 2: Body text in Geist Sans
 
