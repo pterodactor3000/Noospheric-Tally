@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
@@ -12,9 +11,6 @@ import {
 import { validateBarcode } from '@/lib/items/validate-barcode'
 
 import { ScanCapture } from './scan-capture'
-import { StockedCount } from './stocked-count'
-import { StockedToast } from './stocked-toast'
-import { AlreadyStocked } from '../new/already-stocked'
 
 type SearchParamValue = string | string[] | undefined
 
@@ -66,25 +62,32 @@ const ScanItemPage = async ({
 
   if (display.status === 'name') {
     return (
-      <>
-        <AlreadyStocked name={display.name} />
-        <ScanCapture key={barcode} holdBarcode={barcode} />
-        <Link href="/inventory">Back to inventory</Link>
-      </>
+      <ScanCapture
+        key={barcode}
+        holdBarcode={barcode}
+        scanResult={{
+          title: 'Already stocked',
+          detail: display.name,
+        }}
+      />
     )
   }
 
+  const didAddItem = params.added === '1'
+
   return (
-    <>
-      <StockedCount name={display.name} quantity={display.quantity} />
-      <StockedToast
-        name={display.name}
-        barcode={barcode}
-        show={params.added === '1'}
-      />
-      <ScanCapture key={barcode} holdBarcode={barcode} />
-      <Link href="/inventory">Back to inventory</Link>
-    </>
+    <ScanCapture
+      key={barcode}
+      holdBarcode={barcode}
+      scanResult={{
+        title: display.name,
+        detail: String(display.quantity),
+        confirmation: didAddItem
+          ? `Item ${display.name} ${barcode} was added to inventory.`
+          : undefined,
+        shouldClearAdded: didAddItem,
+      }}
+    />
   )
 }
 
