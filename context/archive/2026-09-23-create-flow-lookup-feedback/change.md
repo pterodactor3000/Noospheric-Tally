@@ -1,10 +1,10 @@
 ---
 change_id: create-flow-lookup-feedback
 title: Create-flow lookup feedback
-status: impl_reviewed
+status: archived
 created: 2026-09-23
 updated: 2026-10-29
-archived_at: null
+archived_at: 2026-10-29T16:24:53Z
 ---
 
 ## Notes
