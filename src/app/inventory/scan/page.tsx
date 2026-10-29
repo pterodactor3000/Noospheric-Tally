@@ -10,7 +10,7 @@ import {
 } from '@/lib/items/scan-direction'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 
-import { ScanCapture } from './scan-capture'
+import { ScanCapture, type ScanCaptureResult } from './scan-capture'
 
 type SearchParamValue = string | string[] | undefined
 
@@ -26,6 +26,8 @@ const ScanItemPage = async ({
     barcode?: SearchParamValue
     direction?: SearchParamValue
     added?: SearchParamValue
+    removed?: SearchParamValue
+    floor?: SearchParamValue
   }>
 }) => {
   await requireCurrentUser()
@@ -51,29 +53,26 @@ const ScanItemPage = async ({
 
   const barcode = validationResult.barcode
   const habUnitItem = await loadHabUnitItemByBarcode(barcode)
-  const display = resolveScanDisplay(
-    readDirectionParam(params.direction),
-    habUnitItem,
-  )
+  const direction = readDirectionParam(params.direction)
+  const display = resolveScanDisplay(direction, habUnitItem)
 
   if (display.status === 'create') {
     redirect(`/inventory/new?barcode=${encodeURIComponent(barcode)}`)
   }
 
-  if (display.status === 'name') {
-    return (
-      <ScanCapture
-        key={barcode}
-        holdBarcode={barcode}
-        scanResult={{
-          title: 'Already stocked',
-          detail: display.name,
-        }}
-      />
-    )
-  }
+  let clearParam: ScanCaptureResult['clearParam']
+  let confirmation: string | undefined
 
-  const didAddItem = params.added === '1'
+  if (direction === SCAN_DIRECTION_STOCKING && params.added === '1') {
+    clearParam = 'added'
+    confirmation = `Item ${display.name} ${barcode} was added to inventory.`
+  } else if (direction === SCAN_DIRECTION_USING && params.removed === '1') {
+    clearParam = 'removed'
+    confirmation = `Item ${display.name} ${barcode} was removed from inventory.`
+  } else if (direction === SCAN_DIRECTION_USING && params.floor === '1') {
+    clearParam = 'floor'
+    confirmation = `Item ${display.name} ${barcode} is already at 0.`
+  }
 
   return (
     <ScanCapture
@@ -82,10 +81,8 @@ const ScanItemPage = async ({
       scanResult={{
         title: display.name,
         detail: String(display.quantity),
-        confirmation: didAddItem
-          ? `Item ${display.name} ${barcode} was added to inventory.`
-          : undefined,
-        shouldClearAdded: didAddItem,
+        confirmation,
+        clearParam,
       }}
     />
   )

@@ -13,19 +13,34 @@ interface ScanResultNoticeProps {
   title: string
   detail: string
   confirmation?: string
-  shouldClearAdded?: boolean
+  clearParam?: 'added' | 'removed' | 'floor'
 }
 
 const ScanResultNotice = ({
   title,
   detail,
   confirmation,
-  shouldClearAdded = false,
+  clearParam,
 }: ScanResultNoticeProps) => {
   const router = useRouter()
   const pathname = usePathname()
   const [phase, setPhase] = useState<NoticePhase>('shown')
-  const [latchedConfirmation] = useState(confirmation ?? '')
+  const [latchedConfirmation, setLatchedConfirmation] = useState(
+    confirmation ?? '',
+  )
+  const [previousConfirmation, setPreviousConfirmation] = useState(confirmation)
+  const [showCount, setShowCount] = useState(0)
+
+  // A repeated scan can yield the same title and detail, so the notice keeps
+  // its key. Restart it whenever a confirmation appears while mounted.
+  if (confirmation !== previousConfirmation) {
+    setPreviousConfirmation(confirmation)
+    if (confirmation && !previousConfirmation) {
+      setLatchedConfirmation(confirmation)
+      setPhase('shown')
+      setShowCount((count) => count + 1)
+    }
+  }
 
   useEffect(() => {
     const exitTimer = window.setTimeout(() => {
@@ -40,23 +55,23 @@ const ScanResultNotice = ({
       window.clearTimeout(exitTimer)
       window.clearTimeout(hideTimer)
     }
-  }, [])
+  }, [showCount])
 
   useEffect(() => {
-    if (!shouldClearAdded) {
+    if (!clearParam) {
       return
     }
 
     const params = new URLSearchParams(window.location.search)
-    if (!params.has('added')) {
+    if (!params.has(clearParam)) {
       return
     }
 
-    params.delete('added')
+    params.delete(clearParam)
     const query = params.toString()
 
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
-  }, [shouldClearAdded, pathname, router])
+  }, [clearParam, pathname, router])
 
   if (phase === 'hidden') {
     return null

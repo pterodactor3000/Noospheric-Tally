@@ -6,9 +6,20 @@ import { redirect } from 'next/navigation'
 import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
 import { createNewItem } from '@/lib/items/create-new-item'
+import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
+import {
+  loadScanSessionLines,
+  type ScanSessionLine,
+} from '@/lib/items/load-scan-session-lines'
+import { reverseQuantityChange } from '@/lib/items/reverse-quantity-change'
+import {
+  ITEM_WRITE_FAILURE_MESSAGE,
+  SCAN_SESSION_LOAD_FAILURE_MESSAGE,
+} from '@/lib/items/scan-failure-messages'
+import { isScanSessionId } from '@/lib/items/scan-session'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { validateItemName } from '@/lib/items/validate-item-name'
 import { createClient } from '@/lib/supabase/server'
@@ -26,8 +37,22 @@ interface ItemAlreadyExists {
 
 type ItemActionResult = ItemActionError | ItemAlreadyExists
 
-const ITEM_WRITE_FAILURE_MESSAGE =
-  'Item write failed. Purify the Machine Spirit and try again.'
+interface ScanSessionLinesLoaded {
+  status: 'loaded'
+  lines: ScanSessionLine[]
+}
+
+type ScanSessionLinesResult = ScanSessionLinesLoaded | ItemActionError
+
+interface ScanSessionLineReversed {
+  status: 'reversed'
+  quantity: number
+}
+
+type ScanSessionLineReversalResult = ScanSessionLineReversed | ItemActionError
+
+const REVERSAL_BELOW_ZERO_MESSAGE =
+  'This line cannot be reversed because the count would drop below 0.'
 
 const getFormString = (formData: FormData, key: string): string => {
   const value = formData.get(key)
@@ -150,6 +175,7 @@ const addItemToHousehold = async (
 
 const stockScannedItem = async (
   barcode: string,
+  scanSessionId: unknown,
 ): Promise<ItemActionResult> => {
   const barcodeResult = validateBarcode(barcode)
   if (barcodeResult.status === 'invalid') {
@@ -158,6 +184,13 @@ const stockScannedItem = async (
       message: barcodeResult.message,
       field: 'barcode',
     }
+  }
+
+  if (!isScanSessionId(scanSessionId)) {
+    console.error('stockScannedItem rejected scan session id', {
+      barcode: barcodeResult.barcode,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
   const validBarcode = barcodeResult.barcode
@@ -170,7 +203,7 @@ const stockScannedItem = async (
 
   try {
     const supabase = await createClient()
-    await incrementHabUnitQuantity(validBarcode, supabase)
+    await incrementHabUnitQuantity(validBarcode, scanSessionId, supabase)
   } catch (error: unknown) {
     console.error('stockScannedItem failed', { barcode: validBarcode, error })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
@@ -182,4 +215,104 @@ const stockScannedItem = async (
   )
 }
 
-export { createItem, attachBarcode, addItemToHousehold, stockScannedItem }
+const consumeScannedItem = async (
+  barcode: string,
+  scanSessionId: unknown,
+): Promise<ItemActionResult> => {
+  const barcodeResult = validateBarcode(barcode)
+  if (barcodeResult.status === 'invalid') {
+    return {
+      status: 'error',
+      message: barcodeResult.message,
+      field: 'barcode',
+    }
+  }
+
+  if (!isScanSessionId(scanSessionId)) {
+    console.error('consumeScannedItem rejected scan session id', {
+      barcode: barcodeResult.barcode,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  const validBarcode = barcodeResult.barcode
+  const encodedBarcode = encodeURIComponent(validBarcode)
+
+  const householdItem = await loadHabUnitItemByBarcode(validBarcode)
+  if (!householdItem) {
+    redirect(`/inventory/new?barcode=${encodedBarcode}`)
+  }
+
+  if (householdItem.quantity === 0) {
+    redirect(
+      `/inventory/scan?barcode=${encodedBarcode}&direction=using&floor=1`,
+    )
+  }
+
+  try {
+    const supabase = await createClient()
+    await decrementHabUnitQuantity(validBarcode, scanSessionId, supabase)
+  } catch (error: unknown) {
+    console.error('consumeScannedItem failed', { barcode: validBarcode, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  revalidatePath('/inventory')
+  redirect(
+    `/inventory/scan?barcode=${encodedBarcode}&direction=using&removed=1`,
+  )
+}
+
+const fetchScanSessionLines = async (
+  scanSessionId: unknown,
+): Promise<ScanSessionLinesResult> => {
+  if (!isScanSessionId(scanSessionId)) {
+    console.error('fetchScanSessionLines rejected scan session id', {
+      scanSessionId,
+    })
+    return { status: 'error', message: SCAN_SESSION_LOAD_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const lines = await loadScanSessionLines(scanSessionId, supabase)
+    return { status: 'loaded', lines }
+  } catch (error: unknown) {
+    console.error('fetchScanSessionLines failed', { scanSessionId, error })
+    return { status: 'error', message: SCAN_SESSION_LOAD_FAILURE_MESSAGE }
+  }
+}
+
+const reverseScanSessionLine = async (
+  changeId: unknown,
+): Promise<ScanSessionLineReversalResult> => {
+  // A change id is a UUID, so the scan session id guard validates it too.
+  if (!isScanSessionId(changeId)) {
+    console.error('reverseScanSessionLine rejected change id', { changeId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const result = await reverseQuantityChange(changeId, supabase)
+    if (result.status === 'below-zero') {
+      return { status: 'error', message: REVERSAL_BELOW_ZERO_MESSAGE }
+    }
+
+    revalidatePath('/inventory')
+    return { status: 'reversed', quantity: result.quantity }
+  } catch (error: unknown) {
+    console.error('reverseScanSessionLine failed', { changeId, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+}
+
+export {
+  createItem,
+  attachBarcode,
+  addItemToHousehold,
+  stockScannedItem,
+  consumeScannedItem,
+  fetchScanSessionLines,
+  reverseScanSessionLine,
+}
