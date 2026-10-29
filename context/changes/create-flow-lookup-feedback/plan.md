@@ -289,16 +289,18 @@ The scan and create routes show the existing caret until their server render rep
 
 ### Phase 1: Clear the fixed header
 
+Status: skipped on 2026-10-29 by user decision. Do not implement. The header stays in normal flow.
+
 #### Automated
 
-- [ ] 1.1 `pnpm lint` exits 0.
-- [ ] 1.2 `pnpm typecheck` exits 0.
+- [x] 1.1 `pnpm lint` exits 0. (skipped 2026-10-29, no code change, no SHA)
+- [x] 1.2 `pnpm typecheck` exits 0. (skipped 2026-10-29, no code change, no SHA)
 
 #### Manual
 
-- [ ] 1.3 A short page starts below the header, and the header does not cover its top.
-- [ ] 1.4 On a tall page, content scrolls under the header and the header text stays readable.
-- [ ] 1.5 The header stays pinned to the top of the viewport.
+- [x] 1.3 A short page starts below the header, and the header does not cover its top. (skipped 2026-10-29, no code change, no SHA)
+- [x] 1.4 On a tall page, content scrolls under the header and the header text stays readable. (skipped 2026-10-29, no code change, no SHA)
+- [x] 1.5 The header stays pinned to the top of the viewport. (skipped 2026-10-29, no code change, no SHA)
 
 ### Phase 2: Show lookup misses and a bold barcode
 
