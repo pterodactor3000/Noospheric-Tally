@@ -587,8 +587,8 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [ ] 4.1 `pnpm test` passes `src/lib/items/reverse-quantity-change.test.ts`. A number returns `reversed`, including `0`. Code `23514` returns `below-zero`. Any other error or `null` data throws with the change id.
-- [ ] 4.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 4.1 `pnpm test` passes `src/lib/items/reverse-quantity-change.test.ts`. A number returns `reversed`, including `0`. Code `23514` returns `below-zero`. Any other error or `null` data throws with the change id.
+- [x] 4.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 

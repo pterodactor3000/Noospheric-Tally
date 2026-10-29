@@ -12,6 +12,7 @@ import {
   readScanDirection,
   type ScanDirection,
 } from '@/lib/items/scan-direction'
+import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import {
   SCAN_SESSION_STORAGE_KEY,
   ensureScanSessionId,
@@ -37,9 +38,6 @@ interface ScanCaptureProps {
   holdBarcode?: string
   scanResult?: ScanCaptureResult
 }
-
-const STOCK_SUBMIT_FAILURE_MESSAGE =
-  'Item write failed. Purify the Machine Spirit and try again.'
 
 interface IdleSubmitState {
   readonly status: 'idle'
@@ -170,7 +168,7 @@ const ScanCapture = ({
         setSubmitState({
           status: 'failure',
           barcode,
-          message: STOCK_SUBMIT_FAILURE_MESSAGE,
+          message: ITEM_WRITE_FAILURE_MESSAGE,
         })
       } finally {
         isScanSubmitInFlight.current = false

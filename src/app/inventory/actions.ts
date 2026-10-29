@@ -14,7 +14,11 @@ import {
   loadScanSessionLines,
   type ScanSessionLine,
 } from '@/lib/items/load-scan-session-lines'
-import { SCAN_SESSION_LOAD_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
+import { reverseQuantityChange } from '@/lib/items/reverse-quantity-change'
+import {
+  ITEM_WRITE_FAILURE_MESSAGE,
+  SCAN_SESSION_LOAD_FAILURE_MESSAGE,
+} from '@/lib/items/scan-failure-messages'
 import { isScanSessionId } from '@/lib/items/scan-session'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { validateItemName } from '@/lib/items/validate-item-name'
@@ -40,8 +44,15 @@ interface ScanSessionLinesLoaded {
 
 type ScanSessionLinesResult = ScanSessionLinesLoaded | ItemActionError
 
-const ITEM_WRITE_FAILURE_MESSAGE =
-  'Item write failed. Purify the Machine Spirit and try again.'
+interface ScanSessionLineReversed {
+  status: 'reversed'
+  quantity: number
+}
+
+type ScanSessionLineReversalResult = ScanSessionLineReversed | ItemActionError
+
+const REVERSAL_BELOW_ZERO_MESSAGE =
+  'This line cannot be reversed because the count would drop below 0.'
 
 const getFormString = (formData: FormData, key: string): string => {
   const value = formData.get(key)
@@ -272,6 +283,30 @@ const fetchScanSessionLines = async (
   }
 }
 
+const reverseScanSessionLine = async (
+  changeId: string,
+): Promise<ScanSessionLineReversalResult> => {
+  // A change id is a UUID, so the scan session id guard validates it too.
+  if (!isScanSessionId(changeId)) {
+    console.error('reverseScanSessionLine rejected change id', { changeId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const result = await reverseQuantityChange(changeId, supabase)
+    if (result.status === 'below-zero') {
+      return { status: 'error', message: REVERSAL_BELOW_ZERO_MESSAGE }
+    }
+
+    revalidatePath('/inventory')
+    return { status: 'reversed', quantity: result.quantity }
+  } catch (error: unknown) {
+    console.error('reverseScanSessionLine failed', { changeId, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+}
+
 export {
   createItem,
   attachBarcode,
@@ -279,4 +314,5 @@ export {
   stockScannedItem,
   consumeScannedItem,
   fetchScanSessionLines,
+  reverseScanSessionLine,
 }
