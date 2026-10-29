@@ -23,6 +23,8 @@ interface ItemCreateFormProps {
   barcode: string
   habUnitItems: Item[]
   defaultName?: string
+  householdMissMessage: string
+  catalogMissMessage: string | null
 }
 
 type ItemCreateFormState = Awaited<ReturnType<typeof createItem>> | null
@@ -59,6 +61,8 @@ const ItemCreateForm = ({
   barcode,
   habUnitItems,
   defaultName = '',
+  householdMissMessage,
+  catalogMissMessage,
 }: ItemCreateFormProps) => {
   const [createState, createFormAction, isCreatePending] = useActionState(
     async (_prev: ItemCreateFormState, formData: FormData) =>
@@ -92,8 +96,17 @@ const ItemCreateForm = ({
         Item data creation
       </h1>
       <p className={pageLead}>
-        Provide name for the item with designated barcode // {barcode}
+        Provide name for the item with designated barcode //{' '}
+        <strong className="font-bold text-foreground">{barcode}</strong>
       </p>
+      <p role="status" className={pageLead}>
+        {householdMissMessage}
+      </p>
+      {catalogMissMessage === null ? null : (
+        <p role="status" className={pageLead}>
+          {catalogMissMessage}
+        </p>
+      )}
       <form
         action={createFormAction}
         className={formStack}

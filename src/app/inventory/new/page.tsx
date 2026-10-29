@@ -13,6 +13,7 @@ import { AddToHabUnitForm } from './add-to-hab-unit-form'
 import { BarcodeLookupForm } from './barcode-lookup-form'
 import { ItemCreateForm } from './item-create-form'
 import { lookupCatalogName } from '@/lib/catalog/lookup-catalog-name'
+import { getCreateLookupNotices } from '@/lib/catalog/get-create-lookup-notices'
 
 const NewItemPage = async ({
   searchParams,
@@ -63,12 +64,16 @@ const NewItemPage = async ({
         ])
         const defaultName =
           lookupProduct.status === 'found' ? lookupProduct.name : ''
+        const { householdMissMessage, catalogMissMessage } =
+          getCreateLookupNotices(lookupProduct.status)
 
         body = (
           <ItemCreateForm
             barcode={barcode}
             habUnitItems={items}
             defaultName={defaultName}
+            householdMissMessage={householdMissMessage}
+            catalogMissMessage={catalogMissMessage}
           />
         )
       }
