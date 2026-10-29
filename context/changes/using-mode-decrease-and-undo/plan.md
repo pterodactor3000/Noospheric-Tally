@@ -686,7 +686,7 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [x] 6.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 6.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0. `21b5a1b`
 
 #### Manual
 
