@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-10-05
+updated: 2026-10-29
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -38,7 +38,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-09 | shop-barcode-hab-unit-lookup | scan a shop barcode and see if it is in the hab unit | S-02 | FR-017 | ready |
 | S-10 | shortage-threshold-labels | set a shortage threshold and see IN STOCK, WARNING, or CRITICAL | S-06 | FR-007, FR-008, US-02 | ready |
 | S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-10 | FR-018 | ready |
-| S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | ready |
+| S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | done |
 | S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
 | S-14 | compact-attach-item-picker | choose an existing item for a new barcode from a compact selectable list | S-02 | FR-005 | ready |
 
@@ -218,7 +218,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** A household miss and a catalog miss on the same screen read as one failure if the two messages are not distinct.
-- **Status:** ready
+- **Status:** done
 
 ### S-13: Softer green interface
 
@@ -287,3 +287,4 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **F-01: (foundation) reach the running app from a phone over HTTPS, redeployed on merge** - Archived 2026-09-13 to `context/archive/2026-08-06-deployed-https-app-shell/`. Lesson: -.
 - **S-01: sign in and reach an empty household inventory** - Archived 2026-09-29 to `context/archive/2026-08-09-household-sign-in/`. Lesson: -.
 - **S-02: scan an unknown barcode and record it as a named item** - Archived 2026-09-29 to `context/archive/2026-09-13-scan-to-create-item/`. Lesson: -.
+- **S-12: see a local miss, a catalog miss, loading, a clear header, and a bold barcode** - Archived 2026-10-29 to `context/archive/2026-09-23-create-flow-lookup-feedback/`. Lesson: -.
