@@ -2,7 +2,7 @@
 
 ## Overview
 
-A user can read every screen in a muted green palette, in light and dark, with shadcn/ui default controls, Geist Sans for body text, Kode Mono for mono text, and square corners. Buttons named in the TEC-37 icon table show a Lucide icon before the label. This is roadmap S-13 and covers PRD FR-019. FR-008 stock-label colors stay fixed and separate from the chrome tokens, as the FR-019 challenge resolution requires.
+A user can read every screen in a muted green palette, in light and dark, with shadcn/ui default controls and square corners. The header sits at the top of the page in normal flow. When the page scrolls, the header scrolls with it. Page content starts below the header and does not cover it. Buttons named in the TEC-37 icon table show a Lucide icon before the label. Do not change fonts. This is roadmap S-13 and covers PRD FR-019 except the font sentence, which this slice leaves alone. FR-008 stock-label colors stay separate from the chrome tokens, as the FR-019 challenge resolution requires.
 
 ## Current State Analysis
 
@@ -10,7 +10,9 @@ A user can read every screen in a muted green palette, in light and dark, with s
 
 **Radius.** `globals.css` line 6 sets `--radius: 0.5rem`. Lines 64-67 map `--radius-sm` through `--radius-xl` from it. The shadcn 4.21 scale also maps `--radius-2xl`, `--radius-3xl`, and `--radius-4xl` from `--radius`. Those three are missing, so `rounded-br-4xl` on the inventory panel (`src/app/inventory/page.tsx` lines 21-24, with `cornerShape: 'bevel'`) uses Tailwind's fixed 2rem default.
 
-**Fonts.** `src/app/layout.tsx` lines 10-18 load `Geist` as `--font-geist-sans` and `Kode_Mono` as `--font-kode-mono` through `next/font/google`, and line 37 puts both variable classes on `<body>`. `globals.css` lines 71-72 map `--font-sans` and `--font-mono` to them. Font loading works. Body text does not meet FR-019: `globals.css` line 261 sets `body { font-family: var(--font-kode-mono), monospace }`, and `src/app/styles/class-names.ts` adds `font-mono` to body-copy classes (`pageLead` 45-52, `sectionCopy` 62-68, `footnote` 70, `textLink` 72-78, `fieldLabel` 84, `fieldControl` 86, `formError` 88-94, `actionButton` 96). Other body text with `font-mono`: the radio row label in `src/app/inventory/new/item-create-form.tsx` line 156, the back link in `src/app/inventory/scan/scan-capture.tsx` line 156, the notice container in `src/app/inventory/scan/scan-result-notice.tsx` line 77, and the camera hint in `src/components/barcode-scanner.tsx` line 312. The layout variable for Kode Mono is misnamed `geistMono` (`layout.tsx` line 15).
+**Fonts. Do not change fonts.** `src/app/layout.tsx` loads `Geist` as `--font-geist-sans` and `Kode_Mono` as `--font-kode-mono`. The body rule sets `font-family: var(--font-kode-mono), monospace`. Running text uses `font-mono`. Leave every font declaration, `font-mono` class, `font-sans` class, `next/font` call, and the `geistMono` name exactly as they are. Later phases must not "fix" the fonts.
+
+**Header.** `src/components/header.tsx` uses `fixed inset-x-0 top-0` and has no background, so the bar is pulled out of the page and content paints over it. `HeaderGate` hides that bar on `/inventory/scan`. `pageShell` and `centeredPage` use `min-h-screen`, which would force a full extra viewport under an in-flow header.
 
 **Installed controls against shadcn 4.21 `base-nova`.** The local files match the `base-nova` registry style (Base UI primitives). Fetched sources from `https://ui.shadcn.com/r/styles/base-nova/<name>.json` were compared class by class:
 
@@ -54,12 +56,14 @@ A user can read every screen in a muted green palette, in light and dark, with s
 
 ## Desired End State
 
-In light and dark OS modes, every screen in the route table below uses the muted green tokens: sage-tinted off-white or deep green-gray surfaces, low-chroma green primary, and no neon green. Body copy, labels, inputs, buttons, links, and notices render in Geist Sans. Page titles, section headings, the brand label, and the scan notice title render in Kode Mono. Buttons, inputs, panels, notices, and focus rings have square corners. `button.tsx`, `input.tsx`, and `field.tsx` match shadcn 4.21 `base-nova` class sets and primitives. Ten buttons show their Lucide icon before the label, hidden from assistive technology. Three stock-label token pairs exist with fixed FR-008 colors for S-10 to consume.
+In light and dark OS modes, every screen in the route table below uses the muted green tokens: sage-tinted off-white or deep green-gray surfaces, low-chroma green primary, and no neon green. Fonts are unchanged. The header is the first block on the page, content starts under it, and scrolling the page moves the header off the top with the content. Buttons, inputs, panels, notices, and focus rings have square corners. `button.tsx`, `input.tsx`, and `field.tsx` match shadcn 4.21 `base-nova` class sets and primitives. Ten buttons show their Lucide icon before the label, hidden from assistive technology. Three stock-label token pairs exist with separate FR-008 colors for S-10 to consume.
 
 Routes to check: `/`, `/login`, `/signup`, `/hab-unit/new`, `/inventory`, `/inventory/new`, `/inventory/new?barcode=<unknown>`, `/inventory/new?barcode=<global item>`, `/inventory/scan`, and the scanner manual fallback.
 
 ## What We're NOT Doing
 
+- Changing fonts. Do not change fonts. Do not edit `font-family`, do not add or remove `font-mono` or `font-sans`, do not rename `geistMono`, and do not change the `next/font` setup. Body text stays on Kode Mono.
+- Pinning the header with `fixed` or `sticky`. The header scrolls with the page.
 - Rendering CRITICAL, WARNING, or IN STOCK labels. That is S-06 and S-10 under FR-007 and FR-008. This change only defines their tokens.
 - A theme toggle, `next-themes`, or a stored theme preference. Dark mode follows the OS setting.
 - Icons for Sign in, Sign up, or Attach. The TEC-37 table names no icon for them.
@@ -75,7 +79,7 @@ Routes to check: `/`, `/login`, `/signup`, `/hab-unit/new`, `/inventory`, `/inve
 
 Theme through CSS variables, following shadcn 4.21 theming: OKLCH values in `:root`, a dark override, and `@theme inline` mappings with the full radius scale derived from `--radius`. Set `--radius: 0` so every `rounded-*` utility on installed controls resolves to 0 without touching component structure. Use Tailwind's default `dark:` variant (`prefers-color-scheme`) instead of the unused `.dark` class, so the existing `dark:` utilities in shadcn controls start working. Keep stock-label colors in their own token family, defined once, outside the chrome palette.
 
-Restore the three drifted controls to upstream class sets and primitives, keeping the repo's `clsx` idiom. Move body text to Geist Sans by setting `font-sans` on `<body>` and removing `font-mono` from body-copy classes. Add Lucide icons with `data-icon="inline-start"` so the upstream Button rules size the svg and trim the start padding.
+Restore the three drifted controls to upstream class sets and primitives, keeping the repo's `clsx` idiom. Put the header back in normal flow at the top of a column that is at least one viewport tall, so short pages do not scroll and tall pages take the header with them. Do not change fonts. Add Lucide icons with `data-icon="inline-start"` so the upstream Button rules size the svg and trim the start padding.
 
 ## Critical Implementation Details
 
@@ -182,37 +186,53 @@ Assertions use `toEqual`.
 
 ---
 
-## Phase 2: Body text in Geist Sans
+## Phase 2: Header scrolls with the page
 
 ### Overview
 
-Running text renders in Geist Sans, and mono text (display headings and the brand) renders in Kode Mono. No font is installed or reloaded: the `next/font` wiring already works.
+The header is the top block of the page. Content starts below it. A short page does not scroll. A tall page scrolls the header away with the content. Do not change fonts.
 
 ### Changes Required
 
-#### 1. Root body font
+#### 1. Header in normal flow
 
-**Files:** `src/app/layout.tsx`, `src/app/styles/globals.css`
+**File:** `src/components/header.tsx`
 
-**Intent:** Make Geist Sans the inherited body font through the existing `--font-sans` mapping.
+**Intent:** Stop the header from sitting in a fixed layer behind the page.
 
-**Contract:** `<body>` className gains `font-sans` beside the two font variable classes and `antialiased`. The `geistMono` constant is renamed `kodeMono`, with no option change. In `globals.css`, the `body` rule (lines 258-262) loses its `font-family` declaration and keeps `background` and `color`.
+**Contract:** Remove `fixed`, `inset-x-0`, and `top-0`. Do not add `sticky`. Keep the bar in normal flow with `w-full`, `shrink-0`, and `bg-background`. Keep the flex row, border, and shadow, and center the row with `items-center`. Vertical padding is `py-4`, about half the previous `py-12` bar. The brand link is a flex row so the name sits on the header's vertical center. Do not change the label text, the sign-out control, or any font class.
 
-#### 2. Body-copy classes
+#### 2. Page column
+
+**File:** `src/app/layout.tsx`
+
+**Intent:** Put the header and the page in one column that fills the viewport when the page is short.
+
+**Contract:** `<body>` gains `flex`, `min-h-svh`, and `flex-col` beside the existing font variable classes and `antialiased`. Do not add `font-sans`. Do not rename `geistMono`. Do not change the `Geist` or `Kode_Mono` calls. Wrap `{children}` in one `div` with `flex`, `w-full`, `flex-1`, and `flex-col`. The header stays outside that wrapper and renders on every route, including `/inventory/scan`. Remove `HeaderGate`.
+
+#### 3. Shell height
 
 **File:** `src/app/styles/class-names.ts`
 
-**Intent:** Stop forcing mono on running text.
+**Intent:** Let page shells fill the space under the header instead of claiming a second full viewport.
 
-**Contract:** `font-mono` is removed from `pageLead`, `sectionCopy`, `footnote`, `textLink`, `fieldLabel`, `fieldControl`, `formError`, and `actionButton`. `pageTitle` and `sectionHeading` keep `font-mono`.
+**Contract:** Replace `min-h-screen` with `flex-1` and `w-full` on `pageShell` and `centeredPage`. Do not add or remove `font-mono` on any class.
 
-#### 3. Inline body text
+#### 4. Back to inventory on add item
 
-**Files:** `src/app/inventory/new/item-create-form.tsx`, `src/app/inventory/scan/scan-capture.tsx`, `src/app/inventory/scan/scan-result-notice.tsx`, `src/components/barcode-scanner.tsx`
+**File:** `src/app/inventory/new/page.tsx`
 
-**Intent:** Apply the same mono and sans split to text styled outside `class-names.ts`.
+**Intent:** The add-item view can return to the inventory list.
 
-**Contract:** Remove `font-mono` from the radio row label (`item-create-form.tsx` line 156), the back link (`scan-capture.tsx` line 156), and the camera hint (`barcode-scanner.tsx` line 312). In `scan-result-notice.tsx`, move `font-mono` from the container (line 77) to the title paragraph (lines 87-94), so the detail and confirmation lines render in Geist Sans. The attach heading (`item-create-form.tsx` line 117) and `src/components/tally-label.tsx` keep `font-mono`.
+**Contract:** An outline `Button` links to `/inventory` with the label `Back to inventory`. It sits above the panel on every state of this page. No icon.
+
+#### 5. Scan back link stays under the header
+
+**File:** `src/app/inventory/scan/scan-capture.tsx`
+
+**Intent:** The existing scan back link must not cover the header now that the header is on that route.
+
+**Contract:** The back link and notice stack are `absolute` inside the scan `main`, not `fixed` to the viewport. The label stays `Back to inventory`. It remains a link, not a `Button`.
 
 ### Success Criteria
 
@@ -221,15 +241,18 @@ Running text renders in Geist Sans, and mono text (display headings and the bran
 - `pnpm lint` passes.
 - `pnpm typecheck` passes.
 - `pnpm test` passes.
-- `rg -n "font-kode-mono\), monospace|geistMono" src` returns no match.
-- `rg -n "'font-mono'" src` lists only `class-names.ts` (`pageTitle`, `sectionHeading`), `item-create-form.tsx` (attach heading), `scan-result-notice.tsx` (title), and `tally-label.tsx`.
+- `rg -n "fixed|sticky" src/components/header.tsx` returns no match.
+- `rg -n "font-family: var\\(--font-kode-mono\\)" src/app/styles/globals.css` still matches the body rule.
+- `rg -n "geistMono" src/app/layout.tsx` still matches, and `rg -n "font-sans" src/app/layout.tsx` returns no match.
 
 #### Manual Verification
 
-- On `/`, DevTools computed `font-family` for the lead paragraph and section copy resolves to Geist, and for the `h1` and section headings to Kode Mono.
-- On `/login`, labels, inputs, the error line, the Sign in button, and the footnote link render in Geist Sans.
-- The header brand label still types out in Kode Mono.
-- On `/inventory/scan` with a stocked barcode, the notice title renders in Kode Mono and the detail line in Geist Sans.
+- On `/` and `/login`, the header is at the top, about half its previous height, and the page content starts below it. Content does not cover the header.
+- With a short viewport, a tall page scrolls, and the header moves up with the page. It does not stay pinned.
+- A short page at a normal viewport height does not gain an empty scroll just to clear the header.
+- `/inventory/scan` shows the app header. The scan back link does not cover it.
+- `/inventory/new` shows an outline Back to inventory button above the panel.
+- Computed `font-family` on the body is still Kode Mono.
 
 ---
 
@@ -361,11 +384,11 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 ### Manual Testing Steps
 
 1. Run `pnpm dev`. Open DevTools Rendering and emulate `prefers-color-scheme: light`.
-2. Visit `/`, `/signup`, `/login`. Check palette, square corners, fonts (Geist body, Kode Mono titles), and outline buttons.
+2. Visit `/`, `/signup`, `/login`. Check palette, square corners, outline buttons, and that the header sits above the content. Do not change fonts. Body text stays Kode Mono.
 3. Submit login empty. Check the destructive error color and the invalid input border.
 4. Sign in. On `/hab-unit/new` (new account) check the Apply check icon. On `/inventory` check Add item and Scan item icons and the square panel.
 5. Open `/inventory/new`, enter an unknown barcode, and check the Apply icon on barcode entry and item creation. With stocked items, check Filter narrows the list and Attach has no icon.
-6. Open `/inventory/scan`. Check the using and stocking icons, switch direction, and scan or enter a stocked barcode to check the notice fonts. Deny camera access to reach the manual fallback and check its Apply icon.
+6. Open `/inventory/scan`. Check that the app header is present and the back link does not cover it, then check the using and stocking icons. Deny camera access to reach the manual fallback and check its Apply icon. On `/inventory/new`, check the Back to inventory button.
 7. Emulate `prefers-color-scheme: dark` and repeat steps 2 to 6.
 8. Inspect the accessibility tree for one icon button per screen.
 
@@ -407,22 +430,23 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 - [x] 1.8 Inventory panel, buttons, inputs, and focus rings are square in both modes bba5050
 - [x] 1.9 A `/login` form error reads in destructive red in both modes bba5050
 
-### Phase 2: Body text in Geist Sans
+### Phase 2: Header scrolls with the page
 
 #### Automated
 
-- [ ] 2.1 `pnpm lint` passes
-- [ ] 2.2 `pnpm typecheck` passes
-- [ ] 2.3 `pnpm test` passes
-- [ ] 2.4 `rg -n "font-kode-mono\), monospace|geistMono" src` returns no match
-- [ ] 2.5 `rg -n "'font-mono'" src` lists only `pageTitle`, `sectionHeading`, the attach heading, the scan notice title, and `tally-label.tsx`
+- [x] 2.1 `pnpm lint` passes
+- [x] 2.2 `pnpm typecheck` passes
+- [x] 2.3 `pnpm test` passes
+- [x] 2.4 `rg -n "fixed|sticky" src/components/header.tsx` returns no match
+- [x] 2.5 Body `font-family` is still `var(--font-kode-mono)`, `geistMono` remains in `layout.tsx`, and `layout.tsx` has no `font-sans`
 
 #### Manual
 
-- [ ] 2.6 On `/`, lead and section copy compute to Geist, `h1` and section headings to Kode Mono
-- [ ] 2.7 On `/login`, labels, inputs, error, Sign in button, and footnote link render in Geist Sans
-- [ ] 2.8 The header brand label still types out in Kode Mono
-- [ ] 2.9 The scan notice title renders in Kode Mono and its detail in Geist Sans
+- [x] 2.6 On `/` and `/login`, the header is at the top, about half its previous height, and content starts below it
+- [x] 2.7 A short viewport scrolls a tall page, and the header moves with the page
+- [x] 2.8 A short page at a normal viewport height does not scroll only to clear the header
+- [x] 2.9 `/inventory/scan` shows the app header, the back link does not cover it, and body text still computes to Kode Mono
+- [x] 2.10 `/inventory/new` shows an outline Back to inventory button above the panel
 
 ### Phase 3: shadcn default controls
 

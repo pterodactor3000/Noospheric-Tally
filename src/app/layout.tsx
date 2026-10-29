@@ -3,7 +3,6 @@ import { Geist, Kode_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
 
 import { Header } from '@/components/header'
-import { HeaderGate } from '@/components/header-gate'
 
 import './styles/globals.css'
 
@@ -34,12 +33,19 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body
-        className={clsx(geistSans.variable, geistMono.variable, 'antialiased')}
+        className={clsx(
+          geistSans.variable,
+          geistMono.variable,
+          'antialiased',
+          'flex',
+          'min-h-svh',
+          'flex-col',
+        )}
       >
-        <HeaderGate>
-          <Header />
-        </HeaderGate>
-        {children}
+        <Header />
+        <div className={clsx('flex', 'w-full', 'flex-1', 'flex-col')}>
+          {children}
+        </div>
       </body>
     </html>
   )

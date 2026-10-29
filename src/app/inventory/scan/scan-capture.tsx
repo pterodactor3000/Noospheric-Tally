@@ -125,11 +125,11 @@ const ScanCapture = ({
     submitState.status === 'failure' ? submitState.message : undefined
 
   return (
-    <main className={centeredPage}>
+    <main className={clsx(centeredPage, 'relative')}>
       <div
         className={clsx(
           'pointer-events-none',
-          'fixed',
+          'absolute',
           'top-[max(0.75rem,env(safe-area-inset-top))]',
           'left-1/2',
           'z-50',

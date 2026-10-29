@@ -2,7 +2,8 @@ import { clsx } from 'clsx'
 
 const pageShell = clsx(
   'flex',
-  'min-h-screen',
+  'w-full',
+  'flex-1',
   'items-center',
   'bg-background',
   'px-6',
@@ -13,8 +14,9 @@ const pageShell = clsx(
 
 const centeredPage = clsx(
   'flex',
+  'w-full',
+  'flex-1',
   'flex-col',
-  'min-h-screen',
   'items-center',
   'justify-center',
   'px-6',
