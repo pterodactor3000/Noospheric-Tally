@@ -22,7 +22,7 @@ const BackToInventoryLink = () => {
         variant="link"
         nativeButton={false}
         render={<Link href="/inventory" />}
-        className="-ml-2.5"
+        className={clsx('-ml-2.5', 'min-h-11')}
       >
         Back to inventory
       </Button>

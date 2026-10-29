@@ -136,27 +136,29 @@ const ItemCreateForm = ({
       </form>
       {habUnitItems.length === 0 ? null : (
         <div className={clsx('mt-12', 'flex', 'flex-col')}>
-          <button
-            type="button"
-            aria-expanded={isAttachOpen}
-            aria-controls="attach-existing-item"
-            onClick={() => setIsAttachOpen((isOpen) => !isOpen)}
-            className={clsx(
-              'flex',
-              'w-full',
-              'items-center',
-              'justify-between',
-              'gap-3',
-              'text-left',
-              'font-mono',
-              'text-2xl',
-              'font-semibold',
-              'tracking-tight',
-            )}
-          >
-            Attach to existing item
-            <AttachChevron isOpen={isAttachOpen} />
-          </button>
+          <h2 className="m-0">
+            <button
+              type="button"
+              aria-expanded={isAttachOpen}
+              aria-controls="attach-existing-item"
+              onClick={() => setIsAttachOpen((isOpen) => !isOpen)}
+              className={clsx(
+                'flex',
+                'w-full',
+                'items-center',
+                'justify-between',
+                'gap-3',
+                'text-left',
+                'font-mono',
+                'text-2xl',
+                'font-semibold',
+                'tracking-tight',
+              )}
+            >
+              Attach to existing item
+              <AttachChevron isOpen={isAttachOpen} />
+            </button>
+          </h2>
           <div
             className={clsx(
               'grid',

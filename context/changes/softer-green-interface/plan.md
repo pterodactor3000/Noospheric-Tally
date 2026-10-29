@@ -36,19 +36,19 @@ A user can read every screen in a muted green palette, in light and dark, with s
 | Hab-unit setup | Apply | `src/app/hab-unit/new/hab-unit-name-form.tsx` 76-83 | `Check` |
 | Barcode entry | Apply | `src/app/inventory/new/barcode-lookup-form.tsx` 63-69 | `Check` |
 | Add to hab-unit | Apply | `src/app/inventory/new/add-to-hab-unit-form.tsx` 72-79 | `Check` |
-| Item creation | Apply | `src/app/inventory/new/item-create-form.tsx` 100-107 | `Check` |
+| Item creation | Apply | `src/app/inventory/new/item-create-form.tsx` 128-135 | `Check` |
 | Scanner fallback | Apply | `src/components/barcode-scanner.tsx` 209-215 | `Check` |
 | Landing | Sign in | `src/app/page.tsx` 41-48 | none, not in table |
 | Landing | Sign up | `src/app/page.tsx` 49-56 | none, not in table |
 | Login | Sign in | `src/app/(auth)/login/page.tsx` 92-99 | none, not in table |
 | Signup | Sign up | `src/app/(auth)/signup/page.tsx` 92-99 | none, not in table |
-| Item creation | Attach | `src/app/inventory/new/item-create-form.tsx` 176-183 | none, not in table |
+| Item creation | Attach | `src/app/inventory/new/item-create-form.tsx` 245-252 | none, not in table |
 
 `src/app/inventory/scan/scan-capture.tsx` lines 143-162 render "Back to inventory" as a plain `Link`, not a `Button`. `lucide-react` is not a dependency (`package.json` lines 24-36). No `components.json` exists.
 
 **Stock labels.** No CRITICAL, WARNING, or IN STOCK label renders anywhere in `src` today. FR-008 lands with S-06 and S-10, which are `ready`, not `done`.
 
-**Controls that break at radius 0.** None of the installed controls has a round-only shape (no switch, checkbox, radio, slider, or avatar component is installed). The only radio on screen is the native `<input type="radio">` in `item-create-form.tsx` lines 159-164, which the browser draws as a circle regardless of radius tokens.
+**Controls that break at radius 0.** None of the installed controls has a round-only shape (no switch, checkbox, radio, slider, or avatar component is installed). The only radio on screen is the native `<input type="radio">` in `item-create-form.tsx` lines 228-232, which the browser draws as a circle regardless of radius tokens.
 
 **Commands.** `package.json` lines 10-12: `pnpm lint` (`eslint .`), `pnpm test` (`vitest run`), `pnpm typecheck` (`next typegen && tsc --noEmit`). Line 7: `pnpm build`. CI (`.github/workflows/deploy.yml` lines 45-54) runs lint, typecheck, test, and `pnpm worker:check`. Vitest runs `src/**/*.test.ts` in the node environment (`vitest.config.mts`), so there is no DOM test harness.
 
@@ -220,11 +220,11 @@ The header is the top block of the page. Content starts below it. A short page d
 
 #### 4. Back to inventory on add item
 
-**File:** `src/app/inventory/new/page.tsx`
+**Files:** `src/components/back-to-inventory-link.tsx`, `src/app/layout.tsx`, and `src/app/inventory/new/page.tsx`
 
 **Intent:** The add-item view can return to the inventory list.
 
-**Contract:** `BackToInventoryLink` renders under the header, left aligned, on every `/inventory/` route except `/inventory` itself. It is a `Button` with `variant="link"` pointing at `/inventory`. The label is `Back to inventory`. No icon. The add-item page and the scan page do not render their own copy.
+**Contract:** `BackToInventoryLink` (`src/components/back-to-inventory-link.tsx`) renders under the header, left aligned, on every `/inventory/` route except `/inventory` itself. `src/app/layout.tsx` mounts it once, between `Header` and the page wrapper. It is a `Button` with `variant="link"` pointing at `/inventory`, with `min-h-11` so the touch target is 44px. The label is `Back to inventory`. No icon. The add-item page (`src/app/inventory/new/page.tsx`) and the scan page do not render their own copy.
 
 #### 5. Scan back link stays under the header
 
@@ -286,7 +286,7 @@ Sizes, `defaultVariants`, the `Button` signature, `data-slot`, and exports stay.
 
 **Intent:** Restore the upstream Base UI primitive and class set.
 
-**Contract:** Import `Input as InputPrimitive` from `@base-ui/react/input`. Props are `React.ComponentProps<'input'>`. `className` is a plain `clsx(...)` string, with no `composeRenderProps`. Classes equal upstream: add `rounded-lg`, drop `border-primary`. Keep `'use client'`, `type` pass-through, and `data-slot="input"`. Callers (`fieldControl` strings, `value` and `onChange` in `item-create-form.tsx` lines 133-139, `defaultValue`, `aria-invalid`) work unchanged.
+**Contract:** Import `Input as InputPrimitive` from `@base-ui/react/input`. Props are `React.ComponentProps<'input'>`. `className` is a plain `clsx(...)` string, with no `composeRenderProps`. Classes equal upstream: add `rounded-lg`, drop `border-primary`. Keep `'use client'`, `type` pass-through, and `data-slot="input"`. Callers (`fieldControl` strings, `value` and `onChange` in `item-create-form.tsx` lines 201-208, `defaultValue`, `aria-invalid`) work unchanged.
 
 #### 3. Field
 
@@ -313,14 +313,18 @@ Sizes, `defaultVariants`, the `Button` signature, `data-slot`, and exports stay.
 - `pnpm test` passes.
 - `pnpm build` passes.
 - `rg -n "react-aria" src package.json` returns no match.
-- `rg -n "bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match. Input and button strokes are `border-2`. An invalid input border is solid `--destructive` in both modes, including while focused.
+- `rg -n "bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match. Input and button strokes are `border-2`. The inventory panel stroke is `border-2` (`panel` in `src/app/styles/class-names.ts`). The user asked for more pronounced borders and then confirmed the Phase 3 manual checks, so this adaptation stays. An invalid input border is solid `--destructive` in both modes, including while focused.
 
 #### Manual Verification
 
 - On `/login`, inputs show a thin `--input` border, a ring-colored focus outline, square corners, and the destructive border when invalid.
 - Outline buttons on `/` and `/inventory` show the `--border` color, a muted hover fill, and square corners in both modes.
 - On `/inventory/scan`, the selected direction uses the default variant (primary fill, primary foreground) and the other uses outline. Keyboard focus shows the ring.
-- On `/inventory/new?barcode=<unknown>` with stocked items, typing in Filter narrows the radio list, which confirms `value` and `onChange` still work on the new Input.
+- On `/inventory/new?barcode=<unknown>` with stocked items, typing in Filter narrows the radio list, which confirms `value` and `onChange` still work on the new Input. Open the Attach section first, because it starts closed.
+
+#### Approved adaptations
+
+- **Collapsible Attach section.** In `src/app/inventory/new/item-create-form.tsx`, "Attach to existing item" is an `h2` that wraps a disclosure button with `aria-expanded` and `aria-controls="attach-existing-item"`. The section starts closed. The chevron points down when closed and up when open. Opening and closing animate the grid height, the card shift, and the chevron rotation. The chevron is an inline `svg` (`AttachChevron`), not Lucide. The Attach submit button still has no icon.
 
 ---
 
