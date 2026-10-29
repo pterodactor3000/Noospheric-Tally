@@ -154,7 +154,7 @@ const ScanCapture = ({
           className={clsx(
             'pointer-events-auto',
             'absolute',
-            'top-[calc(25%-2.75rem)]',
+            'top-[calc(25%-54px)]',
             'left-1/2',
             'z-20',
             '-translate-x-1/2',

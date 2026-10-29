@@ -2,7 +2,7 @@
 
 ## Overview
 
-A user can read every screen in a muted green palette, in light and dark, with shadcn/ui default controls and square corners. The header sits at the top of the page in normal flow. When the page scrolls, the header scrolls with it. Page content starts below the header and does not cover it. Buttons named in the TEC-37 icon table show a Lucide icon before the label. Do not change fonts. This is roadmap S-13 and covers PRD FR-019 except the font sentence, which this slice leaves alone. FR-008 stock-label colors stay separate from the chrome tokens, as the FR-019 challenge resolution requires.
+A user can read every screen in a muted green palette, in light and dark, with shadcn/ui default controls and square corners. The header sits at the top of the page in normal flow. When the page scrolls, the header scrolls with it. Page content starts below the header and does not cover it. Only the two scan direction buttons have icons. Each is icon-only, both are the same size, and each control is a 68px square with padding around the glyph. No other button has an icon. Do not change fonts. This is roadmap S-13 and covers PRD FR-019 except the font sentence, which this slice leaves alone. FR-008 stock-label colors stay separate from the chrome tokens, as the FR-019 challenge resolution requires.
 
 ## Current State Analysis
 
@@ -66,8 +66,7 @@ Routes to check: `/`, `/login`, `/signup`, `/hab-unit/new`, `/inventory`, `/inve
 - Pinning the header with `fixed` or `sticky`. The header scrolls with the page.
 - Rendering CRITICAL, WARNING, or IN STOCK labels. That is S-06 and S-10 under FR-007 and FR-008. This change only defines their tokens.
 - A theme toggle, `next-themes`, or a stored theme preference. Dark mode follows the OS setting.
-- Icons for Sign in, Sign up, or Attach. The TEC-37 table names no icon for them.
-- Icons on Back to inventory (a link-variant `Button`), footnote links, or the brand label.
+- Icons on any button except the two scan direction controls. That includes Sign in, Sign up, Attach, Apply, Add item, Scan item, Sign out, and Back to inventory. The user limited icons to those two scan buttons.
 - Restyling the loading splash (`src/components/loading-screen.tsx`). Its marks are white SVG files on a fixed `#181818` backdrop and would vanish on a light token.
 - Restyling the camera viewport in `barcode-scanner.tsx` lines 220-320 (`bg-black`, `text-white`, black overlay). It frames live video.
 - Replacing the native radio list. That is S-14.
@@ -332,7 +331,7 @@ Sizes, `defaultVariants`, the `Button` signature, `data-slot`, and exports stay.
 
 ### Overview
 
-Every button named in the TEC-37 table shows its Lucide icon before the label. The icon is hidden from assistive technology, and the label stays the accessible name.
+Only the using and stocking controls on the scan view have icons. Each control is icon-only, both controls are the same size, and each control is a 68px square with padding around the glyph. No other button in the app has an icon. The user replaced the TEC-37 icon table with this limit.
 
 ### Changes Required
 
@@ -344,13 +343,13 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 
 **Contract:** Run `pnpm add lucide-react`. No `components.json`.
 
-#### 2. Icon placement
+#### 2. Scan direction icons
 
-**Files:** `src/app/inventory/scan/scan-direction-buttons.tsx`, `src/app/inventory/page.tsx`, `src/components/sign-out-button.tsx`, `src/app/hab-unit/new/hab-unit-name-form.tsx`, `src/app/inventory/new/barcode-lookup-form.tsx`, `src/app/inventory/new/add-to-hab-unit-form.tsx`, `src/app/inventory/new/item-create-form.tsx`, `src/components/barcode-scanner.tsx`
+**File:** `src/app/inventory/scan/scan-direction-buttons.tsx`
 
-**Intent:** Place the table icon as the first child of each named `Button`.
+**Intent:** The two scan direction controls are icon-only and the same size.
 
-**Contract:** Each icon element is `<IconName data-icon="inline-start" aria-hidden="true" />`, with no `size-*` or other class, followed by the unchanged label text. The upstream `[&_svg:not([class*='size-'])]:size-4` and `has-data-[icon=inline-start]:pl-2` rules set size and padding. Mapping: using `PackageMinus`, stocking `PackagePlus`, Add item `Plus`, Scan item `ScanBarcode`, Sign out `LogOut`, each of the five Apply buttons `Check`. In `scan-direction-buttons.tsx`, a module constant `SCAN_DIRECTION_ICONS` maps each `ScanDirection` to its icon component, and the map callback renders it. `role="radio"`, `aria-checked`, and `onClick` are unchanged. For `nativeButton={false}` link buttons on `/inventory`, the icon is a child of `Button`, so it renders inside the `Link`. Sign in, Sign up, and Attach get no icon.
+**Contract:** A module constant `SCAN_DIRECTION_ICONS` maps using to `PackageMinus` and stocking to `PackagePlus`. The map callback renders one icon element. The button has no visible label. `aria-label` is the direction name. The svg is `aria-hidden="true"` and `size-10` (40px by 40px). Both buttons use `size="icon"`, `size-[68px]!`, and `p-3`, so each control is a 68px square with padding around the glyph. `role="radio"`, `aria-checked`, and `onClick` stay unchanged. No other button gets an icon. The Attach disclosure chevron stays, because it is the open and close indicator, not a button icon from this phase.
 
 ### Success Criteria
 
@@ -361,16 +360,14 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 - `pnpm test` passes.
 - `pnpm build` passes.
 - `rg -n '"lucide-react"' package.json` shows one dependency entry.
-- `rg -c 'data-icon="inline-start"' src` totals 9 across the 8 files (one per Apply, Add item, Scan item, and Sign out element, and one shared element in the direction map).
-- `rg -n 'data-icon="inline-start"[^>]*className' src` returns no match.
+- `rg -l "from 'lucide-react'" src` lists only `src/app/inventory/scan/scan-direction-buttons.tsx`.
+- `rg -n 'data-icon="inline-start"' src` returns no match.
 
 #### Manual Verification
 
-- On `/inventory/scan`, using shows a package with a minus badge and stocking shows the same package with a plus badge, both before the label.
-- On `/inventory`, Add item shows a plus and Scan item shows a barcode scanner icon. The header Sign out shows a log-out arrow.
-- Each Apply button (hab-unit setup, barcode entry, add to hab-unit, item creation, scanner fallback) shows a check mark before the label.
-- Icons sit at 16px with balanced start padding and inherit the button text color in both modes.
-- In the DevTools accessibility tree, each icon button's name is its label text only (for example `stocking`, `Sign out`), and the svg is hidden.
+- On `/inventory/scan`, using and stocking are icon-only. using shows a package with a minus badge. stocking shows the same package with a plus badge. Both buttons are the same 68px square, with padding around the glyph.
+- Add item, Scan item, Sign out, and every Apply button show a text label and no icon.
+- The accessibility name of each scan direction button is `using` or `stocking`, and the svg is hidden.
 - Sign in, Sign up, and Attach show no icon.
 
 ---
@@ -390,11 +387,11 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 1. Run `pnpm dev`. Open DevTools Rendering and emulate `prefers-color-scheme: light`.
 2. Visit `/`, `/signup`, `/login`. Check palette, square corners, outline buttons, and that the header sits above the content. Do not change fonts. Body text stays Kode Mono.
 3. Submit login empty. Check the destructive error color and the invalid input border.
-4. Sign in. On `/hab-unit/new` (new account) check the Apply check icon. On `/inventory` check Add item and Scan item icons and the square panel.
-5. Open `/inventory/new`, enter an unknown barcode, and check the Apply icon on barcode entry and item creation. With stocked items, check Filter narrows the list and Attach has no icon.
-6. Open `/inventory/scan`. Check that the app header is present and the back link does not cover it, then check the using and stocking icons. Deny camera access to reach the manual fallback and check its Apply icon. On `/inventory/new`, check the Back to inventory button.
+4. Sign in. On `/inventory` check that Add item and Scan item are text only, and that the panel is square.
+5. Open `/inventory/new`, enter an unknown barcode, and check that Apply is text only. With stocked items, open Attach, check that Filter narrows the list, and check that Attach has no icon.
+6. Open `/inventory/scan`. Check that the app header is present and the back link does not cover it. Check that using and stocking are icon-only, the same 68px square, with padding around the glyph. Deny camera access to reach the manual fallback and check that its Apply label has no icon.
 7. Emulate `prefers-color-scheme: dark` and repeat steps 2 to 6.
-8. Inspect the accessibility tree for one icon button per screen.
+8. Inspect the accessibility tree for the scan direction buttons. Each name is the direction, and the svg is hidden.
 
 ## References
 
@@ -474,19 +471,19 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 
 #### Automated
 
-- [ ] 4.1 `pnpm lint` passes
-- [ ] 4.2 `pnpm typecheck` passes
-- [ ] 4.3 `pnpm test` passes
-- [ ] 4.4 `pnpm build` passes
-- [ ] 4.5 `rg -n '"lucide-react"' package.json` shows one dependency entry
-- [ ] 4.6 `rg -c 'data-icon="inline-start"' src` totals 9 across the 8 files
-- [ ] 4.7 `rg -n 'data-icon="inline-start"[^>]*className' src` returns no match
+- [x] 4.1 `pnpm lint` passes
+- [x] 4.2 `pnpm typecheck` passes
+- [x] 4.3 `pnpm test` passes
+- [x] 4.4 `pnpm build` passes
+- [x] 4.5 `rg -n '"lucide-react"' package.json` shows one dependency entry
+- [x] 4.6 `rg -l "from 'lucide-react'" src` lists only `scan-direction-buttons.tsx`
+- [x] 4.7 `rg -n 'data-icon="inline-start"' src` returns no match
 
 #### Manual
 
-- [ ] 4.8 using and stocking show the same package glyph with a minus or plus badge before the label
-- [ ] 4.9 Add item shows a plus, Scan item a barcode scanner, Sign out a log-out arrow
-- [ ] 4.10 All five Apply buttons show a check mark before the label
-- [ ] 4.11 Icons are 16px with balanced start padding and inherit text color in both modes
-- [ ] 4.12 Accessibility tree names each icon button by its label only, with the svg hidden
-- [ ] 4.13 Sign in, Sign up, and Attach show no icon
+- [x] 4.8 using and stocking are icon-only, both buttons are the same 68px square, with padding around the glyph
+- [x] 4.9 Add item, Scan item, and Sign out show no icon
+- [x] 4.10 All five Apply buttons show no icon
+- [x] 4.11 The scan glyphs inherit the button text color in both modes
+- [x] 4.12 Accessibility tree names each scan direction button `using` or `stocking`, and the svg is hidden
+- [x] 4.13 Sign in, Sign up, and Attach show no icon
