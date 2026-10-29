@@ -497,6 +497,36 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 ---
 
+## Phase 6: Count controls beside the tally
+
+### Overview
+
+Each inventory count is shown as `[-] {quantity} [+]`. A count of 8 reads `[-] 8 [+]`. The controls are placeholders and do not change the count.
+
+### Changes Required
+
+#### 1. Placeholder controls
+
+**File:** `src/app/inventory/page.tsx`
+
+**Intent:** Put a text-styled decrease control and a text-styled increase control on either side of the count.
+
+**Contract:** On each stocked row, the far-right group is `[-]`, one space, the quantity, one space, `[+]`. A quantity of 8 is exactly `[-] 8 [+]`. The dot leaders still fill the space after the name and stop before `[-]`. `[-]` and `[+]` are `button` elements with `type="button"`. Their visible text is exactly `[-]` and `[+]`. They use the same font, size, and color as the count. They have no border, no background, no padding, and no underline. Do not use the shared `Button` component. They do not call a server action and do not change `quantity`. Give them `aria-label` values `Decrease {name}` and `Increase {name}`.
+
+### Success Criteria
+
+#### Automated Verification
+
+- `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+
+#### Manual Verification
+
+- A row whose count is 8 shows `[-] 8 [+]` at the far right, with one space on each side of the number.
+- The controls look like the count text.
+- Activating either control leaves the count unchanged.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
@@ -643,7 +673,7 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [x] 5.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 5.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0. `1723fee`
 
 #### Manual
 
@@ -651,3 +681,15 @@ Dropping the table loses the change history. Counts stay as they are.
 - [ ] 5.3 Each stocked row shows the name on the left, `.` characters between, and the count on the far right of the same line.
 - [ ] 5.4 Below 640px the list text is 14px. At 640px and wider it is 16px.
 - [ ] 5.5 The count matches `household_inventory.quantity`, including `0`.
+
+### Phase 6: Count controls beside the tally
+
+#### Automated
+
+- [ ] 6.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+
+#### Manual
+
+- [ ] 6.2 A row whose count is 8 shows `[-] 8 [+]` at the far right, with one space on each side of the number.
+- [ ] 6.3 The controls look like the count text.
+- [ ] 6.4 Activating either control leaves the count unchanged.
