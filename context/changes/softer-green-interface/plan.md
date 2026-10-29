@@ -56,7 +56,7 @@ A user can read every screen in a muted green palette, in light and dark, with s
 
 ## Desired End State
 
-In light and dark OS modes, every screen in the route table below uses the muted green tokens: sage-tinted off-white or deep green-gray surfaces, low-chroma green primary, and no neon green. Fonts are unchanged. The header is the first block on the page, content starts under it, and scrolling the page moves the header off the top with the content. Buttons, inputs, panels, notices, and focus rings have square corners. `button.tsx`, `input.tsx`, and `field.tsx` match shadcn 4.21 `base-nova` class sets and primitives. Ten buttons show their Lucide icon before the label, hidden from assistive technology. Three stock-label token pairs exist with separate FR-008 colors for S-10 to consume.
+In light and dark OS modes, every screen in the route table below uses the muted green tokens: sage-tinted off-white or deep green-gray surfaces, low-chroma green primary, and no neon green. Fonts are unchanged. The header is the first block on the page, content starts under it, and scrolling the page moves the header off the top with the content. Buttons, inputs, panels, notices, and focus rings have square corners. `button.tsx`, `input.tsx`, and `field.tsx` match shadcn 4.21 `base-nova` class sets and primitives. Only the using and stocking scan buttons have icons. Each is icon-only, a 68px square with padding around the glyph, with `aria-label` set to the direction and the svg hidden. Three stock-label token pairs exist with separate FR-008 colors for S-10 to consume.
 
 Routes to check: `/`, `/login`, `/signup`, `/hab-unit/new`, `/inventory`, `/inventory/new`, `/inventory/new?barcode=<unknown>`, `/inventory/new?barcode=<global item>`, `/inventory/scan`, and the scanner manual fallback.
 
@@ -78,7 +78,7 @@ Routes to check: `/`, `/login`, `/signup`, `/hab-unit/new`, `/inventory`, `/inve
 
 Theme through CSS variables, following shadcn 4.21 theming: OKLCH values in `:root`, a dark override, and `@theme inline` mappings with the full radius scale derived from `--radius`. Set `--radius: 0` so every `rounded-*` utility on installed controls resolves to 0 without touching component structure. Use Tailwind's default `dark:` variant (`prefers-color-scheme`) instead of the unused `.dark` class, so the existing `dark:` utilities in shadcn controls start working. Keep stock-label colors in their own token family, defined once, outside the chrome palette.
 
-Restore the three drifted controls to upstream class sets and primitives, keeping the repo's `clsx` idiom. Put the header back in normal flow at the top of a column that is at least one viewport tall, so short pages do not scroll and tall pages take the header with them. Do not change fonts. Add Lucide icons with `data-icon="inline-start"` so the upstream Button rules size the svg and trim the start padding.
+Restore the three drifted controls to upstream class sets and primitives, keeping the repo's `clsx` idiom. Put the header back in normal flow at the top of a column that is at least one viewport tall, so short pages do not scroll and tall pages take the header with them. Do not change fonts. Add Lucide `PackageMinus` and `PackagePlus` to the two scan direction buttons only, sized with `size-10` inside a `size-[68px]! p-3` icon button.
 
 ## Critical Implementation Details
 
