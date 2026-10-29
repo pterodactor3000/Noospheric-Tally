@@ -366,6 +366,7 @@ Only the using and stocking controls on the scan view have icons. Each control i
 #### Manual Verification
 
 - On `/inventory/scan`, using and stocking are icon-only. using shows a package with a minus badge. stocking shows the same package with a plus badge. Both buttons are the same 68px square, with padding around the glyph.
+- The scan glyphs inherit the button text color in both modes.
 - Add item, Scan item, Sign out, and every Apply button show a text label and no icon.
 - The accessibility name of each scan direction button is `using` or `stocking`, and the svg is hidden.
 - Sign in, Sign up, and Attach show no icon.
