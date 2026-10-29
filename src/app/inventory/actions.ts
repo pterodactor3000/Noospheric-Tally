@@ -7,9 +7,11 @@ import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
 import { createNewItem } from '@/lib/items/create-new-item'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
+import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { validateItemName } from '@/lib/items/validate-item-name'
+import { createClient } from '@/lib/supabase/server'
 
 interface ItemActionError {
   status: 'error'
@@ -146,4 +148,38 @@ const addItemToHousehold = async (
   return redirectToInventory()
 }
 
-export { createItem, attachBarcode, addItemToHousehold }
+const stockScannedItem = async (
+  barcode: string,
+): Promise<ItemActionResult> => {
+  const barcodeResult = validateBarcode(barcode)
+  if (barcodeResult.status === 'invalid') {
+    return {
+      status: 'error',
+      message: barcodeResult.message,
+      field: 'barcode',
+    }
+  }
+
+  const validBarcode = barcodeResult.barcode
+  const encodedBarcode = encodeURIComponent(validBarcode)
+
+  const householdItem = await loadHabUnitItemByBarcode(validBarcode)
+  if (!householdItem) {
+    redirect(`/inventory/new?barcode=${encodedBarcode}`)
+  }
+
+  try {
+    const supabase = await createClient()
+    await incrementHabUnitQuantity(validBarcode, supabase)
+  } catch (error: unknown) {
+    console.error('stockScannedItem failed', { barcode: validBarcode, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  revalidatePath('/inventory')
+  redirect(
+    `/inventory/scan?barcode=${encodedBarcode}&direction=stocking&added=1`,
+  )
+}
+
+export { createItem, attachBarcode, addItemToHousehold, stockScannedItem }

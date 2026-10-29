@@ -49,6 +49,10 @@ These conventions apply to all code in this repository. Adapt names, framework r
 - Cover edge cases: empty, null, boundary values and error paths
 <!-- END @pterodactor3000/silica-animus -->
 
+## Delegation
+
+For hard implementation, planning, research, and similar work, split the task across multiple subagents. Give every subagent your model tier or a lower tier.
+
 ## Repository and tracker
 
 - **GitHub repo (canonical):** `pterodactor3000/Noospheric-Tally` (`https://github.com/pterodactor3000/Noospheric-Tally`)
@@ -81,3 +85,13 @@ feat(api)!: rename /v1/orders to /v1/checkout
 
 BREAKING CHANGE: clients must migrate to /v1/checkout; old route returns 410
 ```
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

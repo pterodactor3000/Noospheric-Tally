@@ -9,13 +9,14 @@ const Header = async () => {
     <header
       className={clsx(
         'flex',
+        'w-full',
+        'shrink-0',
+        'items-center',
         'justify-between',
+        'bg-background',
         'px-6',
-        'py-12',
+        'py-4',
         'sm:px-10',
-        'fixed',
-        'inset-x-0',
-        'top-0',
         'border-b-2',
         'border-ring/75',
         'shadow-lg',

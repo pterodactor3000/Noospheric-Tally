@@ -25,10 +25,16 @@ import { Label } from './ui/label'
 import { Input } from './ui/input'
 
 interface BarcodeScannerProps {
-  onDetect: (text: string) => void
+  onSubmitBarcode: (barcode: string) => void | Promise<void>
   defaultBarcode?: string
   errorMessage?: string
+  holdBarcode?: string
+  scanRound?: number
 }
+
+const HOLD_MISS_DURATION_MS = 500
+// Poll faster than the hold length so a steady hold keeps resetting the miss timer.
+const SCAN_DELAY_MS = 100
 
 const POSSIBLE_FORMATS = [
   BarcodeFormat.EAN_13,
@@ -38,15 +44,16 @@ const POSSIBLE_FORMATS = [
 ]
 
 const BarcodeScanner = ({
-  onDetect,
+  onSubmitBarcode,
   defaultBarcode = '',
   errorMessage,
+  holdBarcode,
+  scanRound = 0,
 }: BarcodeScannerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const onDetectEvent = useEffectEvent(onDetect)
-  const [cameraError, setCameraError] = useState<string | null>(
-    errorMessage ?? null,
-  )
+  const onSubmitBarcodeEvent = useEffectEvent(onSubmitBarcode)
+  const [cameraError, setCameraError] = useState<string | null>(null)
+  const displayedError = errorMessage ?? cameraError
 
   useEffect(() => {
     if (errorMessage) {
@@ -59,11 +66,30 @@ const BarcodeScanner = ({
 
     // BrowserMultiFormatReader logs NotFoundException on every empty frame
     // in @zxing/library 0.23. Product barcodes are 1D.
-    const reader = new BrowserMultiFormatOneDReader(hints)
+    const reader = new BrowserMultiFormatOneDReader(hints, {
+      delayBetweenScanAttempts: SCAN_DELAY_MS,
+      delayBetweenScanSuccess: SCAN_DELAY_MS,
+    })
 
     let controls: { stop: () => void } | undefined
-    let hasDetected = false
+    // scanRound is a dependency only: a new round creates a fresh reader and
+    // resets hasSubmitted and the hold.
+    void scanRound
+    let hasSubmitted = false
     let isDisposed = false
+    let isHeld = holdBarcode !== undefined
+    let missTimer: ReturnType<typeof setTimeout> | undefined
+
+    // The hold releases only after HOLD_MISS_DURATION_MS with no decode of the
+    // held code. The timer is first armed on the first reader callback, so
+    // camera startup cannot expire it. Empty frames never reset or release it.
+    const armMissTimer = () => {
+      clearTimeout(missTimer)
+      missTimer = setTimeout(() => {
+        isHeld = false
+        missTimer = undefined
+      }, HOLD_MISS_DURATION_MS)
+    }
 
     const startScan = async () => {
       try {
@@ -77,12 +103,17 @@ const BarcodeScanner = ({
           deviceId,
           videoRef.current ?? undefined,
           (result, _error, scanControls) => {
-            if (isDisposed || !result || hasDetected) {
+            if (isDisposed || hasSubmitted) {
               return
             }
 
-            hasDetected = true
-            scanControls.stop()
+            if (isHeld && missTimer === undefined) {
+              armMissTimer()
+            }
+
+            if (!result) {
+              return
+            }
 
             const rawText = result.getText()
             const text =
@@ -97,7 +128,16 @@ const BarcodeScanner = ({
                   })()
                 : rawText
 
-            onDetectEvent(text)
+            if (isHeld && text === holdBarcode) {
+              armMissTimer()
+              return
+            }
+
+            hasSubmitted = true
+            clearTimeout(missTimer)
+            scanControls.stop()
+
+            void onSubmitBarcodeEvent(text)
           },
         )
         if (isDisposed) {
@@ -122,23 +162,30 @@ const BarcodeScanner = ({
 
     return () => {
       isDisposed = true
+      clearTimeout(missTimer)
       controls?.stop()
     }
-  }, [errorMessage])
+  }, [errorMessage, holdBarcode, scanRound])
 
-  if (cameraError) {
+  if (displayedError) {
     return (
       <form
-        action="/inventory/scan"
-        method="get"
-        className={formStack}
+        onSubmit={(event) => {
+          event.preventDefault()
+          const barcode = new FormData(event.currentTarget).get('barcode')
+          if (typeof barcode !== 'string') {
+            return
+          }
+          void onSubmitBarcode(barcode)
+        }}
+        className={clsx(formStack, 'pt-24')}
       >
         <div
           role="alert"
           aria-live="polite"
           className={formError}
         >
-          {cameraError}
+          {displayedError}
         </div>
         <div className={fieldStack}>
           <Label
@@ -155,7 +202,7 @@ const BarcodeScanner = ({
             autoComplete="off"
             required
             defaultValue={defaultBarcode}
-            aria-invalid={Boolean(cameraError)}
+            aria-invalid={Boolean(displayedError)}
             className={fieldControl}
           />
         </div>

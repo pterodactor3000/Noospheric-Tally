@@ -2,7 +2,8 @@ import { clsx } from 'clsx'
 
 const pageShell = clsx(
   'flex',
-  'min-h-screen',
+  'w-full',
+  'flex-1',
   'items-center',
   'bg-background',
   'px-6',
@@ -13,8 +14,9 @@ const pageShell = clsx(
 
 const centeredPage = clsx(
   'flex',
+  'w-full',
+  'flex-1',
   'flex-col',
-  'min-h-screen',
   'items-center',
   'justify-center',
   'px-6',
@@ -23,13 +25,14 @@ const centeredPage = clsx(
 const contentWidth = clsx('mx-auto', 'w-full', 'max-w-4xl')
 
 const panel = clsx(
-  'border',
+  'border-2',
   'border-foreground/50',
   'p-8',
   'shadow-sm',
   'backdrop-blur',
   'sm:p-12',
-  'dark:bg-black/20',
+  'bg-card',
+  'text-card-foreground',
 )
 
 const pageTitle = clsx(
@@ -88,7 +91,7 @@ const fieldControl = clsx('min-h-11', 'text-base', 'font-mono')
 const formError = clsx(
   'min-h-6',
   'text-sm',
-  'text-red-700',
+  'text-destructive',
   'font-mono',
   'font-semibold',
 )

@@ -28,6 +28,33 @@ interface ItemCreateFormProps {
 type ItemCreateFormState = Awaited<ReturnType<typeof createItem>> | null
 type ItemAttachFormState = Awaited<ReturnType<typeof attachBarcode>> | null
 
+interface AttachChevronProps {
+  readonly isOpen: boolean
+}
+
+const AttachChevron = ({ isOpen }: AttachChevronProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    className={clsx(
+      'size-5',
+      'shrink-0',
+      'transition-transform',
+      'duration-500',
+      'ease-in-out',
+      'motion-reduce:transition-none',
+      isOpen && 'rotate-180',
+    )}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+)
+
 const ItemCreateForm = ({
   barcode,
   habUnitItems,
@@ -46,6 +73,7 @@ const ItemCreateForm = ({
   )
 
   const [filter, setFilter] = useState('')
+  const [isAttachOpen, setIsAttachOpen] = useState(false)
   const normalizedFilter = filter.trim().toLowerCase()
   const offeredItems =
     normalizedFilter.length === 0
@@ -107,81 +135,125 @@ const ItemCreateForm = ({
         </Button>
       </form>
       {habUnitItems.length === 0 ? null : (
-        <form
-          action={attachFormAction}
-          className={clsx('mt-12', 'flex', 'flex-col', 'gap-4')}
-        >
-          <input type="hidden" name="barcode" value={barcode} />
-          <h2
+        <div className={clsx('mt-12', 'flex', 'flex-col')}>
+          <h2 className="m-0">
+            <button
+              type="button"
+              aria-expanded={isAttachOpen}
+              aria-controls="attach-existing-item"
+              onClick={() => setIsAttachOpen((isOpen) => !isOpen)}
+              className={clsx(
+                'flex',
+                'w-full',
+                'items-center',
+                'justify-between',
+                'gap-3',
+                'text-left',
+                'font-mono',
+                'text-2xl',
+                'font-semibold',
+                'tracking-tight',
+              )}
+            >
+              Attach to existing item
+              <AttachChevron isOpen={isAttachOpen} />
+            </button>
+          </h2>
+          <div
             className={clsx(
-              'font-mono',
-              'text-2xl',
-              'font-semibold',
-              'tracking-tight',
+              'grid',
+              '-mx-1',
+              'transition-[grid-template-rows]',
+              'duration-500',
+              'ease-in-out',
+              'motion-reduce:transition-none',
+              isAttachOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
             )}
           >
-            Attach to existing item
-          </h2>
-          <div className={fieldStack}>
-            <Label
-              htmlFor="filter"
-              className={fieldLabel}
-            >
-              Filter
-            </Label>
-            <Input
-              type="search"
-              id="filter"
-              autoComplete="off"
-              value={filter}
-              onChange={(event) => setFilter(event.currentTarget.value)}
-              className={fieldControl}
-            />
-          </div>
-          <fieldset
-            className={fieldStack}
-            aria-invalid={attachState?.status === 'error'}
-          >
-            <legend className={fieldLabel}>
-              Household items
-            </legend>
-            {offeredItems.map((item) => (
-              <label
-                key={item.itemId}
+            <div className={clsx('min-h-0', 'overflow-hidden')}>
+              <form
+                id="attach-existing-item"
+                action={attachFormAction}
+                inert={!isAttachOpen}
+                aria-hidden={!isAttachOpen}
                 className={clsx(
                   'flex',
-                  'min-h-11',
-                  'items-center',
-                  'gap-3',
-                  'font-mono',
+                  'flex-col',
+                  'gap-4',
+                  'px-1',
+                  'pt-4',
+                  'pb-1',
+                  'transition-transform',
+                  'duration-500',
+                  'ease-in-out',
+                  'motion-reduce:transition-none',
+                  isAttachOpen ? 'translate-y-0' : 'translate-y-3',
                 )}
               >
-                <input
-                  type="radio"
-                  name="itemId"
-                  value={item.itemId}
-                  required
-                />
-                {item.name}
-              </label>
-            ))}
-          </fieldset>
-          <div
-            role="alert"
-            aria-live="polite"
-            className={formError}
-          >
-            {attachState?.status === 'error' && attachState.message}
+                <input type="hidden" name="barcode" value={barcode} />
+                <div className={fieldStack}>
+                  <Label
+                    htmlFor="filter"
+                    className={fieldLabel}
+                  >
+                    Filter
+                  </Label>
+                  <Input
+                    type="search"
+                    id="filter"
+                    autoComplete="off"
+                    value={filter}
+                    onChange={(event) => setFilter(event.currentTarget.value)}
+                    className={fieldControl}
+                  />
+                </div>
+                <fieldset
+                  className={fieldStack}
+                  aria-invalid={attachState?.status === 'error'}
+                >
+                  <legend className={fieldLabel}>
+                    Household items
+                  </legend>
+                  {offeredItems.map((item) => (
+                    <label
+                      key={item.itemId}
+                      className={clsx(
+                        'flex',
+                        'min-h-11',
+                        'items-center',
+                        'gap-3',
+                        'font-mono',
+                      )}
+                    >
+                      <input
+                        type="radio"
+                        name="itemId"
+                        value={item.itemId}
+                        required
+                      />
+                      {item.name}
+                    </label>
+                  ))}
+                </fieldset>
+                <div
+                  role="alert"
+                  aria-live="polite"
+                  className={formError}
+                >
+                  {attachState?.status === 'error' && attachState.message}
+                </div>
+                <Button
+                  variant="outline"
+                  type="submit"
+                  disabled={isAttachPending}
+                  className={fullWidthButton}
+                >
+                  Attach
+                </Button>
+              </form>
+            </div>
           </div>
-          <Button
-            variant="outline"
-            type="submit"
-            disabled={isAttachPending}
-            className={fullWidthButton}
-          >
-            Attach
-          </Button>
-        </form>
+        </div>
       )}
     </>
   )
