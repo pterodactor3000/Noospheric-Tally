@@ -223,7 +223,7 @@ The header is the top block of the page. Content starts below it. A short page d
 
 **Intent:** The add-item view can return to the inventory list.
 
-**Contract:** `BackToInventoryLink` (`src/components/back-to-inventory-link.tsx`) renders under the header, left aligned, on every `/inventory/` route except `/inventory` itself. `src/app/layout.tsx` mounts it once, between `Header` and the page wrapper. It is a `Button` with `variant="link"` pointing at `/inventory`, with `min-h-11` so the touch target is 44px. The label is `Back to inventory`. No icon. The add-item page (`src/app/inventory/new/page.tsx`) and the scan page do not render their own copy.
+**Contract:** `BackToInventoryLink` (`src/components/back-to-inventory-link.tsx`) renders under the header, left aligned, on every `/inventory/` route except `/inventory` itself. `src/app/layout.tsx` mounts it once, between `Header` and the page wrapper. It is a native `Link` to `/inventory`, styled with `buttonVariants` for `variant="link"`, with `min-h-11` so the touch target is 44px. The label is `Back to inventory`. No icon. The add-item page (`src/app/inventory/new/page.tsx`) and the scan page do not render their own copy.
 
 #### 5. Scan back link stays under the header
 
