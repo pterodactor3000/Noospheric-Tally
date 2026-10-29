@@ -471,19 +471,19 @@ Only the using and stocking controls on the scan view have icons. Each control i
 
 #### Automated
 
-- [x] 4.1 `pnpm lint` passes
-- [x] 4.2 `pnpm typecheck` passes
-- [x] 4.3 `pnpm test` passes
-- [x] 4.4 `pnpm build` passes
-- [x] 4.5 `rg -n '"lucide-react"' package.json` shows one dependency entry
-- [x] 4.6 `rg -l "from 'lucide-react'" src` lists only `scan-direction-buttons.tsx`
-- [x] 4.7 `rg -n 'data-icon="inline-start"' src` returns no match
+- [x] 4.1 `pnpm lint` passes 2eec4ca
+- [x] 4.2 `pnpm typecheck` passes 2eec4ca
+- [x] 4.3 `pnpm test` passes 2eec4ca
+- [x] 4.4 `pnpm build` passes 2eec4ca
+- [x] 4.5 `rg -n '"lucide-react"' package.json` shows one dependency entry 2eec4ca
+- [x] 4.6 `rg -l "from 'lucide-react'" src` lists only `scan-direction-buttons.tsx` 2eec4ca
+- [x] 4.7 `rg -n 'data-icon="inline-start"' src` returns no match 2eec4ca
 
 #### Manual
 
-- [x] 4.8 using and stocking are icon-only, both buttons are the same 68px square, with padding around the glyph
-- [x] 4.9 Add item, Scan item, and Sign out show no icon
-- [x] 4.10 All five Apply buttons show no icon
-- [x] 4.11 The scan glyphs inherit the button text color in both modes
-- [x] 4.12 Accessibility tree names each scan direction button `using` or `stocking`, and the svg is hidden
-- [x] 4.13 Sign in, Sign up, and Attach show no icon
+- [x] 4.8 using and stocking are icon-only, both buttons are the same 68px square, with padding around the glyph 2eec4ca
+- [x] 4.9 Add item, Scan item, and Sign out show no icon 2eec4ca
+- [x] 4.10 All five Apply buttons show no icon 2eec4ca
+- [x] 4.11 The scan glyphs inherit the button text color in both modes 2eec4ca
+- [x] 4.12 Accessibility tree names each scan direction button `using` or `stocking`, and the svg is hidden 2eec4ca
+- [x] 4.13 Sign in, Sign up, and Attach show no icon 2eec4ca
