@@ -446,25 +446,25 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 - [x] 2.7 A short viewport scrolls a tall page, and the header moves with the page ad9f792
 - [x] 2.8 A short page at a normal viewport height does not scroll only to clear the header ad9f792
 - [x] 2.9 `/inventory/scan` shows the app header, the back link does not cover it, and body text still computes to Kode Mono ad9f792
-- [x] 2.10 Back to inventory is a link button just under the header, on the left, on inventory subroutes
+- [x] 2.10 Back to inventory is a link button just under the header, on the left, on inventory subroutes 620bcff
 
 ### Phase 3: shadcn default controls
 
 #### Automated
 
-- [x] 3.1 `pnpm lint` passes
-- [x] 3.2 `pnpm typecheck` passes
-- [x] 3.3 `pnpm test` passes
-- [x] 3.4 `pnpm build` passes
-- [x] 3.5 `rg -n "react-aria" src package.json` returns no match
-- [x] 3.6 `rg -n "bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match
+- [x] 3.1 `pnpm lint` passes 620bcff
+- [x] 3.2 `pnpm typecheck` passes 620bcff
+- [x] 3.3 `pnpm test` passes 620bcff
+- [x] 3.4 `pnpm build` passes 620bcff
+- [x] 3.5 `rg -n "react-aria" src package.json` returns no match 620bcff
+- [x] 3.6 `rg -n "bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match 620bcff
 
 #### Manual
 
-- [x] 3.7 `/login` inputs show thin input border, ring focus, square corners, destructive border when invalid
-- [x] 3.8 Outline buttons on `/` and `/inventory` show border color, muted hover, square corners in both modes
-- [x] 3.9 On `/inventory/scan`, the selected direction uses the default variant and the other uses outline, with visible keyboard focus
-- [x] 3.10 On item creation, Filter narrows the radio list on the new Input
+- [x] 3.7 `/login` inputs show thin input border, ring focus, square corners, destructive border when invalid 620bcff
+- [x] 3.8 Outline buttons on `/` and `/inventory` show border color, muted hover, square corners in both modes 620bcff
+- [x] 3.9 On `/inventory/scan`, the selected direction uses the default variant and the other uses outline, with visible keyboard focus 620bcff
+- [x] 3.10 On item creation, Filter narrows the radio list on the new Input 620bcff
 
 ### Phase 4: Button icons
 
