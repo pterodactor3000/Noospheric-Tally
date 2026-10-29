@@ -572,8 +572,8 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [x] 3.1 `pnpm test` passes `src/lib/items/load-scan-session-lines.test.ts`. No rows maps to `[]`, rows keep their returned order, `reversed_at` maps to `isReversed`, `-1` maps to `quantityDelta: -1`, and an error or a malformed row throws with the session id.
-- [x] 3.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 3.1 `pnpm test` passes `src/lib/items/load-scan-session-lines.test.ts`. No rows maps to `[]`, rows keep their returned order, `reversed_at` maps to `isReversed`, `-1` maps to `quantityDelta: -1`, and an error or a malformed row throws with the session id. `686b7e2`
+- [x] 3.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0. `686b7e2`
 
 #### Manual
 
