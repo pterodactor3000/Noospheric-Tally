@@ -29,18 +29,13 @@ interface ScanDisplayCreate {
   readonly status: 'create'
 }
 
-interface ScanDisplayName {
-  readonly status: 'name'
-  readonly name: string
-}
-
 interface ScanDisplayQuantity {
   readonly status: 'quantity'
   readonly name: string
   readonly quantity: number
 }
 
-type ScanDisplay = ScanDisplayCreate | ScanDisplayName | ScanDisplayQuantity
+type ScanDisplay = ScanDisplayCreate | ScanDisplayQuantity
 
 const resolveScanDisplay = (
   direction: ScanDirection,
@@ -50,11 +45,7 @@ const resolveScanDisplay = (
     return { status: 'create' }
   }
 
-  if (direction === SCAN_DIRECTION_STOCKING) {
-    return { status: 'quantity', name: stock.name, quantity: stock.quantity }
-  }
-
-  return { status: 'name', name: stock.name }
+  return { status: 'quantity', name: stock.name, quantity: stock.quantity }
 }
 
 export {

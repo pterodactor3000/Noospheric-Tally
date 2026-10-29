@@ -93,11 +93,18 @@ describe('resolveScanDisplay', () => {
     ).toEqual({ status: 'quantity', name: 'Lho sticks', quantity: 0 })
   })
 
-  test('returns name when using with a stock row', () => {
+  test('returns quantity when using with a stock row', () => {
     expect(resolveScanDisplay(SCAN_DIRECTION_USING, stock)).toEqual({
-      status: 'name',
+      status: 'quantity',
       name: 'Lho sticks',
+      quantity: 4,
     })
+  })
+
+  test('returns quantity 0 when using with a zero quantity stock row', () => {
+    expect(
+      resolveScanDisplay(SCAN_DIRECTION_USING, { name: 'Lho sticks', quantity: 0 }),
+    ).toEqual({ status: 'quantity', name: 'Lho sticks', quantity: 0 })
   })
 
   test('returns create when stocking with a null stock row', () => {

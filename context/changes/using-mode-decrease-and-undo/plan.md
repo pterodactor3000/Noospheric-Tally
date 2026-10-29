@@ -555,8 +555,8 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes `src/lib/items/scan-direction.test.ts`. A row returns quantity for stocking and for using, including quantity `0`, and a null row returns create for both directions.
-- [ ] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 2.1 `pnpm test` passes `src/lib/items/scan-direction.test.ts`. A row returns quantity for stocking and for using, including quantity `0`, and a null row returns create for both directions.
+- [x] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 

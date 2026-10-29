@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
 import { createNewItem } from '@/lib/items/create-new-item'
+import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
@@ -191,4 +192,58 @@ const stockScannedItem = async (
   )
 }
 
-export { createItem, attachBarcode, addItemToHousehold, stockScannedItem }
+const consumeScannedItem = async (
+  barcode: string,
+  scanSessionId: string,
+): Promise<ItemActionResult> => {
+  const barcodeResult = validateBarcode(barcode)
+  if (barcodeResult.status === 'invalid') {
+    return {
+      status: 'error',
+      message: barcodeResult.message,
+      field: 'barcode',
+    }
+  }
+
+  if (!isScanSessionId(scanSessionId)) {
+    console.error('consumeScannedItem rejected scan session id', {
+      barcode: barcodeResult.barcode,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  const validBarcode = barcodeResult.barcode
+  const encodedBarcode = encodeURIComponent(validBarcode)
+
+  const householdItem = await loadHabUnitItemByBarcode(validBarcode)
+  if (!householdItem) {
+    redirect(`/inventory/new?barcode=${encodedBarcode}`)
+  }
+
+  if (householdItem.quantity === 0) {
+    redirect(
+      `/inventory/scan?barcode=${encodedBarcode}&direction=using&floor=1`,
+    )
+  }
+
+  try {
+    const supabase = await createClient()
+    await decrementHabUnitQuantity(validBarcode, scanSessionId, supabase)
+  } catch (error: unknown) {
+    console.error('consumeScannedItem failed', { barcode: validBarcode, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  revalidatePath('/inventory')
+  redirect(
+    `/inventory/scan?barcode=${encodedBarcode}&direction=using&removed=1`,
+  )
+}
+
+export {
+  createItem,
+  attachBarcode,
+  addItemToHousehold,
+  stockScannedItem,
+  consumeScannedItem,
+}

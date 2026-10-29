@@ -1,7 +1,7 @@
 'use client'
 
 import { startTransition, useRef, useState } from 'react'
-import { unstable_rethrow, useRouter } from 'next/navigation'
+import { unstable_rethrow } from 'next/navigation'
 import { clsx } from 'clsx'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
@@ -18,7 +18,7 @@ import {
   type ScanSessionStorage,
 } from '@/lib/items/scan-session'
 
-import { stockScannedItem } from '../actions'
+import { consumeScannedItem, stockScannedItem } from '../actions'
 import { ScanDirectionButtons } from './scan-direction-buttons'
 import { ScanResultNotice } from './scan-result-notice'
 
@@ -26,7 +26,7 @@ interface ScanCaptureResult {
   readonly title: string
   readonly detail: string
   readonly confirmation?: string
-  readonly shouldClearAdded?: boolean
+  readonly clearParam?: 'added' | 'removed' | 'floor'
 }
 
 interface ScanCaptureProps {
@@ -96,40 +96,30 @@ const ScanCapture = ({
   holdBarcode,
   scanResult,
 }: ScanCaptureProps) => {
-  const router = useRouter()
   const [submitState, setSubmitState] = useState<SubmitState>({ status: 'idle' })
   const [scanRound, setScanRound] = useState(0)
-  const [noticeGeneration, setNoticeGeneration] = useState(0)
-  const isStockSubmitInFlight = useRef(false)
+  const isScanSubmitInFlight = useRef(false)
 
   const handleSubmitBarcode = (barcode: string) => {
-    const encodedBarcode = encodeURIComponent(barcode)
     // Resubmitting the held barcode keeps this ScanCapture key, so the scanner
     // needs a new round to restart its one-shot camera. A different barcode
     // changes the key and remounts instead.
     const isSameBarcodeAsHold = barcode === holdBarcode
+    const direction = readSubmitDirection()
 
-    if (readSubmitDirection() !== SCAN_DIRECTION_STOCKING) {
-      router.push(
-        `/inventory/scan?barcode=${encodedBarcode}&direction=${SCAN_DIRECTION_USING}`,
-      )
-      if (isSameBarcodeAsHold) {
-        setScanRound((round) => round + 1)
-        setNoticeGeneration((generation) => generation + 1)
-      }
+    if (isScanSubmitInFlight.current) {
       return
     }
 
-    if (isStockSubmitInFlight.current) {
-      return
-    }
-
-    isStockSubmitInFlight.current = true
+    isScanSubmitInFlight.current = true
 
     startTransition(async () => {
       try {
         const scanSessionId = ensureSubmitScanSessionId()
-        const result = await stockScannedItem(barcode, scanSessionId)
+        const result =
+          direction === SCAN_DIRECTION_STOCKING
+            ? await stockScannedItem(barcode, scanSessionId)
+            : await consumeScannedItem(barcode, scanSessionId)
         if (result.status === 'error') {
           setSubmitState({
             status: 'failure',
@@ -138,16 +128,20 @@ const ScanCapture = ({
           })
         }
       } catch (error: unknown) {
-        // A successful stock redirects, which rejects with a redirect error.
+        // A successful scan redirects, which rejects with a redirect error.
         unstable_rethrow(error)
-        console.error(`stockScannedItem failed for barcode ${barcode}`, error)
+        const actionName =
+          direction === SCAN_DIRECTION_STOCKING
+            ? 'stockScannedItem'
+            : 'consumeScannedItem'
+        console.error(`${actionName} failed for barcode ${barcode}`, error)
         setSubmitState({
           status: 'failure',
           barcode,
           message: STOCK_SUBMIT_FAILURE_MESSAGE,
         })
       } finally {
-        isStockSubmitInFlight.current = false
+        isScanSubmitInFlight.current = false
         if (isSameBarcodeAsHold) {
           setScanRound((round) => round + 1)
         }
@@ -178,11 +172,11 @@ const ScanCapture = ({
       >
         {scanResult ? (
           <ScanResultNotice
-            key={`${noticeGeneration}:${scanResult.title}:${scanResult.detail}`}
+            key={`${scanResult.title}:${scanResult.detail}`}
             title={scanResult.title}
             detail={scanResult.detail}
             confirmation={scanResult.confirmation}
-            shouldClearAdded={scanResult.shouldClearAdded}
+            clearParam={scanResult.clearParam}
           />
         ) : null}
       </div>
@@ -212,3 +206,4 @@ const ScanCapture = ({
 }
 
 export { ScanCapture }
+export type { ScanCaptureResult }
