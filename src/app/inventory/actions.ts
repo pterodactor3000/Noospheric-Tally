@@ -9,6 +9,7 @@ import { createNewItem } from '@/lib/items/create-new-item'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
+import { isScanSessionId } from '@/lib/items/scan-session'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { validateItemName } from '@/lib/items/validate-item-name'
 import { createClient } from '@/lib/supabase/server'
@@ -150,6 +151,7 @@ const addItemToHousehold = async (
 
 const stockScannedItem = async (
   barcode: string,
+  scanSessionId: string,
 ): Promise<ItemActionResult> => {
   const barcodeResult = validateBarcode(barcode)
   if (barcodeResult.status === 'invalid') {
@@ -158,6 +160,13 @@ const stockScannedItem = async (
       message: barcodeResult.message,
       field: 'barcode',
     }
+  }
+
+  if (!isScanSessionId(scanSessionId)) {
+    console.error('stockScannedItem rejected scan session id', {
+      barcode: barcodeResult.barcode,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
   const validBarcode = barcodeResult.barcode
@@ -170,7 +179,7 @@ const stockScannedItem = async (
 
   try {
     const supabase = await createClient()
-    await incrementHabUnitQuantity(validBarcode, supabase)
+    await incrementHabUnitQuantity(validBarcode, scanSessionId, supabase)
   } catch (error: unknown) {
     console.error('stockScannedItem failed', { barcode: validBarcode, error })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }

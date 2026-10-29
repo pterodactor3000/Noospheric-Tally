@@ -536,9 +536,9 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes `src/lib/items/increment-hab-unit-quantity.test.ts` and `src/lib/items/decrement-hab-unit-quantity.test.ts`. A row returns `{ changeId, quantity }`, a quantity of `0` is returned, and an RPC error or a malformed result throws an `Error` that names the barcode.
-- [ ] 1.2 `pnpm test` passes `src/lib/items/scan-session.test.ts`. Read returns `null` for missing or invalid values without writing, ensure mints once and reuses a valid id, and `isScanSessionId` rejects non-UUID input.
-- [ ] 1.3 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 1.1 `pnpm test` passes `src/lib/items/increment-hab-unit-quantity.test.ts` and `src/lib/items/decrement-hab-unit-quantity.test.ts`. A row returns `{ changeId, quantity }`, a quantity of `0` is returned, and an RPC error or a malformed result throws an `Error` that names the barcode.
+- [x] 1.2 `pnpm test` passes `src/lib/items/scan-session.test.ts`. Read returns `null` for missing or invalid values without writing, ensure mints once and reuses a valid id, and `isScanSessionId` rejects non-UUID input.
+- [x] 1.3 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 

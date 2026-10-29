@@ -1,7 +1,7 @@
 ---
 change_id: using-mode-decrease-and-undo
 title: Using mode decrease and undo
-status: planned
+status: implementing
 created: 2026-10-29
 updated: 2026-10-29
 archived_at: null

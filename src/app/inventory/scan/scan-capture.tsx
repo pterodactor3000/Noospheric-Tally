@@ -12,6 +12,11 @@ import {
   readScanDirection,
   type ScanDirection,
 } from '@/lib/items/scan-direction'
+import {
+  SCAN_SESSION_STORAGE_KEY,
+  ensureScanSessionId,
+  type ScanSessionStorage,
+} from '@/lib/items/scan-session'
 
 import { stockScannedItem } from '../actions'
 import { ScanDirectionButtons } from './scan-direction-buttons'
@@ -54,6 +59,37 @@ const readSubmitDirection = (): ScanDirection => {
   }
 }
 
+const createInMemoryScanSessionStorage = (): ScanSessionStorage => {
+  const values = new Map<string, string>()
+  return {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => {
+      values.set(key, value)
+    },
+  }
+}
+
+// Used for the life of the page when sessionStorage throws.
+const fallbackScanSessionStorage = createInMemoryScanSessionStorage()
+
+let hasLoggedScanSessionStorageFailure = false
+
+const ensureSubmitScanSessionId = (): string => {
+  const createId = () => crypto.randomUUID()
+  try {
+    return ensureScanSessionId(window.sessionStorage, createId)
+  } catch (error) {
+    if (!hasLoggedScanSessionStorageFailure) {
+      hasLoggedScanSessionStorageFailure = true
+      console.error(
+        `ensureScanSessionId failed for storage key ${SCAN_SESSION_STORAGE_KEY}`,
+        error,
+      )
+    }
+    return ensureScanSessionId(fallbackScanSessionStorage, createId)
+  }
+}
+
 const ScanCapture = ({
   defaultBarcode = '',
   errorMessage,
@@ -92,7 +128,8 @@ const ScanCapture = ({
 
     startTransition(async () => {
       try {
-        const result = await stockScannedItem(barcode)
+        const scanSessionId = ensureSubmitScanSessionId()
+        const result = await stockScannedItem(barcode, scanSessionId)
         if (result.status === 'error') {
           setSubmitState({
             status: 'failure',
