@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { clsx } from 'clsx'
 
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 const shouldShowBackToInventory = (pathname: string): boolean =>
   pathname.startsWith('/inventory/')
@@ -18,14 +18,15 @@ const BackToInventoryLink = () => {
 
   return (
     <div className={clsx('w-full', 'shrink-0', 'px-6', 'pt-3', 'sm:px-10')}>
-      <Button
-        variant="link"
-        nativeButton={false}
-        render={<Link href="/inventory" />}
-        className={clsx('-ml-2.5', 'min-h-11')}
+      <Link
+        href="/inventory"
+        className={buttonVariants({
+          variant: 'link',
+          className: clsx('-ml-2.5', 'min-h-11'),
+        })}
       >
         Back to inventory
-      </Button>
+      </Link>
     </div>
   )
 }
