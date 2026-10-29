@@ -25,7 +25,6 @@ const tallyDots = clsx(
 )
 const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
 const tallyControl = clsx(
-  'cursor-pointer',
   'border-0',
   'bg-transparent',
   'p-0',
