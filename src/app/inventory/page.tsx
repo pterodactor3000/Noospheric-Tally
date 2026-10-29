@@ -33,6 +33,8 @@ const tallyControl = clsx(
   'leading-[inherit]',
   'text-inherit',
   'no-underline',
+  'disabled:text-inherit',
+  'disabled:opacity-100',
 )
 
 const InventoryPage = async () => {
@@ -60,6 +62,7 @@ const InventoryPage = async () => {
                 <span className={tallyCount}>
                   <button
                     type="button"
+                    disabled
                     aria-label={`Decrease ${line.name}`}
                     className={tallyControl}
                   >
@@ -68,6 +71,7 @@ const InventoryPage = async () => {
                   {line.quantity}{' '}
                   <button
                     type="button"
+                    disabled
                     aria-label={`Increase ${line.name}`}
                     className={tallyControl}
                   >

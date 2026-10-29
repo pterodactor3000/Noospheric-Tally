@@ -175,7 +175,7 @@ const addItemToHousehold = async (
 
 const stockScannedItem = async (
   barcode: string,
-  scanSessionId: string,
+  scanSessionId: unknown,
 ): Promise<ItemActionResult> => {
   const barcodeResult = validateBarcode(barcode)
   if (barcodeResult.status === 'invalid') {
@@ -217,7 +217,7 @@ const stockScannedItem = async (
 
 const consumeScannedItem = async (
   barcode: string,
-  scanSessionId: string,
+  scanSessionId: unknown,
 ): Promise<ItemActionResult> => {
   const barcodeResult = validateBarcode(barcode)
   if (barcodeResult.status === 'invalid') {
@@ -264,7 +264,7 @@ const consumeScannedItem = async (
 }
 
 const fetchScanSessionLines = async (
-  scanSessionId: string,
+  scanSessionId: unknown,
 ): Promise<ScanSessionLinesResult> => {
   if (!isScanSessionId(scanSessionId)) {
     console.error('fetchScanSessionLines rejected scan session id', {
@@ -284,7 +284,7 @@ const fetchScanSessionLines = async (
 }
 
 const reverseScanSessionLine = async (
-  changeId: string,
+  changeId: unknown,
 ): Promise<ScanSessionLineReversalResult> => {
   // A change id is a UUID, so the scan session id guard validates it too.
   if (!isScanSessionId(changeId)) {
