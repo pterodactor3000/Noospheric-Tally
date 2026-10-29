@@ -434,19 +434,19 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 
 #### Automated
 
-- [x] 2.1 `pnpm lint` passes
-- [x] 2.2 `pnpm typecheck` passes
-- [x] 2.3 `pnpm test` passes
-- [x] 2.4 `rg -n "fixed|sticky" src/components/header.tsx` returns no match
-- [x] 2.5 Body `font-family` is still `var(--font-kode-mono)`, `geistMono` remains in `layout.tsx`, and `layout.tsx` has no `font-sans`
+- [x] 2.1 `pnpm lint` passes ad9f792
+- [x] 2.2 `pnpm typecheck` passes ad9f792
+- [x] 2.3 `pnpm test` passes ad9f792
+- [x] 2.4 `rg -n "fixed|sticky" src/components/header.tsx` returns no match ad9f792
+- [x] 2.5 Body `font-family` is still `var(--font-kode-mono)`, `geistMono` remains in `layout.tsx`, and `layout.tsx` has no `font-sans` ad9f792
 
 #### Manual
 
-- [x] 2.6 On `/` and `/login`, the header is at the top, about half its previous height, and content starts below it
-- [x] 2.7 A short viewport scrolls a tall page, and the header moves with the page
-- [x] 2.8 A short page at a normal viewport height does not scroll only to clear the header
-- [x] 2.9 `/inventory/scan` shows the app header, the back link does not cover it, and body text still computes to Kode Mono
-- [x] 2.10 `/inventory/new` shows an outline Back to inventory button above the panel
+- [x] 2.6 On `/` and `/login`, the header is at the top, about half its previous height, and content starts below it ad9f792
+- [x] 2.7 A short viewport scrolls a tall page, and the header moves with the page ad9f792
+- [x] 2.8 A short page at a normal viewport height does not scroll only to clear the header ad9f792
+- [x] 2.9 `/inventory/scan` shows the app header, the back link does not cover it, and body text still computes to Kode Mono ad9f792
+- [x] 2.10 `/inventory/new` shows an outline Back to inventory button above the panel ad9f792
 
 ### Phase 3: shadcn default controls
 

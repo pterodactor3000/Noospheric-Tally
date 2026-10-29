@@ -3,7 +3,7 @@ change_id: softer-green-interface
 title: Softer green interface
 status: implementing
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-10-29
 archived_at: null
 ---
 
