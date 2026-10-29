@@ -2,27 +2,28 @@
 
 ## Overview
 
-Deliver roadmap slice S-12 (`create-flow-lookup-feedback`): a signed-in user can tell a household miss from a catalog miss while creating an item, wait on the existing caret while a scan or create lookup runs, scroll without the page covering the fixed header, and read a bold barcode on the item create form. This satisfies FR-005, FR-016, and guardrail 3. The create form stays available when both lookups miss.
+Deliver roadmap slice S-12 (`create-flow-lookup-feedback`): a signed-in user can tell a household miss from a catalog miss while creating an item, wait on the existing loading screen while a scan or create lookup runs, and read a bold barcode on the item create form. This satisfies FR-005, FR-016, and guardrail 3. The create form stays available when both lookups miss. Phase 1, the fixed header, was skipped on 2026-10-29.
 
 ## Current State Analysis
 
-- The header is `fixed` at the top of the viewport and has no background and no stacking order (`src/components/header.tsx:9-23`). Page content paints across it once a page is tall enough to reach that band.
-- The root layout renders `<Header />` and then `{children}` with no offset (`src/app/layout.tsx:35-40`).
-- Six shells size themselves with `min-h-screen`, so they center in the full viewport, including the band under the header: `src/app/page.tsx:15-25`, `src/app/(auth)/layout.tsx:14-24`, `src/app/hab-unit/new/page.tsx:16-26`, `src/app/inventory/page.tsx:15-23`, `src/app/inventory/new/page.tsx:78-88`, and `src/app/inventory/scan/scan-capture.tsx:20-28`.
-- `/inventory/new` loads the hab-unit item, then the global item, then the catalog. The create form renders only when both stores miss. A catalog hit prefills the name. A catalog miss leaves the name empty. Neither result is told to the user (`src/app/inventory/new/page.tsx:44-74`).
-- The create form prints the barcode as ordinary text inside the instruction sentence (`src/app/inventory/new/item-create-form.tsx:66-77`).
-- `lookupCatalogName` returns `found` or `empty` (`src/lib/catalog/lookup-catalog-name.ts:4-12`). Each catalog call times out after 3 seconds (`src/lib/catalog/lookup-catalog-name.ts:15`).
-- `/inventory/scan` redirects to `/inventory/new` when the barcode is valid and absent from the hab unit (`src/app/inventory/scan/page.tsx:37-42`).
-- The app has no `loading.tsx`. The only motion marks are `.caret` and the terminal type animation (`src/app/globals.css:97-118`). Reduced motion already disables `.terminal-type` and does not disable `.caret`.
+- The header is in normal flow. It uses `shrink-0`, `bg-background`, and `py-4`, and it is not `fixed` (`src/components/header.tsx:9-24`). Phase 1 was skipped, so this change does not pin it.
+- The root layout stacks `Header`, `BackToInventoryLink`, then the page (`src/app/layout.tsx:46-50`). `Header` awaits `loadCurrentUser()`, which reads the auth cookies.
+- Shells use `pageShell` from `src/app/styles/class-names.ts`. They do not use `min-h-screen`.
+- `/inventory/new` loads the hab-unit item, then the global item, then the catalog. The create form renders only when both stores miss. That branch calls `getCreateLookupNotices` and passes both sentences (`src/app/inventory/new/page.tsx:60-78`). A catalog hit still prefills the name.
+- The create form bolds the barcode token and renders each miss sentence in its own `role="status"` element (`src/app/inventory/new/item-create-form.tsx:98-109`).
+- `lookupCatalogName` returns `found` or `empty` (`src/lib/catalog/lookup-catalog-name.ts:3-12`). Each catalog call times out after 3 seconds (`src/lib/catalog/lookup-catalog-name.ts:15`).
+- `/inventory/scan` redirects to `/inventory/new` when the barcode is valid and absent from the hab unit (`src/app/inventory/scan/page.tsx:59-61`).
+- `src/app/loading.tsx` renders `LoadingScreen`. That screen is `fixed`, `inset-0`, `role="status"`, and it shows three ring images plus a screen-reader-only `Loading` label (`src/components/loading-screen.tsx:12-26`). Next.js wraps `page.tsx` in that fallback. It does not wrap the layout, so the header's cookie read does not show this fallback (`node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/loading.md`).
+- Reduced motion already sets `animation: none` on `.animate-loading-inner`, `.animate-loading-middle`, and `.animate-loading-outer` (`src/app/styles/globals.css:240-251`). `.caret` still blinks. It is not the loading view.
 - Vitest runs in Node and includes `src/**/*.test.ts` only (`vitest.config.mts:14-17`). There is no component test renderer.
 
 ## Desired End State
 
-The header stays pinned to the top, on an opaque background, above scrolling content. Page content starts below it. A short page does not gain an empty scroll equal to the header. On a tall page, content may pass under the header, and the header text stays readable.
+The header stays as it is now, in normal flow. This change does not pin it.
 
 On the item create form, the barcode is bold. The form says "The item was not found in our database." It also says "The item was not found in the external databases." when every catalog misses. A catalog hit still prefills the name and omits the catalog sentence. The name field and both submit actions stay usable. Add-to-hab-unit and already-stocked do not show those sentences.
 
-`/inventory/scan` and `/inventory/new` show the word Loading and the existing caret until that route's server render replaces them. With reduced motion, the word stays and the caret does not blink.
+`/inventory/scan` and `/inventory/new` show `LoadingScreen` until that route's server render replaces it. With reduced motion, the rings stay visible and do not spin. The screen-reader label stays `Loading`.
 
 Verify with `pnpm lint`, `pnpm typecheck`, `pnpm test`, and the manual checks in each phase.
 
@@ -32,52 +33,38 @@ Verify with `pnpm lint`, `pnpm typecheck`, `pnpm test`, and the manual checks in
 - Changing catalog vendors, request order, timeout, name parsing, or the `found` / `empty` result. `src/lib/catalog/lookup-catalog-name.ts` stays as it is, including its current logs.
 - Miss copy on add-to-hab-unit or already-stocked. Those screens mean the barcode was found in our database or in this hab unit.
 - Counts, stocking mode, using mode, undo, minimums, restock labels, or categories.
-- A new spinner, a component test renderer, or browser end-to-end tests.
-- Unpinning the header, or editing the Stream B row in the roadmap.
+- A new spinner, a caret loading view, a component test renderer, or browser end-to-end tests.
+- Pinning the header, adding `--header-offset`, or editing the Stream B row in the roadmap.
 
 ## Implementation Approach
 
-Keep the header `fixed`. Give it the page background and a stacking order above the page. One custom property, `--header-offset`, is both the header box height and the space inserted above page content. Shells that use `min-h-screen` fill the viewport minus that offset, so short pages stay one screen tall and start below the header.
+Miss copy is a pure function tested in Vitest. The create page calls it only on the branch that already proved the barcode is absent from the hab unit and the global item store. The form renders the returned sentences and bolds the barcode.
 
-Miss copy is a pure function tested in Vitest. The create page calls it only on the branch that already proved the barcode is absent from the hab unit and the global item store. The form renders the returned sentences and bolds the barcode. Route `loading.tsx` files show the existing caret while the scan and create server renders run. The header lives in the root layout, so it stays on screen during that wait.
+The loading animation is the existing `LoadingScreen`, reached through `src/app/loading.tsx`. Do not add a caret view. Add `loading.tsx` under scan or create only when a manual check shows that the root fallback never appears while that page is still awaiting.
 
 ## Critical Implementation Details
 
-**One header measurement.** Today's header height is `py-12` (6rem) plus one text line (1.5rem) plus `border-b-2` (2px). Replace that implicit sum with:
+**Phase 1 is not in force.** Do not add `--header-offset`, `page-below-header`, or a fixed header. The header stays in normal flow.
 
-```css
-:root {
-  --header-offset: calc(6rem + 1.5rem + 2px);
-}
-```
-
-The header box is `h-[var(--header-offset)]` with `items-center`, `box-border`, `bg-background`, and `z-20`. Remove `py-12` from the header so padding cannot change the box without changing the variable. Keep `fixed`, `inset-x-0`, `top-0`, the border, and the shadow.
-
-**Content starts below that box.** The root layout wraps `{children}` in an element whose `padding-top` is `var(--header-offset)`. Each current `min-h-screen` shell drops that utility and adds `page-below-header`:
-
-```css
-.page-below-header {
-  min-height: calc(100svh - var(--header-offset));
-}
-```
-
-The document's minimum height stays one viewport: offset plus `(100svh - offset)`. Tall content grows downward from the top of that shell. When it scrolls, it passes under the opaque header.
-
-**The create branch is the only miss site.** `ItemCreateForm` mounts only after both `loadHabUnitItemByBarcode` and `findGlobalItemByBarcode` miss (`src/app/inventory/new/page.tsx:44-74`). Household miss copy belongs on that form alone. Catalog miss copy belongs there only when `lookupProduct.status` is `empty`. A `found` result still passes `lookupProduct.name` as `defaultName`.
+**The create branch is the only miss site.** `ItemCreateForm` mounts only after both `loadHabUnitItemByBarcode` and `findGlobalItemByBarcode` miss (`src/app/inventory/new/page.tsx:60-78`). Household miss copy belongs on that form alone. Catalog miss copy belongs there only when `lookupProduct.status` is `empty`. A `found` result still passes `lookupProduct.name` as `defaultName`.
 
 **Notices are status text.** Render each sentence in its own `role="status"` element, after the barcode sentence and before the name field. Leave the red `role="alert"` elements for validation errors. Guardrail 3: both forms on the page still submit.
 
 **Barcode weight.** Bold only the barcode token in the instruction sentence. The surrounding sentence stays at its current weight and color. Use `font-bold` and `text-foreground` on that token so the weight is visible against `text-foreground/70`.
 
-**Loading is the route suspense boundary.** `src/app/inventory/scan/loading.tsx` and `src/app/inventory/new/loading.tsx` each render one shared loading view. That view is a child of the offset wrapper, uses `page-below-header`, and shows `Loading` plus `<span className="caret" aria-hidden="true" />`. Do not add a second spinner inside `ItemCreateForm`. The catalog request finishes on the server before the form is sent.
+**Loading is the existing screen.** `src/app/loading.tsx` renders `LoadingScreen` and nothing else. That component is the animation for a scan or create server render. Do not add a spinner inside `ItemCreateForm`. The catalog request finishes on the server before the form is sent.
 
-A scan of an unknown hab-unit barcode redirects to `/inventory/new` (`src/app/inventory/scan/page.tsx:40-42`). The user can see the scan loading view, then the create loading view, while the catalog lookup runs. That sequence is the two waits in this slice.
+A scan of an unknown hab-unit barcode redirects to `/inventory/new` (`src/app/inventory/scan/page.tsx:59-61`). The root fallback can show while the scan page awaits, then again while the create page awaits the catalog. That sequence is the two waits in this slice.
 
-**Reduced motion.** Extend the existing `prefers-reduced-motion` block so `.caret` sets `animation: none`. The loading word stays.
+`loading.js` wraps the page, not the layout. `Header` awaits cookies in the root layout, so that read does not show `LoadingScreen`. After the layout is up, the page fallback can show while the page awaits. If a manual check shows neither route ever shows `LoadingScreen` during that wait, add `src/app/inventory/scan/loading.tsx` and `src/app/inventory/new/loading.tsx`, each rendering `LoadingScreen` only. No other route gains a `loading.tsx`.
+
+**Reduced motion.** The existing `prefers-reduced-motion: reduce` block already sets `animation: none` on the three ring classes. Do not add a `.caret` rule. The rings stay on screen. The screen-reader label stays `Loading`.
 
 ---
 
 ## Phase 1: Clear the fixed header
+
+Skipped on 2026-10-29. The sections below are not in force.
 
 ### Overview
 
@@ -201,37 +188,37 @@ const getCreateLookupNotices = (
 
 ---
 
-## Phase 3: Show a loading state while lookup runs
+## Phase 3: Show the loading screen while lookup runs
 
 ### Overview
 
-The scan and create routes show the existing caret until their server render replaces it.
+Scan and create keep the existing `LoadingScreen` until their server render replaces it. This phase does not add a caret.
 
 ### Changes Required
 
-#### 1. Loading view
+#### 1. Root fallback
 
-**File:** `src/components/lookup-loading.tsx`
+**File:** `src/app/loading.tsx`
 
-**Intent:** Share one loading view between the two routes.
+**Intent:** Keep the animation that already wraps page renders.
 
-**Contract:** The view is a `main` with `page-below-header`, centered like the scan shell. Its text is `Loading` followed by `<span className="caret" aria-hidden="true" />`. It has no timer and no catalog call.
+**Contract:** The default export renders `LoadingScreen` and nothing else. `LoadingScreen` stays a full-viewport `role="status"` view with the three ring images and a screen-reader-only `Loading` label. It has no timer and no catalog call.
 
-#### 2. Route boundaries
+#### 2. Route fallback, only if the root one never shows
 
 **Files:** `src/app/inventory/scan/loading.tsx`, `src/app/inventory/new/loading.tsx`
 
-**Intent:** Show that view while each route's async page is unresolved.
+**Intent:** Cover a scan or create wait that the root fallback does not show.
 
-**Contract:** Each file default-exports a component that renders `LookupLoading` and nothing else. No other route gains a `loading.tsx`.
+**Contract:** Add these files only when a manual check shows that the route replaces the previous screen with no `LoadingScreen` while its server page is still awaiting. Each file default-exports a component that renders `LoadingScreen` and nothing else. If the root fallback already shows, do not add either file. No other route gains a `loading.tsx`.
 
 #### 3. Reduced motion
 
-**File:** `src/app/globals.css`
+**File:** `src/app/styles/globals.css`
 
-**Intent:** Stop the caret blink when the user asks for reduced motion.
+**Intent:** Keep the rings still when the user asks for reduced motion.
 
-**Contract:** Inside the existing `prefers-reduced-motion: reduce` block, `.caret` sets `animation: none`. `.terminal-type` stays as it is.
+**Contract:** Inside the existing `prefers-reduced-motion: reduce` block, `.animate-loading-inner`, `.animate-loading-middle`, and `.animate-loading-outer` stay at `animation: none`. Do not add a `.caret` rule. `.terminal-type` stays as it is.
 
 ### Success Criteria
 
@@ -242,9 +229,9 @@ The scan and create routes show the existing caret until their server render rep
 
 #### Manual Verification
 
-- `/inventory/new?barcode=` for a valid barcode absent from the hab unit shows the caret until the create form replaces it.
-- `/inventory/scan` shows the caret until the scanner replaces it.
-- With `prefers-reduced-motion: reduce`, the loading word stays and the caret does not blink.
+- `/inventory/new?barcode=` for a valid barcode absent from the hab unit shows `LoadingScreen` until the create form replaces it.
+- `/inventory/scan` shows `LoadingScreen` until the scanner replaces it.
+- With `prefers-reduced-motion: reduce`, the rings stay visible and do not spin. The screen-reader label stays `Loading`.
 
 ---
 
@@ -262,26 +249,26 @@ The scan and create routes show the existing caret until their server render rep
 
 ### Manual Testing Steps
 
-1. Open a short page, such as sign-in, and confirm the card starts below the header.
-2. Open a tall page, scroll, and confirm the header text stays readable on top of the content.
-3. Scan or enter a barcode that this hab unit and the global store do not have, and that a catalog can name. Confirm the household sentence, the prefilled name, the bold barcode, and that Apply still works.
-4. Repeat with a barcode every catalog misses. Confirm both sentences, an empty name, and that Apply still requires a typed name as it does today.
-5. Open a barcode this hab unit already stocks, and one the global store has but this hab unit does not. Confirm those screens omit both sentences.
-6. Reload `/inventory/scan` and `/inventory/new?barcode=` for an unknown barcode. Confirm the caret shows until the next screen replaces it.
-7. Repeat step 6 with reduced motion. Confirm the loading word stays and the caret does not blink.
+1. Scan or enter a barcode that this hab unit and the global store do not have, and that a catalog can name. Confirm the household sentence, the prefilled name, the bold barcode, and that Apply still works.
+2. Repeat with a barcode every catalog misses. Confirm both sentences, an empty name, and that Apply still requires a typed name as it does today.
+3. Open a barcode this hab unit already stocks, and one the global store has but this hab unit does not. Confirm those screens omit both sentences.
+4. Reload `/inventory/scan` and `/inventory/new?barcode=` for an unknown barcode. Confirm `LoadingScreen` shows until the next screen replaces it. If it never shows, add the two route `loading.tsx` files from Phase 3 and repeat this step.
+5. Repeat step 4 with reduced motion. Confirm the rings stay visible and do not spin.
 
 ## References
 
 - Roadmap: `context/foundation/roadmap.md` (S-12)
 - PRD: `context/foundation/prd.md` (FR-005, FR-016, guardrail 3)
 - Issue: TEC-36
-- Header: `src/components/header.tsx:9-23`
-- Root layout: `src/app/layout.tsx:35-40`
-- Create branch: `src/app/inventory/new/page.tsx:44-74`
-- Barcode sentence: `src/app/inventory/new/item-create-form.tsx:66-77`
-- Catalog result: `src/lib/catalog/lookup-catalog-name.ts:4-12`
-- Scan redirect: `src/app/inventory/scan/page.tsx:37-42`
-- Caret: `src/app/globals.css:97-118`
+- Header: `src/components/header.tsx:9-24`
+- Root layout: `src/app/layout.tsx:46-50`
+- Create branch: `src/app/inventory/new/page.tsx:60-78`
+- Barcode sentence: `src/app/inventory/new/item-create-form.tsx:98-109`
+- Catalog result: `src/lib/catalog/lookup-catalog-name.ts:3-15`
+- Scan redirect: `src/app/inventory/scan/page.tsx:59-61`
+- Loading screen: `src/app/loading.tsx`, `src/components/loading-screen.tsx:12-26`
+- Reduced motion: `src/app/styles/globals.css:240-251`
+- Next.js loading boundary: `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/loading.md`
 
 ## Progress
 
@@ -306,8 +293,8 @@ Status: skipped on 2026-10-29 by user decision. Do not implement. The header sta
 
 #### Automated
 
-- [ ] 2.1 `pnpm test src/lib/catalog/get-create-lookup-notices.test.ts` passes.
-- [ ] 2.2 `pnpm typecheck` exits 0.
+- [x] 2.1 `pnpm test src/lib/catalog/get-create-lookup-notices.test.ts` passes. `c21aed0`
+- [x] 2.2 `pnpm typecheck` exits 0. `c21aed0`
 
 #### Manual
 
@@ -316,7 +303,7 @@ Status: skipped on 2026-10-29 by user decision. Do not implement. The header sta
 - [ ] 2.5 The barcode on the item create form is bold.
 - [ ] 2.6 Add-to-hab-unit and already-stocked do not show those sentences.
 
-### Phase 3: Show a loading state while lookup runs
+### Phase 3: Show the loading screen while lookup runs
 
 #### Automated
 
@@ -325,6 +312,6 @@ Status: skipped on 2026-10-29 by user decision. Do not implement. The header sta
 
 #### Manual
 
-- [ ] 3.3 `/inventory/new?barcode=` for a valid barcode absent from the hab unit shows the caret until the create form replaces it.
-- [ ] 3.4 `/inventory/scan` shows the caret until the scanner replaces it.
-- [ ] 3.5 With `prefers-reduced-motion: reduce`, the loading word stays and the caret does not blink.
+- [ ] 3.3 `/inventory/new?barcode=` for a valid barcode absent from the hab unit shows `LoadingScreen` until the create form replaces it.
+- [ ] 3.4 `/inventory/scan` shows `LoadingScreen` until the scanner replaces it.
+- [ ] 3.5 With `prefers-reduced-motion: reduce`, the rings stay visible and do not spin. The screen-reader label stays `Loading`.
