@@ -35,6 +35,8 @@ type LinesState = LoadedLinesState | FailedLinesState
 interface ReversalFailure {
   readonly changeId: string
   readonly message: string
+  // The reloadToken that was current when the failure was stored.
+  readonly reloadToken: number
 }
 
 const formatQuantityDelta = (quantityDelta: 1 | -1): string =>
@@ -97,7 +99,11 @@ const ScanSessionList = ({ scanSessionId, reloadToken }: ScanSessionListProps) =
     try {
       const result = await reverseScanSessionLine(changeId)
       if (result.status === 'error') {
-        setReversalFailure({ changeId, message: result.message })
+        setReversalFailure({
+          changeId,
+          message: result.message,
+          reloadToken,
+        })
         return
       }
 
@@ -110,7 +116,11 @@ const ScanSessionList = ({ scanSessionId, reloadToken }: ScanSessionListProps) =
       router.refresh()
     } catch (error: unknown) {
       console.error('reverseScanSessionLine failed', { changeId, error })
-      setReversalFailure({ changeId, message: ITEM_WRITE_FAILURE_MESSAGE })
+      setReversalFailure({
+        changeId,
+        message: ITEM_WRITE_FAILURE_MESSAGE,
+        reloadToken,
+      })
     } finally {
       isReversalInFlight.current = false
       setPendingChangeId(null)
@@ -144,7 +154,7 @@ const ScanSessionList = ({ scanSessionId, reloadToken }: ScanSessionListProps) =
           {currentState.message}
         </p>
       ) : null}
-      {reversalFailure ? (
+      {reversalFailure && reversalFailure.reloadToken === reloadToken ? (
         <p role="alert" className={clsx('text-sm', 'text-destructive')}>
           {reversalFailure.message}
         </p>
