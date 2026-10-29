@@ -458,6 +458,45 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 ---
 
+## Phase 5: Inventory list shows each count
+
+### Overview
+
+`/inventory` lists each hab-unit item with its current count. The name sits on the left, the count sits on the far right, and dot characters fill the space between them.
+
+### Changes Required
+
+#### 1. Tally rows
+
+**File:** `src/lib/items/load-hab-unit-items.ts`
+
+**Intent:** Give the inventory page the count without changing the name-only list the create flow uses.
+
+**Contract:** Leave `loadHabUnitItems` and `Item` unchanged. Add `loadHabUnitTallyLines()`, which selects `item_id, name, quantity` from `household_inventory`, orders by `name` ascending, and returns `{ itemId, name, quantity }[]`. `quantity` is the integer from that column, including `0`. Throw `household_inventory tally select failed` with `cause` when `error` is set or `data` is missing. Treat `data` as `unknown` and narrow each row.
+
+#### 2. List layout
+
+**File:** `src/app/inventory/page.tsx`
+
+**Intent:** Show the count on each inventory row, inside a section no wider than 900px.
+
+**Contract:** The inventory `<section>` is `w-full` and `max-w-[900px]`. It still holds the empty state, the list, and the two buttons. The list uses `loadHabUnitTallyLines`. Each row is one line: the name first, then a run of `.` characters that fills the remaining space, then the count at the far right. The dots are characters, not a border, underline, or empty gap. The count does not wrap onto a second line. The dot run is `aria-hidden`. Below the `sm` breakpoint the list font size is `14px`. From `sm` up it is `16px`. The buttons keep their current size.
+
+### Success Criteria
+
+#### Automated Verification
+
+- `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+
+#### Manual Verification
+
+- The inventory section is at most 900px wide.
+- Each stocked row shows the name on the left, `.` characters between, and the count on the far right of the same line.
+- Below 640px the list text is 14px. At 640px and wider it is 16px.
+- The count matches `household_inventory.quantity`, including `0`.
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
@@ -599,3 +638,16 @@ Dropping the table loses the change history. Counts stay as they are.
 - [ ] 4.7 Tap Undo twice quickly on one line. Only one reversal happens.
 - [ ] 4.8 When the reversed line's barcode is the result on screen, the shown count updates after Undo.
 - [ ] 4.9 As a member in SQL, `reverse_quantity_change` on an already reversed id raises `reverse_quantity_change refuses a change that is already reversed`. A random UUID raises `reverse_quantity_change refuses a change this household did not record`.
+
+### Phase 5: Inventory list shows each count
+
+#### Automated
+
+- [ ] 5.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+
+#### Manual
+
+- [ ] 5.2 The inventory section is at most 900px wide.
+- [ ] 5.3 Each stocked row shows the name on the left, `.` characters between, and the count on the far right of the same line.
+- [ ] 5.4 Below 640px the list text is 14px. At 640px and wider it is 16px.
+- [ ] 5.5 The count matches `household_inventory.quantity`, including `0`.
