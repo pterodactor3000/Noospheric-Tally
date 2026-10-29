@@ -94,7 +94,7 @@ The increment uses the same shape with `+ 1`, delta `1`, and no `quantity > 0` f
 
 **Lock order.** Scan RPCs lock the inventory row through `update`, then insert a new log row. `reverse_quantity_change` locks the log row with `select ... for update`, then updates the inventory row. A scan never locks an existing log row, so the two never wait on each other in a cycle.
 
-**The RPC signature replacement breaks the deployed build until deploy.** The Phase 1 migration drops `increment_household_quantity(text)`. After `db push`, the build already deployed from `main` gets an error on every stocking scan until this branch deploys. Push the Phase 1 migration only when that gap is acceptable, and deploy soon after merge.
+**The old increment stays until after deploy.** The Phase 1 migration adds `increment_household_quantity(text, uuid)` beside `increment_household_quantity(text)`. PostgREST picks the overload from the named arguments, so the build deployed from `main` keeps calling the old function. That build writes no log row. A later contract migration drops `increment_household_quantity(text)` only after the S-04 deploy.
 
 **Phase 1 carries the stocking caller.** Replacing the increment signature breaks `stockScannedItem`, the only caller (`src/app/inventory/actions.ts` line 173), at type check and at run time. Phase 1 therefore also adds `src/lib/items/scan-session.ts` and passes the session id on the stocking path. The approved file list placed that work in Phase 2. Phase 2 keeps the using path and its session id.
 
@@ -114,17 +114,17 @@ Every scan-driven +1 or -1 is recorded once in a household-scoped log with a ses
 
 **File:** `supabase/migrations/<timestamp>_create_household_quantity_changes.sql`, created with `pnpm exec supabase migration new create_household_quantity_changes` so its timestamp sorts after `20261028113918`.
 
-**Intent:** Add the change log and the floor constraint, and replace the increment with a logged version. Add the logged decrement.
+**Intent:** Add the change log and the floor constraint, and add a logged overload of the increment. Leave `increment_household_quantity(text)` in place. Add the logged decrement.
 
 **Contract:**
 
 - `alter table public.household_inventory add constraint household_inventory_quantity_not_negative check (quantity >= 0);`. Existing rows are all at least 0, because only the increment has written quantity.
 - `create table public.household_quantity_changes` with `id uuid primary key default gen_random_uuid()`, `household_id uuid not null references public.households(id) on delete cascade`, `item_id uuid not null references public.items(id) on delete cascade`, `scan_session_id uuid not null`, `barcode text not null`, `quantity_delta integer not null check (quantity_delta in (-1, 1))`, `created_at timestamptz not null default now()`, and `reversed_at timestamptz null`.
 - Add `foreign key (household_id, item_id) references public.household_inventory (household_id, item_id) on delete cascade`. It targets the existing unique constraint `household_inventory_item_id_key`. Every log row then has an inventory row that holds its name, and PostgREST can embed `household_inventory(name)`.
-- Add an index on `(household_id, scan_session_id, created_at desc)`.
+- Add an index on `(scan_session_id, created_at desc)`. The list filters on `scan_session_id` only. Household scoping is the RLS subquery, so a leading `household_id` column would go unused.
 - `barcode` stores the trimmed barcode that was scanned. The list needs it, `item_barcodes` is unreadable under RLS, and one item can have several barcodes.
 - Enable RLS. Add `household_quantity_changes_select_if_member` for `select` to `authenticated`, written the same way as `household_inventory_select_if_member` (`supabase/migrations/20260916120209_create_items.sql` lines 43-53). Add no insert, update, or delete policy.
-- `drop function public.increment_household_quantity(text);`
+- Do not drop `public.increment_household_quantity(text)`. Create the `(text, uuid)` overload beside it.
 - `create function public.increment_household_quantity(item_barcode text, scan_session_id uuid) returns table (change_id uuid, quantity integer)`, with `language plpgsql`, `security definer`, and `set search_path = ''`. Raise when the caller is missing, has no household, or passes a null `scan_session_id`. Find the item by trimmed barcode, then run the one-statement CTE from Critical Implementation Details with `+ 1` and delta `1`. When nothing matched, raise `increment_household_quantity refuses a barcode this household does not stock`, the S-03 text, for both an unknown barcode and an unstocked item. Otherwise `return next`.
 - `create function public.decrement_household_quantity(item_barcode text, scan_session_id uuid)` with the same return shape and the same security settings. Run the CTE with `- 1`, delta `-1`, and `inventory.quantity > 0`. When nothing matched and the inventory row exists, raise `decrement_household_quantity refuses a quantity below 0`. When nothing matched and no inventory row exists, raise `decrement_household_quantity refuses a barcode this household does not stock`. Neither path inserts a log row.
 - For both functions, run `revoke all on function ... (text, uuid) from public, anon;` and then `grant execute on function ... (text, uuid) to authenticated;`.
@@ -197,11 +197,11 @@ Every scan-driven +1 or -1 is recorded once in a household-scoped log with a ses
 
 - `pnpm test` passes `src/lib/items/increment-hab-unit-quantity.test.ts` and `src/lib/items/decrement-hab-unit-quantity.test.ts`. A row returns `{ changeId, quantity }`, a quantity of `0` is returned, and an RPC error or a malformed result throws an `Error` that names the barcode.
 - `pnpm test` passes `src/lib/items/scan-session.test.ts`. Read returns `null` for missing or invalid values without writing, ensure mints once and reuses a valid id, and `isScanSessionId` rejects non-UUID input.
-- `pnpm lint` and `pnpm typecheck` exit 0.
+- `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual Verification
 
-- `pnpm exec supabase db push` applies the new migration. `select to_regprocedure('public.increment_household_quantity(text)')` returns null.
+- `pnpm exec supabase db push` applies the new migration. `select to_regprocedure('public.increment_household_quantity(text, uuid)')` is not null, and `select to_regprocedure('public.increment_household_quantity(text)')` is not null.
 - `has_function_privilege('anon', ..., 'execute')` returns false for `increment_household_quantity(text, uuid)` and `decrement_household_quantity(text, uuid)`, and `has_function_privilege('authenticated', ..., 'execute')` returns true for both.
 - In a rolled-back transaction, `update public.household_inventory set quantity = -1` fails with a check violation.
 - As a member, `increment_household_quantity` on a stocked barcode returns a change id and the count plus 1, and adds one log row with that session id, delta 1, and the trimmed barcode.
@@ -271,7 +271,7 @@ Pass the matching flag name as the one to clear. Keep `holdBarcode` and `key={ba
 
 **Intent:** A using submit writes once, the same way stocking does.
 
-**Contract:** Replace the using `router.push` (lines 76-85) with a `consumeScannedItem(barcode, ensuredSessionId)` call. Use the same in-flight ref, transition, `unstable_rethrow`, and failure state as the stocking path (lines 87-118). Generalize the ref name to `isScanSubmitInFlight` so either direction blocks a second submit. In `finally`, for the same barcode as the hold, bump both `scanRound` and `noticeGeneration`. Replace `shouldClearAdded` on `ScanCaptureResult` (lines 20-25) with `clearParam?: 'added' | 'removed' | 'floor'`.
+**Contract:** Replace the using `router.push` (lines 76-85) with a `consumeScannedItem(barcode, ensuredSessionId)` call. Use the same in-flight ref, transition, `unstable_rethrow`, and failure state as the stocking path (lines 87-118). Generalize the ref name to `isScanSubmitInFlight` so either direction blocks a second submit. In `finally`, for the same barcode as the hold, bump only `scanRound`. A successful using scan already changes the count, which changes the notice key, and the at-0 case restarts when the floor notice appears. An extra `noticeGeneration` bump can remount the notice after the flag is cleared and latch an empty confirmation. Replace `shouldClearAdded` on `ScanCaptureResult` (lines 20-25) with `clearParam?: 'added' | 'removed' | 'floor'`.
 
 #### 5. Notice
 
@@ -286,7 +286,7 @@ Pass the matching flag name as the one to clear. Keep `holdBarcode` and `key={ba
 #### Automated Verification
 
 - `pnpm test` passes `src/lib/items/scan-direction.test.ts`. A row returns quantity for stocking and for using, including quantity `0`, and a null row returns create for both directions.
-- `pnpm lint` and `pnpm typecheck` exit 0.
+- `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual Verification
 
@@ -335,7 +335,7 @@ The scanner shows every line the current tab session recorded, in both direction
 
 **Intent:** Give the client component a way to load lines.
 
-**Contract:** Export `fetchScanSessionLines(scanSessionId: string)`, which returns `{ status: 'loaded', lines } | { status: 'error', message }`. Validate the id with `isScanSessionId`. When it is invalid, log the failure and return the load failure. Call `loadScanSessionLines` with `createClient()` in `try`. On a throw, log `fetchScanSessionLines failed` with the id and return `SCAN_SESSION_LOAD_FAILURE_MESSAGE`, which is `Session list failed to load. Purify the Machine Spirit and try again.` That text follows the pattern of `ITEM_WRITE_FAILURE_MESSAGE`. The action writes nothing and does not revalidate.
+**Contract:** Create `src/lib/items/scan-failure-messages.ts`. It is not a `'use server'` file. Export `SCAN_SESSION_LOAD_FAILURE_MESSAGE` as `Session list failed to load. Purify the Machine Spirit and try again.` The client and the server both import it. Do not export it from `actions.ts`. Export `fetchScanSessionLines(scanSessionId: string)`, which returns `{ status: 'loaded', lines } | { status: 'error', message }`. Validate the id with `isScanSessionId`. When it is invalid, log the failure and return the load failure. Call `loadScanSessionLines` with `createClient()` in `try`. On a throw, log `fetchScanSessionLines failed` with the id and return `SCAN_SESSION_LOAD_FAILURE_MESSAGE`. The action writes nothing and does not revalidate. Keep this server action: Next sends Server Functions one at a time, so a list load can sit ahead of the next scan write. Use a GET route only if a delayed scan is noticeable.
 
 #### 3. List component
 
@@ -343,7 +343,7 @@ The scanner shows every line the current tab session recorded, in both direction
 
 **Intent:** Show the lines below the scanner.
 
-**Contract:** A client component with props `scanSessionId: string | null` and `reloadToken: number`. When `scanSessionId` is null, render an empty list and make no call. Otherwise call `fetchScanSessionLines` on mount and whenever either prop changes. Ignore a response that arrives after a newer request started or after unmount. Render an `<ol>` in a `<section aria-label="Scan session">`, newest first. Each item shows `+1` or `-1`, the name, and the barcode. A load failure renders its message with `role="alert"`. Undo comes in Phase 4.
+**Contract:** A client component with props `scanSessionId: string | null` and `reloadToken: number`. When `scanSessionId` is null, render an empty list and make no call. Otherwise start `fetchScanSessionLines` when the component mounts and whenever either prop changes. Set list state only inside that async response, not synchronously in an effect. Ignore a response that arrives after a newer request started or after unmount. Render an `<ol>` in a `<section aria-label="Scan session">`, newest first. Each item shows `+1` or `-1`, the name, and the barcode. A load failure renders its message with `role="alert"`. A thrown `fetchScanSessionLines` call is logged as `fetchScanSessionLines failed` with the session id, and the list renders `SCAN_SESSION_LOAD_FAILURE_MESSAGE` with `role="alert"`. Undo comes in Phase 4.
 
 #### 4. Placement and session state
 
@@ -351,14 +351,14 @@ The scanner shows every line the current tab session recorded, in both direction
 
 **Intent:** Mount the list below the scanner and give it the current id.
 
-**Contract:** Hold `scanSessionId` in state, starting at `null`. On mount, set it from `readScanSessionId`, which never writes. After each submit calls `ensureScanSessionId`, set it to the returned id. Render `ScanSessionList` after the scanner block inside `main`. Pass `scanSessionId` and `reloadToken={scanRound}`. A different barcode remounts `ScanCapture` and loads the list fresh.
+**Contract:** Read the session id with `useSyncExternalStore`, the same shape as `scan-direction-buttons.tsx` lines 30-63. The client snapshot calls `readScanSessionId` and returns `null` when no valid id is stored. The server snapshot returns `null`. `readScanSessionId` never writes. After a submit calls `ensureScanSessionId`, notify the store listeners. Do not hold the id in React state, and do not set it from an effect. Render `ScanSessionList` after the scanner block inside `main`. Pass the store snapshot and `reloadToken={scanRound}`. A different barcode remounts `ScanCapture` and loads the list fresh.
 
 ### Success Criteria
 
 #### Automated Verification
 
 - `pnpm test` passes `src/lib/items/load-scan-session-lines.test.ts`. No rows maps to `[]`, rows keep their returned order, `reversed_at` maps to `isReversed`, `-1` maps to `quantityDelta: -1`, and an error or a malformed row throws with the session id.
-- `pnpm lint` and `pnpm typecheck` exit 0.
+- `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual Verification
 
@@ -429,7 +429,7 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 **Intent:** Reverse one line for the client.
 
-**Contract:** Export `reverseScanSessionLine(changeId: string)`, which returns `{ status: 'reversed', quantity } | { status: 'error', message }`. Validate the id with `isScanSessionId`, because it is also a UUID. When it is invalid, log the failure and return `ITEM_WRITE_FAILURE_MESSAGE`. Call `reverseQuantityChange` with `createClient()` in `try`. `below-zero` returns `This line cannot be reversed because the count would drop below 0.` A throw is logged as `reverseScanSessionLine failed` with the change id and returns `ITEM_WRITE_FAILURE_MESSAGE`. On success, `revalidatePath('/inventory')` and return `reversed`. The action does not redirect.
+**Contract:** Move `ITEM_WRITE_FAILURE_MESSAGE` from `actions.ts` into `src/lib/items/scan-failure-messages.ts`. `actions.ts` imports it and does not re-export it. Export `reverseScanSessionLine(changeId: string)`, which returns `{ status: 'reversed', quantity } | { status: 'error', message }`. Validate the id with `isScanSessionId`, because it is also a UUID. When it is invalid, log the failure and return `ITEM_WRITE_FAILURE_MESSAGE`. Call `reverseQuantityChange` with `createClient()` in `try`. `below-zero` returns `This line cannot be reversed because the count would drop below 0.` A throw is logged as `reverseScanSessionLine failed` with the change id and returns `ITEM_WRITE_FAILURE_MESSAGE`. On success, `revalidatePath('/inventory')` and return `reversed`. The action does not redirect.
 
 #### 5. Undo in the list
 
@@ -437,14 +437,14 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 **Intent:** Add Undo to unreversed lines.
 
-**Contract:** An unreversed line renders a `Button` labeled `Undo`, with `aria-label` `Undo {+1|-1} {name} {barcode}`. A reversed line renders the text `reversed` and no button. An in-flight ref blocks a second reversal while one is pending and disables every Undo button. On `reversed`, reload the lines and call `router.refresh()` so a displayed count for that barcode updates. On `error`, render the message with `role="alert"` and leave the line unreversed. A thrown call is logged with the change id and shows `ITEM_WRITE_FAILURE_MESSAGE`.
+**Contract:** An unreversed line renders a `Button` labeled `Undo`, with `aria-label` `Undo {+1|-1} {name} {barcode}`. A reversed line renders the text `reversed` and no button. An in-flight ref blocks a second reversal while one is pending. Do not read that ref during render. Drive `disabled` on every Undo button from `pendingChangeId` state, set in the click handler, or from `useTransition`'s `isPending`. Set list state only inside the async response. On `reversed`, reload the lines and call `router.refresh()` so a displayed count for that barcode updates. On `error`, render the message with `role="alert"` and leave the line unreversed. A thrown call is logged with the change id and shows `ITEM_WRITE_FAILURE_MESSAGE`, imported from `src/lib/items/scan-failure-messages.ts`. `scan-capture.tsx` imports that same constant and drops its local copy.
 
 ### Success Criteria
 
 #### Automated Verification
 
 - `pnpm test` passes `src/lib/items/reverse-quantity-change.test.ts`. A number returns `reversed`, including `0`. Code `23514` returns `below-zero`. Any other error or `null` data throws with the change id.
-- `pnpm lint` and `pnpm typecheck` exit 0.
+- `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual Verification
 
@@ -477,7 +477,7 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 1. Run `pnpm exec supabase db push` to apply the ledger migration.
 2. In the SQL editor, start a transaction. Run `set local role authenticated` and `set local request.jwt.claims = '{"sub":"<member user id>"}'`. Call `increment_household_quantity('<stocked barcode>', gen_random_uuid())`. Expect a change id and the count plus 1, plus one log row. Roll back.
 3. Repeat step 2 with `decrement_household_quantity` on a barcode at 1. Expect 0, then a `refuses a quantity below 0` raise and no second log row. Call both functions with an unknown barcode. Expect the not-stocked text.
-4. Check `has_function_privilege` for `anon` and `authenticated` on both scan functions. Check that `to_regprocedure('public.increment_household_quantity(text)')` is null.
+4. Check `has_function_privilege` for `anon` and `authenticated` on both `(text, uuid)` scan functions. Check that `to_regprocedure('public.increment_household_quantity(text, uuid)')` and `to_regprocedure('public.increment_household_quantity(text)')` are both not null.
 5. In the app, stock-scan an item. Expect the S-03 result and toast, a `scan-session-id` in `sessionStorage`, and one log row with that id.
 6. Using-scan a stocked item at 2 or more. Expect the count 1 lower and `Item {name} {barcode} was removed from inventory.` Refresh. Expect no change and no confirmation.
 7. Hold the same can in frame. Expect no change. Move it out for 500ms or more and present it again. Expect one more decrease.
@@ -489,20 +489,24 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 ## Migration and Rollback
 
-Two migrations, applied with `pnpm exec supabase db push` (`README.md` lines 42-51).
+Two migrations during the slice, applied with `pnpm exec supabase db push` (`README.md` lines 42-51), plus one contract migration after the S-04 deploy.
 
-The ledger migration adds a constraint, a table, and an RLS policy. It drops `increment_household_quantity(text)` and creates the two `(text, uuid)` scan functions. The constraint validates the existing rows, which are all at least 0. No existing quantity changes. The old increment is gone the moment the migration applies, so the build deployed from `main` fails stocking scans until this branch deploys. Apply it close to deploy.
+The ledger migration adds a constraint, a table, and an RLS policy. It creates `increment_household_quantity(text, uuid)` and `decrement_household_quantity(text, uuid)`. It does not drop `increment_household_quantity(text)`. The constraint validates the existing rows, which are all at least 0. No existing quantity changes. The build deployed from `main` keeps calling the old function, and those stocking scans write no log row until this branch deploys.
 
 The reversal migration adds one function and changes no data.
 
-All three functions are `security definer` with `set search_path = ''`. Each one resolves the household from `auth.uid()` through `household_members`, revokes `public` and `anon`, and grants `authenticated` only. The table has a member-only select policy and no write policy, so rows change only through these functions.
+After the S-04 deploy, apply `supabase/migrations/<timestamp>_drop_increment_household_quantity_text.sql`, created with `pnpm exec supabase migration new drop_increment_household_quantity_text`. It runs `drop function public.increment_household_quantity(text);`. After it, `to_regprocedure('public.increment_household_quantity(text)')` returns null. Until that migration, the old overload stays.
 
-To roll back, add one new migration and deploy the S-03 app code with it:
+All three new functions are `security definer` with `set search_path = ''`. Each one resolves the household from `auth.uid()` through `household_members`, revokes `public` and `anon`, and grants `authenticated` only. The table has a member-only select policy and no write policy, so rows change only through these functions. The old `increment_household_quantity(text)` keeps the grants from its own migration.
+
+To roll back before the contract migration, add one new migration and deploy the S-03 app code with it:
 
 - Drop `reverse_quantity_change(uuid)`, `decrement_household_quantity(text, uuid)`, and `increment_household_quantity(text, uuid)`.
-- Recreate `increment_household_quantity(item_barcode text) returns integer` from `supabase/migrations/20260930092020_increment_household_quantity.sql` lines 1-48, with its revoke and grant.
+- Leave `increment_household_quantity(text)` in place.
 - Drop `public.household_quantity_changes`.
 - Drop the `household_inventory_quantity_not_negative` constraint, or keep it, since S-03 never writes a negative value.
+
+To roll back after the contract migration, also recreate `increment_household_quantity(item_barcode text) returns integer` from `supabase/migrations/20260930092020_increment_household_quantity.sql` lines 1-48, with its revoke and grant.
 
 Dropping the table loses the change history. Counts stay as they are.
 
@@ -534,11 +538,11 @@ Dropping the table loses the change history. Counts stay as they are.
 
 - [ ] 1.1 `pnpm test` passes `src/lib/items/increment-hab-unit-quantity.test.ts` and `src/lib/items/decrement-hab-unit-quantity.test.ts`. A row returns `{ changeId, quantity }`, a quantity of `0` is returned, and an RPC error or a malformed result throws an `Error` that names the barcode.
 - [ ] 1.2 `pnpm test` passes `src/lib/items/scan-session.test.ts`. Read returns `null` for missing or invalid values without writing, ensure mints once and reuses a valid id, and `isScanSessionId` rejects non-UUID input.
-- [ ] 1.3 `pnpm lint` and `pnpm typecheck` exit 0.
+- [ ] 1.3 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 
-- [ ] 1.4 `pnpm exec supabase db push` applies the new migration. `select to_regprocedure('public.increment_household_quantity(text)')` returns null.
+- [ ] 1.4 `pnpm exec supabase db push` applies the new migration. `select to_regprocedure('public.increment_household_quantity(text, uuid)')` is not null, and `select to_regprocedure('public.increment_household_quantity(text)')` is not null.
 - [ ] 1.5 `has_function_privilege('anon', ..., 'execute')` returns false for `increment_household_quantity(text, uuid)` and `decrement_household_quantity(text, uuid)`, and `has_function_privilege('authenticated', ..., 'execute')` returns true for both.
 - [ ] 1.6 In a rolled-back transaction, `update public.household_inventory set quantity = -1` fails with a check violation.
 - [ ] 1.7 As a member, `increment_household_quantity` on a stocked barcode returns a change id and the count plus 1, and adds one log row with that session id, delta 1, and the trimmed barcode.
@@ -552,7 +556,7 @@ Dropping the table loses the change history. Counts stay as they are.
 #### Automated
 
 - [ ] 2.1 `pnpm test` passes `src/lib/items/scan-direction.test.ts`. A row returns quantity for stocking and for using, including quantity `0`, and a null row returns create for both directions.
-- [ ] 2.2 `pnpm lint` and `pnpm typecheck` exit 0.
+- [ ] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 
@@ -569,7 +573,7 @@ Dropping the table loses the change history. Counts stay as they are.
 #### Automated
 
 - [ ] 3.1 `pnpm test` passes `src/lib/items/load-scan-session-lines.test.ts`. No rows maps to `[]`, rows keep their returned order, `reversed_at` maps to `isReversed`, `-1` maps to `quantityDelta: -1`, and an error or a malformed row throws with the session id.
-- [ ] 3.2 `pnpm lint` and `pnpm typecheck` exit 0.
+- [ ] 3.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 
@@ -584,7 +588,7 @@ Dropping the table loses the change history. Counts stay as they are.
 #### Automated
 
 - [ ] 4.1 `pnpm test` passes `src/lib/items/reverse-quantity-change.test.ts`. A number returns `reversed`, including `0`. Code `23514` returns `below-zero`. Any other error or `null` data throws with the change id.
-- [ ] 4.2 `pnpm lint` and `pnpm typecheck` exit 0.
+- [ ] 4.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 

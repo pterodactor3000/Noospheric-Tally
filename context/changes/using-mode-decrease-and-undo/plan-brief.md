@@ -32,6 +32,7 @@ The member selects using and scans an item he opens. The count drops by 1, and `
 | At-0 using scan | The action checks the loaded quantity before the write. A raced RPC raise shows the existing write failure | No parsing of Postgres exception text | plan |
 | Reversal below 0 | The RPC raises SQLSTATE `23514`, and the wrapper branches on that code | The action has no quantity loaded before a reversal | plan |
 | Stocking caller in Phase 1 | Phase 1 also adds the session helper and passes the session id on stocking | The replaced increment signature otherwise breaks the only caller | plan |
+| Client failure strings | `src/lib/items/scan-failure-messages.ts`, not a `'use server'` file | A `'use server'` file can export only async functions, and exporting a string fails `next build` | plan review 2026-10-29 (F3) |
 
 ## Scope
 
@@ -60,14 +61,14 @@ Follow the S-03 pattern. Security-definer RPCs do every write, server actions ca
 
 | Phase | Deliverable | Key risk |
 | --- | --- | --- |
-| 1. Quantity change ledger and scan RPCs | Log table, floor constraint, logged increment and decrement, stocking passes the session id | Dropping the old increment breaks stocking on the deployed build until this branch deploys |
+| 1. Quantity change ledger and scan RPCs | Log table, floor constraint, logged increment and decrement, stocking passes the session id | The old increment stays until a post-deploy drop, so stocking from `main` writes no log row |
 | 2. Using scan lowers the count | `consumeScannedItem`, count and confirmation on the using result, visible at-0 refusal | A repeated at-0 notice with an unchanged key fails to show again |
 | 3. Session review list | Lines from this tab session below the scanner, newest first | The list reloads before or after the redirect render and shows a stale set |
 | 4. Per-line reversal | Undo once per line, below-0 refusal, reversed marker | A double tap or a concurrent scan reverses twice or deadlocks |
 
 ## Risks and Assumptions
 
-- The Phase 1 migration drops `increment_household_quantity(text)`. Push it close to deploy.
+- Phase 1 adds `increment_household_quantity(text, uuid)` and leaves `increment_household_quantity(text)` in place. Drop the old function only after the S-04 deploy. Until then, stocking from the deployed build writes no log row.
 - The scan RPCs declare `returns table (change_id uuid, quantity integer)`. An unqualified `quantity` column inside them is ambiguous and fails at call time.
 - The reversal RPC locks the log row and then the inventory row. A scan locks only the inventory row, so they cannot deadlock.
 - A storage that throws falls back to an in-memory session id for the page lifetime.
