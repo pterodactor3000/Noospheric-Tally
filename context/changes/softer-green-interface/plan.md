@@ -67,7 +67,7 @@ Routes to check: `/`, `/login`, `/signup`, `/hab-unit/new`, `/inventory`, `/inve
 - Rendering CRITICAL, WARNING, or IN STOCK labels. That is S-06 and S-10 under FR-007 and FR-008. This change only defines their tokens.
 - A theme toggle, `next-themes`, or a stored theme preference. Dark mode follows the OS setting.
 - Icons for Sign in, Sign up, or Attach. The TEC-37 table names no icon for them.
-- Icons on links that are not `Button` (Back to inventory, footnote links, the brand label).
+- Icons on Back to inventory (a link-variant `Button`), footnote links, or the brand label.
 - Restyling the loading splash (`src/components/loading-screen.tsx`). Its marks are white SVG files on a fixed `#181818` backdrop and would vanish on a light token.
 - Restyling the camera viewport in `barcode-scanner.tsx` lines 220-320 (`bg-black`, `text-white`, black overlay). It frames live video.
 - Replacing the native radio list. That is S-14.
@@ -450,7 +450,7 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 - [x] 2.7 A short viewport scrolls a tall page, and the header moves with the page ad9f792
 - [x] 2.8 A short page at a normal viewport height does not scroll only to clear the header ad9f792
 - [x] 2.9 `/inventory/scan` shows the app header, the back link does not cover it, and body text still computes to Kode Mono ad9f792
-- [x] 2.10 Back to inventory is a link button just under the header, on the left, on inventory subroutes 620bcff
+- [x] 2.10 Back to inventory is a link button just under the header, on the left, on inventory subroutes 620bcff 43e2833
 
 ### Phase 3: shadcn default controls
 
