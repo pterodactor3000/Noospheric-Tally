@@ -298,20 +298,20 @@ Status: skipped on 2026-10-29 by user decision. Do not implement. The header sta
 
 #### Manual
 
-- [ ] 2.3 A barcode absent from the hab unit and the global store, with a catalog hit, shows "The item was not found in our database.", hides the catalog sentence, prefills the name, and still submits.
-- [ ] 2.4 The same path, when every catalog misses, shows both sentences, leaves the name empty, and still submits.
-- [ ] 2.5 The barcode on the item create form is bold.
-- [ ] 2.6 Add-to-hab-unit and already-stocked do not show those sentences.
+- [x] 2.3 A barcode absent from the hab unit and the global store, with a catalog hit, shows "The item was not found in our database.", hides the catalog sentence, prefills the name, and still submits. `12a43a6`
+- [x] 2.4 The same path, when every catalog misses, shows both sentences, leaves the name empty, and still submits. `12a43a6`
+- [x] 2.5 The barcode on the item create form is bold. `12a43a6`
+- [x] 2.6 Add-to-hab-unit and already-stocked do not show those sentences. `12a43a6`
 
 ### Phase 3: Show the loading screen while lookup runs
 
 #### Automated
 
-- [ ] 3.1 `pnpm lint` exits 0.
-- [ ] 3.2 `pnpm typecheck` exits 0.
+- [x] 3.1 `pnpm lint` exits 0. (verified 2026-10-29, no code change, no SHA)
+- [x] 3.2 `pnpm typecheck` exits 0. (verified 2026-10-29, no code change, no SHA)
 
 #### Manual
 
-- [ ] 3.3 `/inventory/new?barcode=` for a valid barcode absent from the hab unit shows `LoadingScreen` until the create form replaces it.
-- [ ] 3.4 `/inventory/scan` shows `LoadingScreen` until the scanner replaces it.
-- [ ] 3.5 With `prefers-reduced-motion: reduce`, the rings stay visible and do not spin. The screen-reader label stays `Loading`.
+- [x] 3.3 `/inventory/new?barcode=` for a valid barcode absent from the hab unit shows `LoadingScreen` until the create form replaces it. (verified 2026-10-29, no code change, no SHA)
+- [x] 3.4 `/inventory/scan` shows `LoadingScreen` until the scanner replaces it. (verified 2026-10-29, no code change, no SHA)
+- [x] 3.5 With `prefers-reduced-motion: reduce`, the rings stay visible and do not spin. The screen-reader label stays `Loading`. (verified 2026-10-29, no code change, no SHA)
