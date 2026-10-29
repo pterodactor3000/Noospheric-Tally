@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 const TallyLabel = () => {
   return (
-    <Link href={'/'}>
+    <Link href="/" className={clsx('flex', 'items-center')}>
       <p
         className={clsx(
           'font-mono',

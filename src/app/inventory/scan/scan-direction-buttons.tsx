@@ -1,6 +1,7 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
+import { PackageMinus, PackagePlus, type LucideIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +17,11 @@ const SCAN_DIRECTIONS: readonly ScanDirection[] = [
   SCAN_DIRECTION_USING,
   SCAN_DIRECTION_STOCKING,
 ]
+
+const SCAN_DIRECTION_ICONS: Record<ScanDirection, LucideIcon> = {
+  [SCAN_DIRECTION_USING]: PackageMinus,
+  [SCAN_DIRECTION_STOCKING]: PackagePlus,
+}
 
 const scanDirectionListeners = new Set<() => void>()
 
@@ -73,6 +79,7 @@ const ScanDirectionButtons = () => {
     <div role="radiogroup" aria-label="Scan direction" className="flex gap-2">
       {SCAN_DIRECTIONS.map((direction) => {
         const isSelected = direction === selectedDirection
+        const DirectionIcon = SCAN_DIRECTION_ICONS[direction]
 
         return (
           <Button
@@ -80,10 +87,13 @@ const ScanDirectionButtons = () => {
             type="button"
             role="radio"
             aria-checked={isSelected}
+            aria-label={direction}
             variant={isSelected ? 'default' : 'outline'}
+            size="icon"
             onClick={() => handleSelectDirection(direction)}
+            className="size-[68px]! p-3"
           >
-            {direction}
+            <DirectionIcon className="size-10" aria-hidden="true" />
           </Button>
         )
       })}

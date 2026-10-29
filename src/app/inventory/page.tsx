@@ -1,11 +1,9 @@
 import Link from 'next/link'
-import { clsx } from 'clsx'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitItems } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
-import { CSSProperties } from 'react'
 
 const InventoryPage = async () => {
   await requireCurrentUser()
@@ -18,10 +16,7 @@ const InventoryPage = async () => {
         <h1>Your {habUnit.name} tally</h1>
       </div>
 
-      <section
-        className={clsx(panel, 'rounded-br-4xl')}
-        style={{ cornerShape: 'bevel' } as CSSProperties}
-      >
+      <section className={panel}>
         {items.length === 0 ? (
           <p>Nothing is added here yet.</p>
         ) : (

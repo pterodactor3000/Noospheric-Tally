@@ -1,7 +1,6 @@
 'use client'
 
 import { startTransition, useRef, useState } from 'react'
-import Link from 'next/link'
 import { unstable_rethrow, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 
@@ -125,11 +124,11 @@ const ScanCapture = ({
     submitState.status === 'failure' ? submitState.message : undefined
 
   return (
-    <main className={centeredPage}>
+    <main className={clsx(centeredPage, 'relative')}>
       <div
         className={clsx(
           'pointer-events-none',
-          'fixed',
+          'absolute',
           'top-[max(0.75rem,env(safe-area-inset-top))]',
           'left-1/2',
           'z-50',
@@ -140,26 +139,6 @@ const ScanCapture = ({
           'gap-3',
         )}
       >
-        <Link
-          href="/inventory"
-          className={clsx(
-            'pointer-events-auto',
-            'inline-flex',
-            'min-h-11',
-            'items-center',
-            'self-start',
-            'border-2',
-            'border-ring',
-            'bg-background',
-            'px-3',
-            'py-2',
-            'font-mono',
-            'text-sm',
-            'text-foreground',
-          )}
-        >
-          Back to inventory
-        </Link>
         {scanResult ? (
           <ScanResultNotice
             key={`${noticeGeneration}:${scanResult.title}:${scanResult.detail}`}
