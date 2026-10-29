@@ -15,7 +15,7 @@ The delta is a household-scoped change log with a session id, logged increment a
 
 ## Desired End State
 
-The member selects using and scans an item he opens. The count drops by 1, and `Item {name} {barcode} was removed from inventory.` shows once. A refresh changes nothing. At 0, the scan writes nothing and shows `Item {name} {barcode} is already at 0.` Below the scanner, every +1 and -1 from this tab session is listed newest first, with Undo on each unreversed line. Undo moves the count back once and marks the line `reversed`. A reversal that would go below 0 shows `This line cannot be reversed because the count would drop below 0.`, and the line stays unreversed. On `/inventory`, each item shows its current count: the name on the left, the count on the far right, and `.` characters between them. That section is at most 900px wide, and the list text is 14px below 640px and 16px from 640px up.
+The member selects using and scans an item he opens. The count drops by 1, and `Item {name} {barcode} was removed from inventory.` shows once. A refresh changes nothing. At 0, the scan writes nothing and shows `Item {name} {barcode} is already at 0.` Below the scanner, every +1 and -1 from this tab session is listed newest first, with Undo on each unreversed line. Undo moves the count back once and marks the line `reversed`. A reversal that would go below 0 shows `This line cannot be reversed because the count would drop below 0.`, and the line stays unreversed. On `/inventory`, each item shows its current count: the name on the left, the count on the far right, and `.` characters between them. That section fills the available width and is at most 900px wide, and the list text is 14px below 640px and 16px from 640px up.
 
 ## Key Decisions Made
 
@@ -33,7 +33,7 @@ The member selects using and scans an item he opens. The count drops by 1, and `
 | Reversal below 0 | The RPC raises SQLSTATE `23514`, and the wrapper branches on that code | The action has no quantity loaded before a reversal | plan |
 | Stocking caller in Phase 1 | Phase 1 also adds the session helper and passes the session id on stocking | The replaced increment signature otherwise breaks the only caller | plan |
 | Client failure strings | `src/lib/items/scan-failure-messages.ts`, not a `'use server'` file | A `'use server'` file can export only async functions, and exporting a string fails `next build` | plan review 2026-10-29 (F3) |
-| Inventory list | Name on the left, count on the far right, `.` characters between them. Section `max-width: 900px`. List text 14px below 640px and 16px from 640px up | The inventory page listed names only | User 2026-10-29 |
+| Inventory list | Name on the left, count on the far right, `.` characters between them. Section width `-webkit-fill-available` and `stretch`, capped at 900px. List text 14px below 640px and 16px from 640px up | The inventory page listed names only | User 2026-10-29 |
 
 ## Scope
 
@@ -44,7 +44,7 @@ The member selects using and scans an item he opens. The count drops by 1, and `
 - Session id in `sessionStorage` on both directions
 - Session list below the scanner, newest first
 - Per-line Undo through a locked reversal RPC, with a visible below-0 refusal
-- Inventory list shows each item's current count, with the name on the left, `.` leaders, and the count on the right, inside a section at most 900px wide
+- Inventory list shows each item's current count, with the name on the left, `.` leaders, and the count on the right, inside a section that fills the available width and is at most 900px wide
 
 **Out of scope:**
 
@@ -66,7 +66,7 @@ Follow the S-03 pattern. Security-definer RPCs do every write, server actions ca
 | 2. Using scan lowers the count | `consumeScannedItem`, count and confirmation on the using result, visible at-0 refusal | A repeated at-0 notice with an unchanged key fails to show again |
 | 3. Session review list | Lines from this tab session below the scanner, newest first | The list reloads before or after the redirect render and shows a stale set |
 | 4. Per-line reversal | Undo once per line, below-0 refusal, reversed marker | A double tap or a concurrent scan reverses twice or deadlocks |
-| 5. Inventory list shows each count | Name, dot leaders, and the current count, in a section at most 900px wide | A border or a gap is used instead of `.` characters |
+| 5. Inventory list shows each count | Name, dot leaders, and the current count, in a section that fills the available width and is at most 900px wide | A border or a gap is used instead of `.` characters |
 
 ## Risks and Assumptions
 

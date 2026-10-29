@@ -480,7 +480,7 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 **Intent:** Show the count on each inventory row, inside a section no wider than 900px.
 
-**Contract:** The inventory `<section>` is `w-full` and `max-w-[900px]`. It still holds the empty state, the list, and the two buttons. The list uses `loadHabUnitTallyLines`. Each row is one line: the name first, then a run of `.` characters that fills the remaining space, then the count at the far right. The dots are characters, not a border, underline, or empty gap. The count does not wrap onto a second line. The dot run is `aria-hidden`. Below the `sm` breakpoint the list font size is `14px`. From `sm` up it is `16px`. The buttons keep their current size.
+**Contract:** The inventory `<section>` fills the available width. Set `width: -webkit-fill-available` and `width: stretch`, and cap it with `max-w-[900px]`. Do not leave the width as content size, and do not use `w-full` alone. The centered page would otherwise shrink the section to the text. It still holds the empty state, the list, and the two buttons. The list uses `loadHabUnitTallyLines`. Each row is one line: the name first, then a run of `.` characters that fills the remaining space, then the count at the far right. The dots are characters, not a border, underline, or empty gap. The count does not wrap onto a second line. The dot run is `aria-hidden`. Below the `sm` breakpoint the list font size is `14px`. From `sm` up it is `16px`. The buttons keep their current size.
 
 ### Success Criteria
 
@@ -490,7 +490,7 @@ Run `revoke all on function public.reverse_quantity_change(uuid) from public, an
 
 #### Manual Verification
 
-- The inventory section is at most 900px wide.
+- The inventory section fills the available width with `width: -webkit-fill-available` and `width: stretch`, and it is at most 900px wide.
 - Each stocked row shows the name on the left, `.` characters between, and the count on the far right of the same line.
 - Below 640px the list text is 14px. At 640px and wider it is 16px.
 - The count matches `household_inventory.quantity`, including `0`.
@@ -643,11 +643,11 @@ Dropping the table loses the change history. Counts stay as they are.
 
 #### Automated
 
-- [ ] 5.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 5.1 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 
-- [ ] 5.2 The inventory section is at most 900px wide.
+- [ ] 5.2 The inventory section fills the available width with `width: -webkit-fill-available` and `width: stretch`, and it is at most 900px wide.
 - [ ] 5.3 Each stocked row shows the name on the left, `.` characters between, and the count on the far right of the same line.
 - [ ] 5.4 Below 640px the list text is 14px. At 640px and wider it is 16px.
 - [ ] 5.5 The count matches `household_inventory.quantity`, including `0`.
