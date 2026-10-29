@@ -25,7 +25,7 @@ const centeredPage = clsx(
 const contentWidth = clsx('mx-auto', 'w-full', 'max-w-4xl')
 
 const panel = clsx(
-  'border',
+  'border-2',
   'border-foreground/50',
   'p-8',
   'shadow-sm',

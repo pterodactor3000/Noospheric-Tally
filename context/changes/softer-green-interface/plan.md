@@ -100,8 +100,8 @@ Restore the three drifted controls to upstream class sets and primitives, keepin
 | `--accent` | `oklch(0.9 0.03 155)` #cfe4d5 | `oklch(0.32 0.03 160)` #25382e |
 | `--accent-foreground` | `oklch(0.27 0.03 160)` | `oklch(0.9 0.02 155)` |
 | `--destructive` | `oklch(0.55 0.19 27)` #c9302d | `oklch(0.7 0.17 25)` #f66d67 |
-| `--border` | `oklch(0.85 0.02 155)` #c4d2c8 | `oklch(0.36 0.02 160)` #344039 |
-| `--input` | `oklch(0.85 0.02 155)` | `oklch(0.4 0.02 160)` #3f4b44 |
+| `--border` | `oklch(0.72 0.03 155)` | `oklch(0.5 0.03 160)` |
+| `--input` | `oklch(0.72 0.03 155)` | `oklch(0.55 0.03 160)` |
 | `--ring` | `oklch(0.6 0.05 160)` #668a76 | `oklch(0.55 0.05 158)` #597b66 |
 
 Computed WCAG contrast: foreground on background is 13.7:1 light and 13.5:1 dark, high enough for long reads without pure black on white. Muted foreground on background is 5.5:1 light and 6.8:1 dark. Primary foreground on primary is 5.8:1 light and 7.5:1 dark. Ring on background is 3.6:1 light and 3.8:1 dark, above the 3:1 non-text minimum.
@@ -224,7 +224,7 @@ The header is the top block of the page. Content starts below it. A short page d
 
 **Intent:** The add-item view can return to the inventory list.
 
-**Contract:** An outline `Button` links to `/inventory` with the label `Back to inventory`. It sits above the panel on every state of this page. No icon.
+**Contract:** `BackToInventoryLink` renders under the header, left aligned, on every `/inventory/` route except `/inventory` itself. It is a `Button` with `variant="link"` pointing at `/inventory`. The label is `Back to inventory`. No icon. The add-item page and the scan page do not render their own copy.
 
 #### 5. Scan back link stays under the header
 
@@ -232,7 +232,7 @@ The header is the top block of the page. Content starts below it. A short page d
 
 **Intent:** The existing scan back link must not cover the header now that the header is on that route.
 
-**Contract:** The back link and notice stack are `absolute` inside the scan `main`, not `fixed` to the viewport. The label stays `Back to inventory`. It remains a link, not a `Button`.
+**Contract:** The scan notice stays `absolute` inside the scan `main`. The back control is the shared link button under the header, not a second control on the camera.
 
 ### Success Criteria
 
@@ -251,7 +251,7 @@ The header is the top block of the page. Content starts below it. A short page d
 - With a short viewport, a tall page scrolls, and the header moves up with the page. It does not stay pinned.
 - A short page at a normal viewport height does not gain an empty scroll just to clear the header.
 - `/inventory/scan` shows the app header. The scan back link does not cover it.
-- `/inventory/new` shows an outline Back to inventory button above the panel.
+- Back to inventory is a link button just under the header, on the left, on inventory subroutes.
 - Computed `font-family` on the body is still Kode Mono.
 
 ---
@@ -313,7 +313,7 @@ Sizes, `defaultVariants`, the `Button` signature, `data-slot`, and exports stay.
 - `pnpm test` passes.
 - `pnpm build` passes.
 - `rg -n "react-aria" src package.json` returns no match.
-- `rg -n "border-2|bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match.
+- `rg -n "bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match. Input and button strokes are `border-2`. An invalid input border is solid `--destructive` in both modes, including while focused.
 
 #### Manual Verification
 
@@ -446,25 +446,25 @@ Every button named in the TEC-37 table shows its Lucide icon before the label. T
 - [x] 2.7 A short viewport scrolls a tall page, and the header moves with the page ad9f792
 - [x] 2.8 A short page at a normal viewport height does not scroll only to clear the header ad9f792
 - [x] 2.9 `/inventory/scan` shows the app header, the back link does not cover it, and body text still computes to Kode Mono ad9f792
-- [x] 2.10 `/inventory/new` shows an outline Back to inventory button above the panel ad9f792
+- [x] 2.10 Back to inventory is a link button just under the header, on the left, on inventory subroutes
 
 ### Phase 3: shadcn default controls
 
 #### Automated
 
-- [ ] 3.1 `pnpm lint` passes
-- [ ] 3.2 `pnpm typecheck` passes
-- [ ] 3.3 `pnpm test` passes
-- [ ] 3.4 `pnpm build` passes
-- [ ] 3.5 `rg -n "react-aria" src package.json` returns no match
-- [ ] 3.6 `rg -n "border-2|bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match
+- [x] 3.1 `pnpm lint` passes
+- [x] 3.2 `pnpm typecheck` passes
+- [x] 3.3 `pnpm test` passes
+- [x] 3.4 `pnpm build` passes
+- [x] 3.5 `rg -n "react-aria" src package.json` returns no match
+- [x] 3.6 `rg -n "bg-foreground|border-primary" src/components/ui/button.tsx src/components/ui/input.tsx` returns no match
 
 #### Manual
 
-- [ ] 3.7 `/login` inputs show thin input border, ring focus, square corners, destructive border when invalid
-- [ ] 3.8 Outline buttons on `/` and `/inventory` show border color, muted hover, square corners in both modes
-- [ ] 3.9 On `/inventory/scan`, the selected direction uses the default variant and the other uses outline, with visible keyboard focus
-- [ ] 3.10 On item creation, Filter narrows the radio list on the new Input
+- [x] 3.7 `/login` inputs show thin input border, ring focus, square corners, destructive border when invalid
+- [x] 3.8 Outline buttons on `/` and `/inventory` show border color, muted hover, square corners in both modes
+- [x] 3.9 On `/inventory/scan`, the selected direction uses the default variant and the other uses outline, with visible keyboard focus
+- [x] 3.10 On item creation, Filter narrows the radio list on the new Input
 
 ### Phase 4: Button icons
 

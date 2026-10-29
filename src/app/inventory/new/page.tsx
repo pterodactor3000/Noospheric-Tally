@@ -1,9 +1,6 @@
 import { ReactNode } from 'react'
-import Link from 'next/link'
-import { clsx } from 'clsx'
 
-import { actionButton, contentWidth, pageShell, panel } from '@/app/styles/class-names'
-import { Button } from '@/components/ui/button'
+import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
 
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
@@ -81,14 +78,6 @@ const NewItemPage = async ({
   return (
     <main className={pageShell}>
       <div className={contentWidth}>
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/inventory" />}
-          className={clsx(actionButton, 'mb-6')}
-        >
-          Back to inventory
-        </Button>
         <div className={panel}>
           {body}
         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Kode_Mono } from 'next/font/google'
 import { clsx } from 'clsx'
 
+import { BackToInventoryLink } from '@/components/back-to-inventory-link'
 import { Header } from '@/components/header'
 
 import './styles/globals.css'
@@ -43,6 +44,7 @@ export default function RootLayout({
         )}
       >
         <Header />
+        <BackToInventoryLink />
         <div className={clsx('flex', 'w-full', 'flex-1', 'flex-col')}>
           {children}
         </div>
