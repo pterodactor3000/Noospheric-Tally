@@ -24,6 +24,17 @@ const tallyDots = clsx(
   'whitespace-nowrap',
 )
 const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
+const tallyControl = clsx(
+  'cursor-pointer',
+  'border-0',
+  'bg-transparent',
+  'p-0',
+  'font-[inherit]',
+  'text-[length:inherit]',
+  'leading-[inherit]',
+  'text-inherit',
+  'no-underline',
+)
 
 const InventoryPage = async () => {
   await requireCurrentUser()
@@ -47,7 +58,23 @@ const InventoryPage = async () => {
                 <span aria-hidden="true" className={tallyDots}>
                   {TALLY_DOT_LEADER}
                 </span>
-                <span className={tallyCount}>{line.quantity}</span>
+                <span className={tallyCount}>
+                  <button
+                    type="button"
+                    aria-label={`Decrease ${line.name}`}
+                    className={tallyControl}
+                  >
+                    [-]
+                  </button>{' '}
+                  {line.quantity}{' '}
+                  <button
+                    type="button"
+                    aria-label={`Increase ${line.name}`}
+                    className={tallyControl}
+                  >
+                    [+]
+                  </button>
+                </span>
               </li>
             ))}
           </ul>
