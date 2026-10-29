@@ -4,13 +4,13 @@ interface CreateLookupNotices {
 }
 
 const HOUSEHOLD_MISS_MESSAGE = 'The item was not found in our database.'
-const CATALOG_MISS_MESSAGE = 'The item was not found in the external databases.'
+const EMPTY_CATALOG_MESSAGE = 'Enter the item name manually.'
 
 const getCreateLookupNotices = (
   catalogStatus: 'found' | 'empty',
 ): CreateLookupNotices => ({
   householdMissMessage: HOUSEHOLD_MISS_MESSAGE,
-  catalogMissMessage: catalogStatus === 'empty' ? CATALOG_MISS_MESSAGE : null,
+  catalogMissMessage: catalogStatus === 'empty' ? EMPTY_CATALOG_MESSAGE : null,
 })
 
 export type { CreateLookupNotices }

@@ -9,10 +9,10 @@ describe('getCreateLookupNotices', () => {
     })
   })
 
-  test('returns the household sentence and the catalog sentence when every catalog misses', () => {
+  test('returns the household sentence and a prompt to enter the item name when the catalog status is empty', () => {
     expect(getCreateLookupNotices('empty')).toEqual({
       householdMissMessage: 'The item was not found in our database.',
-      catalogMissMessage: 'The item was not found in the external databases.',
+      catalogMissMessage: 'Enter the item name manually.',
     })
   })
 })

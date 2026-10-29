@@ -21,7 +21,7 @@ Deliver roadmap slice S-12 (`create-flow-lookup-feedback`): a signed-in user can
 
 The header stays as it is now, in normal flow. This change does not pin it.
 
-On the item create form, the barcode is bold. The form says "The item was not found in our database." It also says "The item was not found in the external databases." when every catalog misses. A catalog hit still prefills the name and omits the catalog sentence. The name field and both submit actions stay usable. Add-to-hab-unit and already-stocked do not show those sentences.
+On the item create form, the barcode is bold. The form says "The item was not found in our database." It also says "Enter the item name manually." when the catalog lookup returns empty. A catalog hit still prefills the name and omits the catalog sentence. The name field and both submit actions stay usable. Add-to-hab-unit and already-stocked do not show those sentences.
 
 `/inventory/scan` and `/inventory/new` show `LoadingScreen` until that route's server render replaces it. With reduced motion, the rings stay visible and do not spin. The screen-reader label stays `Loading`.
 
@@ -123,7 +123,7 @@ The header stays pinned, paints on the page background above scrolling content, 
 
 ### Overview
 
-The item create form tells the user about a household miss and, when every catalog misses, a catalog miss. The barcode is bold. The form still saves.
+The item create form tells the user about a household miss and, when the catalog lookup returns empty, asks them to enter the item name manually. The barcode is bold. The form still saves.
 
 ### Changes Required
 
@@ -146,7 +146,7 @@ const getCreateLookupNotices = (
 ): CreateLookupNotices
 ```
 
-`householdMissMessage` is `The item was not found in our database.` `catalogMissMessage` is `The item was not found in the external databases.` when `catalogStatus` is `empty`, and `null` when it is `found`.
+`householdMissMessage` is `The item was not found in our database.` `catalogMissMessage` is `Enter the item name manually.` when `catalogStatus` is `empty`, and `null` when it is `found`. An empty catalog status includes a miss, a timeout, and a failed request, so the sentence does not claim the catalogs confirmed the item was absent.
 
 #### 2. Notice tests
 

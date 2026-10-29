@@ -91,7 +91,7 @@ const ScanDirectionButtons = () => {
             variant={isSelected ? 'default' : 'outline'}
             size="icon"
             onClick={() => handleSelectDirection(direction)}
-            className="size-[68px]! p-3"
+            className="size-17! p-3"
           >
             <DirectionIcon className="size-10" aria-hidden="true" />
           </Button>

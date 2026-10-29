@@ -90,16 +90,32 @@ const ScanResultNotice = ({
           'uppercase',
           'tracking-tight',
           'text-balance',
-          'break-words',
+          'wrap-break-word',
         )}
       >
         {title}
       </p>
-      <p className={clsx('mt-2', 'text-base', 'leading-6', 'text-pretty', 'break-words')}>
+      <p
+        className={clsx(
+          'mt-2',
+          'text-base',
+          'leading-6',
+          'text-pretty',
+          'wrap-break-word',
+        )}
+      >
         {detail}
       </p>
       {latchedConfirmation ? (
-        <p className={clsx('mt-2', 'text-sm', 'leading-6', 'text-pretty', 'break-words')}>
+        <p
+          className={clsx(
+            'mt-2',
+            'text-sm',
+            'leading-6',
+            'text-pretty',
+            'wrap-break-word',
+          )}
+        >
           {latchedConfirmation}
         </p>
       ) : null}
