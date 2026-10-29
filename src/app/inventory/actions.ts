@@ -10,6 +10,11 @@ import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantit
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
+import {
+  loadScanSessionLines,
+  type ScanSessionLine,
+} from '@/lib/items/load-scan-session-lines'
+import { SCAN_SESSION_LOAD_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import { isScanSessionId } from '@/lib/items/scan-session'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { validateItemName } from '@/lib/items/validate-item-name'
@@ -27,6 +32,13 @@ interface ItemAlreadyExists {
 }
 
 type ItemActionResult = ItemActionError | ItemAlreadyExists
+
+interface ScanSessionLinesLoaded {
+  status: 'loaded'
+  lines: ScanSessionLine[]
+}
+
+type ScanSessionLinesResult = ScanSessionLinesLoaded | ItemActionError
 
 const ITEM_WRITE_FAILURE_MESSAGE =
   'Item write failed. Purify the Machine Spirit and try again.'
@@ -240,10 +252,31 @@ const consumeScannedItem = async (
   )
 }
 
+const fetchScanSessionLines = async (
+  scanSessionId: string,
+): Promise<ScanSessionLinesResult> => {
+  if (!isScanSessionId(scanSessionId)) {
+    console.error('fetchScanSessionLines rejected scan session id', {
+      scanSessionId,
+    })
+    return { status: 'error', message: SCAN_SESSION_LOAD_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const lines = await loadScanSessionLines(scanSessionId, supabase)
+    return { status: 'loaded', lines }
+  } catch (error: unknown) {
+    console.error('fetchScanSessionLines failed', { scanSessionId, error })
+    return { status: 'error', message: SCAN_SESSION_LOAD_FAILURE_MESSAGE }
+  }
+}
+
 export {
   createItem,
   attachBarcode,
   addItemToHousehold,
   stockScannedItem,
   consumeScannedItem,
+  fetchScanSessionLines,
 }

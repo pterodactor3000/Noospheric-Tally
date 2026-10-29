@@ -1,6 +1,6 @@
 'use client'
 
-import { startTransition, useRef, useState } from 'react'
+import { startTransition, useRef, useState, useSyncExternalStore } from 'react'
 import { unstable_rethrow } from 'next/navigation'
 import { clsx } from 'clsx'
 
@@ -15,12 +15,14 @@ import {
 import {
   SCAN_SESSION_STORAGE_KEY,
   ensureScanSessionId,
+  readScanSessionId,
   type ScanSessionStorage,
 } from '@/lib/items/scan-session'
 
 import { consumeScannedItem, stockScannedItem } from '../actions'
 import { ScanDirectionButtons } from './scan-direction-buttons'
 import { ScanResultNotice } from './scan-result-notice'
+import { ScanSessionList } from './scan-session-list'
 
 interface ScanCaptureResult {
   readonly title: string
@@ -74,6 +76,30 @@ const fallbackScanSessionStorage = createInMemoryScanSessionStorage()
 
 let hasLoggedScanSessionStorageFailure = false
 
+const scanSessionListeners = new Set<() => void>()
+
+const subscribeToScanSessionId = (listener: () => void) => {
+  scanSessionListeners.add(listener)
+  return () => {
+    scanSessionListeners.delete(listener)
+  }
+}
+
+const notifyScanSessionIdListeners = () => {
+  scanSessionListeners.forEach((listener) => listener())
+}
+
+// Reads only. The id is minted inside a submit, never by a render.
+const getScanSessionIdSnapshot = (): string | null => {
+  try {
+    return readScanSessionId(window.sessionStorage)
+  } catch {
+    return readScanSessionId(fallbackScanSessionStorage)
+  }
+}
+
+const getScanSessionIdServerSnapshot = (): string | null => null
+
 const ensureSubmitScanSessionId = (): string => {
   const createId = () => crypto.randomUUID()
   try {
@@ -99,6 +125,11 @@ const ScanCapture = ({
   const [submitState, setSubmitState] = useState<SubmitState>({ status: 'idle' })
   const [scanRound, setScanRound] = useState(0)
   const isScanSubmitInFlight = useRef(false)
+  const scanSessionId = useSyncExternalStore(
+    subscribeToScanSessionId,
+    getScanSessionIdSnapshot,
+    getScanSessionIdServerSnapshot,
+  )
 
   const handleSubmitBarcode = (barcode: string) => {
     // Resubmitting the held barcode keeps this ScanCapture key, so the scanner
@@ -115,11 +146,12 @@ const ScanCapture = ({
 
     startTransition(async () => {
       try {
-        const scanSessionId = ensureSubmitScanSessionId()
+        const submitScanSessionId = ensureSubmitScanSessionId()
+        notifyScanSessionIdListeners()
         const result =
           direction === SCAN_DIRECTION_STOCKING
-            ? await stockScannedItem(barcode, scanSessionId)
-            : await consumeScannedItem(barcode, scanSessionId)
+            ? await stockScannedItem(barcode, submitScanSessionId)
+            : await consumeScannedItem(barcode, submitScanSessionId)
         if (result.status === 'error') {
           setSubmitState({
             status: 'failure',
@@ -201,6 +233,7 @@ const ScanCapture = ({
           scanRound={scanRound}
         />
       </div>
+      <ScanSessionList scanSessionId={scanSessionId} reloadToken={scanRound} />
     </main>
   )
 }
