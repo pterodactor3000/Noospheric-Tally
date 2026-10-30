@@ -1,3 +1,5 @@
+import { getStockState, type StockState } from './stock-state'
+
 const SCAN_DIRECTION_USING = 'using'
 const SCAN_DIRECTION_STOCKING = 'stocking'
 const SCAN_DIRECTION_STORAGE_KEY = 'scan-direction'
@@ -23,6 +25,7 @@ const writeScanDirection = (
 interface ScanStock {
   readonly name: string
   readonly quantity: number
+  readonly minimumQuantity: number
 }
 
 interface ScanDisplayCreate {
@@ -33,6 +36,7 @@ interface ScanDisplayQuantity {
   readonly status: 'quantity'
   readonly name: string
   readonly quantity: number
+  readonly stockState: StockState
 }
 
 type ScanDisplay = ScanDisplayCreate | ScanDisplayQuantity
@@ -45,7 +49,12 @@ const resolveScanDisplay = (
     return { status: 'create' }
   }
 
-  return { status: 'quantity', name: stock.name, quantity: stock.quantity }
+  return {
+    status: 'quantity',
+    name: stock.name,
+    quantity: stock.quantity,
+    stockState: getStockState(stock.quantity, stock.minimumQuantity),
+  }
 }
 
 export {

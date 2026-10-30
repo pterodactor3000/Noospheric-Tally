@@ -472,11 +472,11 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 #### Automated
 
-- [ ] 4.1 `pnpm test` passes, with `stockState` asserted in `scan-direction.test.ts` and `theme-tokens.test.ts` unchanged
-- [ ] 4.2 `pnpm lint` exits 0
-- [ ] 4.3 `pnpm typecheck` exits 0
-- [ ] 4.4 `pnpm worker:check` exits 0
-- [ ] 4.5 `rg -n "bg-stock-|text-stock-" src` matches only `src/app/styles/stock-state-class-names.ts`
+- [x] 4.1 `pnpm test` passes, with `stockState` asserted in `scan-direction.test.ts` and `theme-tokens.test.ts` unchanged
+- [x] 4.2 `pnpm lint` exits 0
+- [x] 4.3 `pnpm typecheck` exits 0
+- [x] 4.4 `pnpm worker:check` exits 0
+- [x] 4.5 `rg -n "bg-stock-|text-stock-" src` matches only `src/app/styles/stock-state-class-names.ts`
 
 #### Manual
 

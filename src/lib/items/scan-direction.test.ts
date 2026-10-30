@@ -77,20 +77,26 @@ describe('writeScanDirection', () => {
 })
 
 describe('resolveScanDisplay', () => {
-  const stock = { name: 'Lho sticks', quantity: 4 }
+  const stock = { name: 'Lho sticks', quantity: 4, minimumQuantity: 3 }
 
   test('returns quantity when stocking with a stock row', () => {
     expect(resolveScanDisplay(SCAN_DIRECTION_STOCKING, stock)).toEqual({
       status: 'quantity',
       name: 'Lho sticks',
       quantity: 4,
+      stockState: 'warning',
     })
   })
 
   test('returns quantity 0 when stocking with a zero quantity stock row', () => {
     expect(
-      resolveScanDisplay(SCAN_DIRECTION_STOCKING, { name: 'Lho sticks', quantity: 0 }),
-    ).toEqual({ status: 'quantity', name: 'Lho sticks', quantity: 0 })
+      resolveScanDisplay(SCAN_DIRECTION_STOCKING, { ...stock, quantity: 0 }),
+    ).toEqual({
+      status: 'quantity',
+      name: 'Lho sticks',
+      quantity: 0,
+      stockState: 'critical',
+    })
   })
 
   test('returns quantity when using with a stock row', () => {
@@ -98,14 +104,43 @@ describe('resolveScanDisplay', () => {
       status: 'quantity',
       name: 'Lho sticks',
       quantity: 4,
+      stockState: 'warning',
     })
   })
 
   test('returns quantity 0 when using with a zero quantity stock row', () => {
     expect(
-      resolveScanDisplay(SCAN_DIRECTION_USING, { name: 'Lho sticks', quantity: 0 }),
-    ).toEqual({ status: 'quantity', name: 'Lho sticks', quantity: 0 })
+      resolveScanDisplay(SCAN_DIRECTION_USING, { ...stock, quantity: 0 }),
+    ).toEqual({
+      status: 'quantity',
+      name: 'Lho sticks',
+      quantity: 0,
+      stockState: 'critical',
+    })
   })
+
+  test.each([
+    { direction: SCAN_DIRECTION_STOCKING, quantity: 3, stockState: 'critical' },
+    { direction: SCAN_DIRECTION_STOCKING, quantity: 4, stockState: 'warning' },
+    { direction: SCAN_DIRECTION_STOCKING, quantity: 5, stockState: 'warning' },
+    { direction: SCAN_DIRECTION_STOCKING, quantity: 6, stockState: 'in-stock' },
+    { direction: SCAN_DIRECTION_USING, quantity: 3, stockState: 'critical' },
+    { direction: SCAN_DIRECTION_USING, quantity: 4, stockState: 'warning' },
+    { direction: SCAN_DIRECTION_USING, quantity: 5, stockState: 'warning' },
+    { direction: SCAN_DIRECTION_USING, quantity: 6, stockState: 'in-stock' },
+  ] as const)(
+    'returns $stockState when $direction leaves quantity $quantity with a minimum of 3',
+    ({ direction, quantity, stockState }) => {
+      expect(
+        resolveScanDisplay(direction, { ...stock, quantity }),
+      ).toEqual({
+        status: 'quantity',
+        name: 'Lho sticks',
+        quantity,
+        stockState,
+      })
+    },
+  )
 
   test('returns create when stocking with a null stock row', () => {
     expect(resolveScanDisplay(SCAN_DIRECTION_STOCKING, null)).toEqual({

@@ -19,6 +19,7 @@ import {
   readScanSessionId,
   type ScanSessionStorage,
 } from '@/lib/items/scan-session'
+import type { StockState } from '@/lib/items/stock-state'
 
 import { consumeScannedItem, stockScannedItem } from '../actions'
 import { ScanDirectionButtons } from './scan-direction-buttons'
@@ -28,6 +29,7 @@ import { ScanSessionList } from './scan-session-list'
 interface ScanCaptureResult {
   readonly title: string
   readonly detail: string
+  readonly stockState: StockState
   readonly confirmation?: string
   readonly clearParam?: 'added' | 'removed' | 'floor'
 }
@@ -202,9 +204,10 @@ const ScanCapture = ({
       >
         {scanResult ? (
           <ScanResultNotice
-            key={`${scanResult.title}:${scanResult.detail}`}
+            key={`${scanResult.title}:${scanResult.detail}:${scanResult.stockState}`}
             title={scanResult.title}
             detail={scanResult.detail}
+            stockState={scanResult.stockState}
             confirmation={scanResult.confirmation}
             clearParam={scanResult.clearParam}
           />
