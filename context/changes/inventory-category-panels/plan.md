@@ -581,7 +581,7 @@ Phases 2 and 4 change an RPC signature. Apply each migration and deploy its code
 
 #### Manual
 
-- [ ] 1.5 After the migration, every existing `household_inventory` row has category `uncategorized`
+- [x] 1.5 After the migration, every existing `household_inventory` row has category `uncategorized`
 - [ ] 1.6 An insert with category `drinks` is rejected by the check constraint
 - [ ] 1.7 `/inventory`, `/inventory/restock`, `/inventory/lookup`, a scan, and an item page still load with no error
 
