@@ -589,11 +589,11 @@ Phases 2 and 4 change an RPC signature. Apply each migration and deploy its code
 
 #### Automated
 
-- [x] 2.1 `pnpm test -- src/lib/catalog/lookup-catalog-name.test.ts src/lib/items/create-new-item.test.ts` passes
-- [x] 2.2 `pnpm test` passes
-- [x] 2.3 Typecheck passes
-- [x] 2.4 Lint passes
-- [x] 2.5 A search of `src` for `debugger` finds no match
+- [x] 2.1 `pnpm test -- src/lib/catalog/lookup-catalog-name.test.ts src/lib/items/create-new-item.test.ts` passes (970a216)
+- [x] 2.2 `pnpm test` passes (970a216)
+- [x] 2.3 Typecheck passes (970a216)
+- [x] 2.4 Lint passes (970a216)
+- [x] 2.5 A search of `src` for `debugger` finds no match (970a216)
 
 #### Manual
 
