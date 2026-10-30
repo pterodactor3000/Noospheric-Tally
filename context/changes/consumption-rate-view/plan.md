@@ -222,7 +222,7 @@ No migration. Removing the Use row and the two modules reverses the change. Exis
 
 #### Automated
 
-- [x] 2.1 `pnpm typecheck`, `pnpm lint`, and `pnpm test` pass
+- [x] 2.1 `pnpm typecheck`, `pnpm lint`, and `pnpm test` pass (429a8c5)
 
 #### Manual
 
