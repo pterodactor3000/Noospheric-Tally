@@ -5,6 +5,7 @@ import {
 import { dbFindItemByBarcode } from '../db/types'
 import { createClient } from '../supabase/server'
 import { Item } from '../types'
+import { readHabUnitTallyLine } from './load-hab-unit-items'
 
 interface HabUnitStockedItem extends Item {
   readonly quantity: number
@@ -54,12 +55,15 @@ const loadHabUnitItemByBarcode = async (
     return null
   }
 
-  return {
-    itemId: habUnitItem.item_id,
-    name: habUnitItem.name,
-    quantity: habUnitItem.quantity,
-    minimumQuantity: habUnitItem.minimum_quantity,
+  const line = readHabUnitTallyLine(habUnitItem)
+
+  if (!line) {
+    throw new Error(
+      `select from household_inventory returned an invalid row for item ${findItem.item_id}`,
+    )
   }
+
+  return line
 }
 
 export { loadHabUnitItemByBarcode }

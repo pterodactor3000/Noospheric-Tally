@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
@@ -27,13 +27,26 @@ type ItemMinimumFormState =
   | null
 
 const formStatus = clsx('min-h-6', 'text-sm', 'font-mono', 'font-semibold')
+const MINIMUM_QUANTITY_ERROR_ID = 'minimum-quantity-error'
 
 const ItemMinimumForm = ({ itemId, minimumQuantity }: ItemMinimumFormProps) => {
+  const [inputValue, setInputValue] = useState(String(minimumQuantity))
   const [state, formAction, isPending] = useActionState(
     async (_prev: ItemMinimumFormState, formData: FormData) =>
       saveItemMinimumQuantity(formData),
     null,
   )
+  const [seenState, setSeenState] = useState(state)
+
+  if (state !== seenState) {
+    setSeenState(state)
+    if (state?.status === 'saved') {
+      setInputValue(String(state.minimumQuantity))
+    }
+  }
+
+  const isMinimumFieldError =
+    state?.status === 'error' && state.field === 'minimum'
 
   return (
     <form action={formAction} className={formStack}>
@@ -51,12 +64,21 @@ const ItemMinimumForm = ({ itemId, minimumQuantity }: ItemMinimumFormProps) => {
           id="minimumQuantity"
           inputMode="numeric"
           autoComplete="off"
-          defaultValue={minimumQuantity}
-          aria-invalid={state?.status === 'error' && state.field === 'minimum'}
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
+          aria-invalid={isMinimumFieldError}
+          aria-describedby={
+            isMinimumFieldError ? MINIMUM_QUANTITY_ERROR_ID : undefined
+          }
           className={fieldControl}
         />
       </div>
-      <div role="alert" aria-live="polite" className={formError}>
+      <div
+        id={MINIMUM_QUANTITY_ERROR_ID}
+        role="alert"
+        aria-live="polite"
+        className={formError}
+      >
         {state?.status === 'error' && state.message}
       </div>
       <div role="status" aria-live="polite" className={formStatus}>
