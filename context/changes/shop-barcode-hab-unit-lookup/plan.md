@@ -298,9 +298,9 @@ No migration. Revert the branch to remove the route, the button, and the scroll 
 
 #### Manual
 
-- [ ] 2.4 A household barcode shows name, count, and stock label
-- [ ] 2.5 A missing barcode shows `Not in your hab unit.` and the scanner stays live with no create path
-- [ ] 2.6 An invalid barcode shows the validation message
+- [x] 2.4 A household barcode shows name, count, and stock label
+- [x] 2.5 A missing barcode shows `Not in your hab unit.` and the scanner stays live with no create path
+- [x] 2.6 An invalid barcode shows the validation message
 - [ ] 2.7 A failed household read shows `The hab unit lookup failed. Try the scan again.`
 
 ### Phase 3: Place Lookup and keep the tally chrome fixed
@@ -312,6 +312,6 @@ No migration. Revert the branch to remove the route, the button, and the scroll 
 
 #### Manual
 
-- [ ] 3.3 Restock and Lookup share one row, and Lookup opens `/inventory/lookup`
-- [ ] 3.4 Only the item list scrolls. The title, search row, and buttons stay visible
-- [ ] 3.5 Desktop and narrow screenshots are shown to the user, and the user approves the layout or the requested tweaks are applied
+- [x] 3.3 Restock and Lookup share one row, and Lookup opens `/inventory/lookup`
+- [x] 3.4 Only the item list scrolls. The title, search row, and buttons stay visible
+- [x] 3.5 Desktop and narrow screenshots are shown to the user, and the user approves the layout or the requested tweaks are applied
