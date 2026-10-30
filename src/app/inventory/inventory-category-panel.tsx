@@ -4,7 +4,7 @@ import { type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
-import type { StockState } from '@/lib/items/stock-state'
+import { STOCK_STATE_LABELS, type StockState } from '@/lib/items/stock-state'
 
 interface InventoryCategoryPanelProps {
   readonly label: string
@@ -95,6 +95,9 @@ const InventoryCategoryPanel = ({
           <span className={clsx('flex', 'min-w-0', 'items-center', 'gap-2')}>
             <span className="truncate">{label}</span>
             <span className="shrink-0">{itemCount}</span>
+            {shortage === null ? null : (
+              <span className="sr-only">{STOCK_STATE_LABELS[shortage]}</span>
+            )}
           </span>
           <CategoryPanelChevron isOpen={isOpen} />
         </button>

@@ -12,6 +12,7 @@ const LEVELS = {
   quantity: 4,
   minimumQuantity: 2,
   expectedQuantity: 4,
+  expectedCategory: 'food',
   category: 'food',
 } as const
 
@@ -29,6 +30,7 @@ const createLevelsClientStub = (
       new_quantity: LEVELS.quantity,
       new_minimum_quantity: LEVELS.minimumQuantity,
       expected_quantity: LEVELS.expectedQuantity,
+      expected_category: LEVELS.expectedCategory,
       new_category: category,
     })
     return result

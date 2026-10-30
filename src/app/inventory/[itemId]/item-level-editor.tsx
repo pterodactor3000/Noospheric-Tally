@@ -12,6 +12,7 @@ import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-nam
 import {
   ITEM_CATEGORIES,
   ITEM_CATEGORY_LABELS,
+  isItemCategory,
   type ItemCategory,
 } from '@/lib/items/item-category'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
@@ -178,6 +179,7 @@ const ItemLevelEditor = ({
 }: ItemLevelEditorProps) => {
   const [count, setCount] = useState(quantity)
   const [minimum, setMinimum] = useState(minimumQuantity)
+  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>(category)
   const [isBarcodeLineOpen, setIsBarcodeLineOpen] = useState(false)
   const isWideItemHeading = useIsWideItemHeading()
   const isBarcodeLineShown = isWideItemHeading || isBarcodeLineOpen
@@ -194,6 +196,7 @@ const ItemLevelEditor = ({
       <input type="hidden" name="quantity" value={count} />
       <input type="hidden" name="minimumQuantity" value={minimum} />
       <input type="hidden" name="expectedQuantity" value={quantity} />
+      <input type="hidden" name="expectedCategory" value={category} />
       <div className={itemRows}>
         <h1 className={itemTitle}>
           <span className={itemHeadingLine}>
@@ -276,7 +279,13 @@ const ItemLevelEditor = ({
             <select
               id="item-category"
               name="category"
-              defaultValue={category}
+              value={selectedCategory}
+              onChange={(event) => {
+                const nextCategory = event.currentTarget.value
+                if (isItemCategory(nextCategory)) {
+                  setSelectedCategory(nextCategory)
+                }
+              }}
               className={clsx(itemControl, 'appearance-none', 'bg-none')}
             >
               {ITEM_CATEGORIES.map((itemCategory) => (
