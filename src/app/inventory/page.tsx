@@ -19,7 +19,6 @@ const inventorySection = clsx(
   'max-w-[900px]',
 )
 const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
-const tallyRow = clsx('flex', 'flex-wrap', 'items-baseline', 'gap-2', 'px-2')
 const tallyName = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
 const tallyDots = clsx(
   'min-w-0',
@@ -53,23 +52,24 @@ const InventoryPage = async () => {
               return (
                 <li
                   key={line.itemId}
-                  className={clsx(tallyRow, STOCK_STATE_CLASS_NAMES[stockState])}
+                  className={clsx('px-2', STOCK_STATE_CLASS_NAMES[stockState])}
                 >
-                  <Link
-                    href={`/inventory/${line.itemId}`}
-                    className={tallyName}
-                  >
-                    {line.name}
-                  </Link>
-                  <span aria-hidden="true" className={tallyDots}>
-                    {TALLY_DOT_LEADER}
-                  </span>
                   <TallyCountControls
                     itemId={line.itemId}
                     name={line.name}
                     quantity={line.quantity}
                     stockStateLabel={STOCK_STATE_LABELS[stockState]}
-                  />
+                  >
+                    <Link
+                      href={`/inventory/${line.itemId}`}
+                      className={tallyName}
+                    >
+                      {line.name}
+                    </Link>
+                    <span aria-hidden="true" className={tallyDots}>
+                      {TALLY_DOT_LEADER}
+                    </span>
+                  </TallyCountControls>
                 </li>
               )
             })}

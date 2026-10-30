@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
 import { formError } from '@/app/styles/class-names'
@@ -14,6 +14,7 @@ interface TallyCountControlsProps {
   readonly name: string
   readonly quantity: number
   readonly stockStateLabel: string
+  readonly children: ReactNode
 }
 
 const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
@@ -31,13 +32,14 @@ const tallyControl = clsx(
   'disabled:text-inherit',
   'disabled:opacity-100',
 )
-const tallyError = clsx(formError, 'basis-full')
+const tallyLine = clsx('flex', 'items-baseline', 'gap-2')
 
 const TallyCountControls = ({
   itemId,
   name,
   quantity,
   stockStateLabel,
+  children,
 }: TallyCountControlsProps) => {
   const [isPending, startTransition] = useTransition()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -62,39 +64,42 @@ const TallyCountControls = ({
   }
 
   return (
-    <>
-      <span className={tallyCount}>
-        <button
-          type="button"
-          disabled={isPending || quantity === 0}
-          aria-label={`Decrease ${name}`}
-          className={tallyControl}
-          onClick={() => {
-            adjustCount(-1)
-          }}
-        >
-          [-]
-        </button>{' '}
-        {quantity}{' '}
-        <button
-          type="button"
-          disabled={isPending}
-          aria-label={`Increase ${name}`}
-          className={tallyControl}
-          onClick={() => {
-            adjustCount(1)
-          }}
-        >
-          [+]
-        </button>
-        <span className="sr-only">{stockStateLabel}</span>
-      </span>
+    <div>
+      <div className={tallyLine}>
+        {children}
+        <span className={tallyCount}>
+          <button
+            type="button"
+            disabled={isPending || quantity === 0}
+            aria-label={`Decrease ${name}`}
+            className={tallyControl}
+            onClick={() => {
+              adjustCount(-1)
+            }}
+          >
+            [-]
+          </button>{' '}
+          {quantity}{' '}
+          <button
+            type="button"
+            disabled={isPending}
+            aria-label={`Increase ${name}`}
+            className={tallyControl}
+            onClick={() => {
+              adjustCount(1)
+            }}
+          >
+            [+]
+          </button>
+          <span className="sr-only">{stockStateLabel}</span>
+        </span>
+      </div>
       {errorMessage === null ? null : (
-        <p role="alert" className={tallyError}>
+        <p role="alert" className={formError}>
           {errorMessage}
         </p>
       )}
-    </>
+    </div>
   )
 }
 
