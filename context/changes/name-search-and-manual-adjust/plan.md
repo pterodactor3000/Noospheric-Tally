@@ -365,8 +365,8 @@ Both migrations only add functions. They change no table and no existing functio
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes `src/lib/items/filter-items-by-name.test.ts`: an empty or whitespace query returns every item, matching ignores case and surrounding spaces, no match returns an empty array, and the input is unchanged.
-- [ ] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 2.1 `pnpm test` passes `src/lib/items/filter-items-by-name.test.ts`: an empty or whitespace query returns every item, matching ignores case and surrounding spaces, no match returns an empty array, and the input is unchanged.
+- [x] 2.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 
