@@ -59,7 +59,6 @@ const sectionHeading = clsx(
   'font-semibold',
   'tracking-[0.18em]',
   'text-foreground/70',
-  'uppercase',
 )
 
 const sectionCopy = clsx(
@@ -94,6 +93,7 @@ const formError = clsx(
   'text-destructive',
   'font-mono',
   'font-semibold',
+  'motion-safe:animate-form-alert-in',
 )
 
 const actionButton = clsx('font-mono', 'min-h-11')

@@ -1,11 +1,15 @@
 import HabUnitNameForm from './hab-unit-name-form'
 import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
 import { requireCurrentUser } from '@/lib/helpers'
+import {
+  buildDefaultHabUnitName,
+  readRandomHabUnitSuffix,
+} from '@/lib/hab-unit/build-default-hab-unit-name'
 import { loadCurrentHabUnit } from '@/lib/hab-unit/load-current-hab-unit'
 import { redirect } from 'next/navigation'
 
 const NewHabUnit = async () => {
-  const user = await requireCurrentUser()
+  await requireCurrentUser()
   const habUnit = await loadCurrentHabUnit()
 
   if (habUnit) {
@@ -16,7 +20,9 @@ const NewHabUnit = async () => {
     <main className={pageShell}>
       <div className={contentWidth}>
         <div className={panel}>
-          <HabUnitNameForm defaultName={user.email?.split('@')[0] ?? ''} />
+          <HabUnitNameForm
+            defaultName={buildDefaultHabUnitName(readRandomHabUnitSuffix())}
+          />
         </div>
       </div>
     </main>

@@ -23,8 +23,9 @@ import {
   SCAN_SESSION_LOAD_FAILURE_MESSAGE,
 } from '@/lib/items/scan-failure-messages'
 import { isScanSessionId } from '@/lib/items/scan-session'
-import { setHabUnitMinimumQuantity } from '@/lib/items/set-hab-unit-minimum-quantity'
+import { setHabUnitItemLevels } from '@/lib/items/set-hab-unit-item-levels'
 import { validateBarcode } from '@/lib/items/validate-barcode'
+import { validateHouseholdQuantity } from '@/lib/items/validate-household-quantity'
 import { validateItemName } from '@/lib/items/validate-item-name'
 import { validateMinimumQuantity } from '@/lib/items/validate-minimum-quantity'
 import { createClient } from '@/lib/supabase/server'
@@ -55,13 +56,6 @@ interface ScanSessionLineReversed {
 }
 
 type ScanSessionLineReversalResult = ScanSessionLineReversed | ItemActionError
-
-interface MinimumQuantitySaved {
-  status: 'saved'
-  minimumQuantity: number
-}
-
-type MinimumQuantityResult = MinimumQuantitySaved | ItemActionError
 
 interface QuantityAdjusted {
   status: 'adjusted'
@@ -350,15 +344,21 @@ const reverseScanSessionLine = async (
   }
 }
 
-const saveItemMinimumQuantity = async (
+const saveItemLevels = async (
   formData: FormData,
-): Promise<MinimumQuantityResult> => {
+): Promise<ItemActionError> => {
   const itemId = getFormString(formData, 'itemId')
+  const rawQuantity = getFormString(formData, 'quantity')
   const rawMinimumQuantity = getFormString(formData, 'minimumQuantity')
 
   if (!isScanSessionId(itemId)) {
-    console.error('saveItemMinimumQuantity rejected item id', { itemId })
+    console.error('saveItemLevels rejected item id', { itemId })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  const quantityResult = validateHouseholdQuantity(rawQuantity)
+  if (quantityResult.status === 'invalid') {
+    return { status: 'error', message: quantityResult.message }
   }
 
   const minimumResult = validateMinimumQuantity(rawMinimumQuantity)
@@ -370,19 +370,24 @@ const saveItemMinimumQuantity = async (
     }
   }
 
-  const { minimumQuantity } = minimumResult
-
   try {
     const supabase = await createClient()
-    await setHabUnitMinimumQuantity(itemId, minimumQuantity, supabase)
+    await setHabUnitItemLevels(
+      itemId,
+      {
+        quantity: quantityResult.quantity,
+        minimumQuantity: minimumResult.minimumQuantity,
+      },
+      supabase,
+    )
   } catch (error: unknown) {
-    console.error('saveItemMinimumQuantity failed', { itemId, error })
+    console.error('saveItemLevels failed', { itemId, error })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
   revalidatePath('/inventory')
   revalidatePath(`/inventory/${itemId}`)
-  return { status: 'saved', minimumQuantity }
+  redirect('/inventory')
 }
 
 const adjustItemQuantity = async (
@@ -428,6 +433,6 @@ export {
   consumeScannedItem,
   fetchScanSessionLines,
   reverseScanSessionLine,
-  saveItemMinimumQuantity,
+  saveItemLevels,
   adjustItemQuantity,
 }

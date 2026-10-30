@@ -24,24 +24,28 @@ The slice has three parts. Part one turns the disabled `[-]` and `[+]` buttons o
 
 ## Desired End State
 
-On `/inventory`, every row's `[-]` and `[+]` change that item's count by 1 per press. The count shown, the name, count, and `[+]` / `[-]` text color, and the count on `/inventory/{itemId}` update. The row background stays plain. `[-]` is disabled at 0. A refused or failed write shows a message under the row.
+On `/inventory`, the heading is `Your [{hab unit name}] tally`. The bracketed name uses the in-stock green. Add item and Scan item share one width and sit centered under the list. Every row's `[-]` and `[+]` change that item's count by 1 per press. The name, dots, count, and buttons use the stock text color. The row background stays plain. Each row is 36px tall. `[-]` is disabled at 0. A refused or failed write shows a message under the row, and that message slides in.
 
-Above the tally, a search field filters rows by name, ignoring case and surrounding spaces. A query with no match shows `No item matches "{query}".`. The filter text survives a count change.
+Above the tally, a search field filters rows by name, ignoring case and surrounding spaces, with 1rem between the field and the list. Two icons beside the field sort by name or by count. The first press of the active icon is ascending and the next reverses it. A count of 0 stays at the bottom. A query with no match shows `No item matches "{query}".`. The filter text survives a count change.
 
-On `/inventory/new` with no valid barcode, the member can add an item with a name only. The item lands on `/inventory` at 0, with the default minimum of 3, with no barcode attached. He finds it by name and raises its count with `[+]`.
+On `/inventory/{itemId}`, the name row is `[LABEL] {name}` then dots then ` ++  {barcode} ++` when a barcode exists. The label is bold and uses the stock color. Below the `sm` breakpoint that row is two lines and has no dots. Count and Minimum each have `[-]` and `[+]`. Those presses stay local until Save. Save writes both through `set_household_item_levels` and returns to `/inventory`. Cancel returns without writing.
+
+On `/inventory/new` with no valid barcode, the member can open `Or add an item without a barcode`, which starts collapsed, in sentence case, at the same size as `Provide the barcode`. The item lands on `/inventory` at 0, with the default minimum of 3, with no barcode attached. `Attach to existing item` is the same text size. Its list is titled `Item designation`. Each name is a 36px row with no radio, count, or dots. The selected name uses the stock-warning yellow.
+
+A new household's name field is prefilled with `Hab-unit#` and three digits. Uppercase styling stays on the app name and on `h1` titles. A form error is absent until a write fails, then it slides in and the button under it moves with that space.
 
 Verify with the manual steps in Testing Strategy.
 
 ## What We're NOT Doing
 
-- Setting a count to an exact number, or adjusting by more than 1 per press. The PRD says "adjust its count by hand" and the placeholders are one-step controls. A larger step or a typed count is a later decision.
+- Changing a tally row by more than 1 per press. The item page saves an absolute count and minimum together. The tally stays one unit per press.
 - Logging hand adjustments in `household_quantity_changes`, or reversing one. The log is scan-session scoped and holds barcode and session id columns that a hand adjustment does not have. The opposite button reverses a hand adjustment.
 - Editing or deleting an item, renaming an item, or removing a barcode-less item.
 - Attaching a barcode to a barcode-less item through a new flow. The existing "Attach to existing item" list on `/inventory/new` already offers every household item, so a barcode-less item is already attachable.
 - A duplicate-name check for barcode-less items. The PRD accepts inconsistent naming for the first version (FR-006 challenge).
 - Server-side search, fuzzy matching, accent folding, ranking, or search outside the household inventory.
 - Category panels, the restock list, and the consumption view (S-11, S-07, S-08).
-- Editing `context/foundation/roadmap.md`, or archiving S-04 or S-06.
+- Archiving S-04 or S-06. The roadmap records the 2026-10-30 follow-on decisions. It does not archive those slices.
 - A browser or route test harness. Vitest stays on `src/**/*.test.ts`.
 
 ## Implementation Approach
@@ -323,7 +327,7 @@ A member can add an item by name alone from `/inventory/new`. It starts at 0 wit
 
 ## Migration and Rollback
 
-Both migrations only add functions. They change no table and no existing function, so the build on `main` keeps working when they are applied first. Apply them with `pnpm exec supabase db push` before deploying the app. To roll back, deploy the previous app build, then `drop function public.adjust_household_quantity(uuid, integer)` and `drop function public.create_item_without_barcode(text)`. Items created without a barcode stay as rows and keep working in the tally.
+The migrations only add functions and one select policy. They change no table and no existing function, so the build on `main` keeps working when they are applied first. Apply them with `pnpm exec supabase db push` before deploying the app. To roll back, deploy the previous app build, then `drop function public.set_household_item_levels(uuid, integer, integer)`, `drop function public.adjust_household_quantity(uuid, integer)`, `drop function public.create_item_without_barcode(text)`, and `drop policy item_barcodes_select_if_member on public.item_barcodes`. Items created without a barcode stay as rows and keep working in the tally.
 
 ## References
 
@@ -390,3 +394,12 @@ Both migrations only add functions. They change no table and no existing functio
 - [ ] 3.6 Submitting a blank name shows `Item does not match length restrictions` under the field and creates no item.
 - [ ] 3.7 Searching `cinn` on `/inventory` shows the `Cinnamon` row, pressing `[+]` twice shows a count of 2, and `/inventory/{itemId}` shows `Count: 2`.
 - [ ] 3.8 `/inventory/new?barcode=<valid unknown barcode>` still shows the item create form, and a known barcode behaves as before.
+
+### Follow-on UI
+
+Recorded 2026-10-30 after the three phases. These checks are unchecked because they were not run in a signed-in browser.
+
+- [ ] 4.1 The tally heading is `Your [{name}] tally` with the name in the in-stock green. Rows are 36px. Name and count sort ascend, then descend, and a count of 0 stays at the bottom.
+- [ ] 4.2 On the item page, Save writes the draft count and minimum and returns to `/inventory`. Cancel returns without writing. A narrow screen shows the name and barcode on two lines with no dots.
+- [ ] 4.3 `Or add an item without a barcode` starts collapsed. `Item designation` lists names at 36px, and the selected name is the stock-warning yellow.
+- [ ] 4.4 A household that does not exist yet opens with a name of `Hab-unit#` plus three digits. A failed form write shows its message with the slide, and the button under it moves with that space.

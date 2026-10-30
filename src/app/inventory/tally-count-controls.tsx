@@ -19,7 +19,7 @@ interface TallyCountControlsProps {
 
 const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
 const tallyControl = clsx(
-  'min-h-11',
+  'min-h-[36px]',
   'min-w-11',
   'border-0',
   'bg-transparent',
@@ -33,7 +33,13 @@ const tallyControl = clsx(
   'disabled:opacity-100',
 )
 const tallyLine = clsx('flex', 'items-baseline', 'gap-2')
-const tallyAlert = clsx('min-h-6', 'text-sm', 'font-mono', 'font-semibold')
+const tallyAlert = clsx(
+  'min-h-6',
+  'text-sm',
+  'font-mono',
+  'font-semibold',
+  'motion-safe:animate-form-alert-in',
+)
 
 const TallyCountControls = ({
   itemId,

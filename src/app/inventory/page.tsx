@@ -5,6 +5,7 @@ import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
+import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 import InventoryTally from './inventory-tally'
 
@@ -15,6 +16,20 @@ const inventorySection = clsx(
   'max-w-[900px]',
 )
 
+const inventoryActions = clsx(
+  'mx-auto',
+  'mt-4',
+  'grid',
+  'w-full',
+  'max-w-lg',
+  'grid-cols-2',
+  'gap-4',
+)
+
+const inventoryActionButton = clsx(actionButton, 'w-full')
+
+const inventoryTitle = clsx('mb-[1rem]', 'text-center', 'text-2xl', 'font-semibold')
+
 const InventoryPage = async () => {
   await requireCurrentUser()
   const habUnit = await requireCurrentHabUnit()
@@ -22,29 +37,34 @@ const InventoryPage = async () => {
 
   return (
     <main className={centeredPage}>
-      <div>
-        <h1>Your {habUnit.name} tally</h1>
-      </div>
+      <h1 className={inventoryTitle}>
+        Your{' '}
+        <span className={STOCK_STATE_TEXT_CLASS_NAMES['in-stock']}>
+          [{habUnit.name}]
+        </span>{' '}
+        tally
+      </h1>
 
       <section className={inventorySection}>
         <InventoryTally lines={tallyLines} />
-        <br />
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/inventory/new" />}
-          className={actionButton}
-        >
-          Add item
-        </Button>
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/inventory/scan" />}
-          className={actionButton}
-        >
-          Scan item
-        </Button>
+        <div className={inventoryActions}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/new" />}
+            className={inventoryActionButton}
+          >
+            Add item
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/scan" />}
+            className={inventoryActionButton}
+          >
+            Scan item
+          </Button>
+        </div>
       </section>
     </main>
   )

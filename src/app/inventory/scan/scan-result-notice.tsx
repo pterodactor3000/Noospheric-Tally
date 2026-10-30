@@ -107,7 +107,6 @@ const ScanResultNotice = ({
         className={clsx(
           'text-xl',
           'font-semibold',
-          'uppercase',
           'tracking-tight',
           'text-balance',
           'wrap-break-word',
