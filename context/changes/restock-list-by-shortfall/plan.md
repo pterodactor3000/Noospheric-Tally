@@ -26,9 +26,9 @@ No table, migration, or write is added. The restock list reads the same rows as 
 
 On `/inventory`, a full-width `Restock` button sits under Add item and Scan item. It opens `/inventory/restock`.
 
-`/inventory/restock` shows the heading `Restock` and one row per item with `quantity <= minimumQuantity`. The largest shortfall is first, where shortfall is `minimumQuantity - quantity`. Equal shortfalls sort by name A to Z. An item at 0 with a large minimum ranks above an item at 2 with a small minimum. An item with `quantity > minimumQuantity` is not listed. Each row is two lines: `{name} {dots}`, then `{dots} {count} short {n}`, for example `4 short 2`. The name links to `/inventory/{itemId}`. The row text is the critical color and has no `[-]`, `[+]`, or `[CRITICAL]` chip. With nothing to restock the page shows `Nothing needs restocking.`
+`/inventory/restock` shows the heading `Restock` and one row per item with `quantity <= minimumQuantity`. The largest shortfall is first, where shortfall is `minimumQuantity - quantity`. Equal shortfalls sort by name A to Z. An item at 0 with a large minimum ranks above an item at 2 with a small minimum. An item with `quantity > minimumQuantity` is not listed. From `sm` up each row is one line: `{name} {dots} {count} // [{n} short]`, for example `4 // [2 short]`. Below `sm` the row is two lines: `{name} {dots}`, then `{dots} {count} // [{n} short]`. The name links to `/inventory/{itemId}`. The row text is the critical color and has no `[-]`, `[+]`, or `[CRITICAL]` chip. With nothing to restock the page shows `Nothing needs restocking.`
 
-On `/inventory/{itemId}`, line 1 is `[STATUS] {name} {dots}`. From the `sm` breakpoint up, line 2 is visible: `{dots} ++  {barcode, barcode} ++` with every barcode oldest first. Below `sm`, line 2 is hidden until the member expands the heading with a `Barcodes` control. With no barcode, line 2 reads ` ++  [REDACTED] ++`, and hover, focus, or a tap shows `// NO BARCODE SUPPLIED //`. The heading is 16px, and 18px from `sm`. A separator sits between the heading and Count. Count and Minimum are unchanged.
+On `/inventory/{itemId}`, line 1 is `[STATUS] {name} {dots}`. From the `sm` breakpoint up, line 2 is visible: `{dots} ++  {barcode, barcode} ++` with every barcode oldest first. Below `sm`, line 2 is hidden until the member clicks the item name. The line then opens with the grid-row and slide animation. There is no `Barcodes` control. With no barcode, line 2 reads ` ++  [REDACTED] ++`, and hover, focus, or a tap shows `// NO BARCODE SUPPLIED //`. The heading is 16px, and 18px from `sm`. A separator sits between the heading and Count. Count and Minimum are unchanged.
 
 Verify with the automated checks and manual steps of each phase.
 
@@ -146,7 +146,7 @@ const rankRestockLines = (
 
 ### Overview
 
-Add `/inventory/restock` with the two-line rows, and the full-width Restock control on `/inventory`. This phase adds the new route, so it also runs `pnpm worker:check`.
+Add `/inventory/restock` with one line from `sm` up and two lines below `sm`, and the full-width Restock control on `/inventory`. This phase adds the new route, so it also runs `pnpm worker:check`.
 
 ### Changes Required
 
@@ -178,7 +178,7 @@ Add `/inventory/restock` with the two-line rows, and the full-width Restock cont
 - Otherwise renders `<ul>` sized like the tally list: 14px and 16px from `sm` (`src/app/inventory/inventory-tally.tsx:31`), with `mt-[1rem]`.
 - Each `<li key={line.itemId}>` carries `px-2` and `STOCK_STATE_TEXT_CLASS_NAMES.critical`, so the row text is the critical color. It renders no visible `[CRITICAL]` text and no `sr-only` state text.
 - Line 1 is a flex row with `items-baseline` and `gap-2`: a `Link` to `/inventory/${line.itemId}` containing `{line.name}`, then `<span aria-hidden="true">` with 300 `.` characters and the `min-w-0 flex-1 overflow-hidden whitespace-nowrap` classes. The link follows `tallyName` (`src/app/inventory/inventory-tally.tsx:35-41`): `min-h-[36px] min-w-0 truncate leading-[36px] text-inherit`.
-- Line 2 is a flex row with the same alignment: `<span aria-hidden="true">` dots first, then `<span className="shrink-0 whitespace-nowrap">{line.quantity} short {line.shortfall}</span>`. Example text: `4 short 2`, `0 short 3`, `3 short 0`.
+- The end of the row is `{line.quantity} // [{line.shortfall} short]`. Example text: `4 // [2 short]`, `0 // [3 short]`, `3 // [0 short]`. From `sm` up that end sits on line 1 after the dots, and the second row is `sm:hidden`. Below `sm` the end is hidden on line 1 (`max-sm:hidden`) and line 2 is a flex row with dots first, then the same end text.
 - No `[-]` or `[+]`, no button, and no form control appears on this page.
 - Dots are decorative and `aria-hidden`, as in the tally.
 
@@ -205,8 +205,8 @@ Add `/inventory/restock` with the two-line rows, and the full-width Restock cont
 #### Manual Verification
 
 - On `/inventory`, a full-width `Restock` button sits under Add item and Scan item, spans the width of the pair, and opens `/inventory/restock`.
-- With items at (count, minimum) of (0, 5), (2, 5), (4, 6), (3, 3), (4, 3), and (9, 3), `/inventory/restock` lists (0, 5) first with shortfall 5, then (2, 5) with shortfall 3, then (4, 6) with shortfall 2, then (3, 3) with `3 short 0`. The (4, 3) WARNING row and the (9, 3) IN STOCK row are absent.
-- Each row is two lines: name then dots, then dots then `{count} short {n}`. The name is a link to `/inventory/{itemId}`. The row text is the critical color and shows no `[-]`, `[+]`, or `[CRITICAL]` text.
+- With items at (count, minimum) of (0, 5), (2, 5), (4, 6), (3, 3), (4, 3), and (9, 3), `/inventory/restock` lists (0, 5) first with shortfall 5, then (2, 5) with shortfall 3, then (4, 6) with shortfall 2, then (3, 3) with `3 // [0 short]`. The (4, 3) WARNING row and the (9, 3) IN STOCK row are absent.
+- Below `sm` each row is two lines: `>` then name then dots, then dots then `{count} // [{n} short]`. From `sm` up each row is one line ending in `{count} // [{n} short]`. The name is a link to `/inventory/{itemId}`. The row text is the critical color and shows no `[-]`, `[+]`, or `[CRITICAL]` text. The `>` is `aria-hidden`.
 - Raising a count on `/inventory` past its minimum removes that row from `/inventory/restock` after navigating there.
 - With every item above its minimum, or with no items, the page shows `Nothing needs restocking.`
 - The heading reads `Restock`, and exactly one `Back to inventory` link shows and returns to `/inventory`.
@@ -310,7 +310,7 @@ const getBarcodeLineText = (
 
 **File:** `src/app/inventory/[itemId]/item-level-editor.tsx`
 
-**Intent:** A larger heading, a separator, and the full barcode list. Below `sm` the barcode line starts hidden behind a `Barcodes` control. From `sm` up both lines show.
+**Intent:** A larger heading, a separator, and the full barcode list. Below `sm` the barcode line starts hidden until the item name is clicked, then it animates open. From `sm` up both lines show.
 
 **Contract:**
 
@@ -320,9 +320,9 @@ const getBarcodeLineText = (
 - The `<h1>` holds two flex rows, each a `<span>` with `items-baseline` and `gap-2` (`itemLine`, `:24`).
   - Line 1: the label span (`itemLabel`, `:33`) with the status and the name, then the dots span.
   - Line 2: a dots span, then `<BarcodeLine barcodes={barcodes} />`.
-- The status span is unchanged: bold, bracketed `[{STOCK_STATE_LABELS[stockState]}]`, and `STOCK_STATE_TEXT_CLASS_NAMES[stockState]` (`:146-153`). The name keeps its current type. The expand control is not inside the name span.
-- Line 2 is in the document, including when `barcodes` is empty. The dots are `aria-hidden`. Below `sm` it starts hidden. A `<button type="button">` labeled `Barcodes` sits between line 1 and line 2, with `aria-expanded={false}` and `aria-controls` pointing at line 2. Activating it shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2. The button is `sm:hidden`. From `sm` up, line 2 is shown whether or not the narrow control was used, and the button is not shown. The open state starts closed on each visit and is not stored.
-- Add `<Separator />` from `@/components/ui/separator` between the `</h1>` (`:166`) and the Count `LevelStepper` (`:167`), inside the `itemRows` div. It is horizontal, full width, with a small vertical margin (`my-2`).
+- The status span is unchanged: bold, bracketed `[{STOCK_STATE_LABELS[stockState]}]`, and `STOCK_STATE_TEXT_CLASS_NAMES[stockState]`. The name is a `<label>` with `onClick`, `aria-expanded`, and `aria-controls` pointing at line 2. It is the same text as the wide name, not a button. Activating it below `sm` shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2. The label does not submit the form. From `sm` up, line 2 stays visible.
+- Line 2 is in the document, including when `barcodes` is empty. The dots are `aria-hidden`. Below `sm` it starts closed. Opening it uses the same grid-row height animation and slide as the attach panel (`transition-[grid-template-rows]` and `translate-y`, 500ms, `motion-reduce:transition-none`). From `sm` up, line 2 is shown whether or not the narrow control was used. The open state starts closed on each visit and is not stored.
+- Add `<Separator />` from `@/components/ui/separator` between the `</h1>` (`:166`) and the Count `LevelStepper` (`:167`), inside the `itemRows` div. It is horizontal, full width, 2px thick to match `border-2`, with a small vertical margin (`my-2`) and a slight primary glow (`shadow-[0_0_8px] shadow-primary/40`).
 - Count and Minimum steppers, the hidden inputs, the form action, Save, and Cancel do not change.
 
 ### Success Criteria
@@ -336,16 +336,16 @@ const getBarcodeLineText = (
 
 #### Manual Verification
 
-- At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. There is no `Barcodes` control. At 360px line 1 is visible, line 2 is hidden, and a `Barcodes` control is shown with `aria-expanded` false.
-- The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before.
+- At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. At 360px line 1 is visible, line 2 is hidden, and the item name is a label with `aria-expanded` false. There is no `Barcodes` control and no name button.
+- The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before. Below 460px the visible label is `[C]`, `[W]`, or `[I]`. From 460px up it is the full word.
 - The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`.
-- A horizontal rule sits under the heading and above Count.
+- A horizontal rule sits under the heading and above Count. It is 2px thick, the same as the panel border, with a slight primary glow.
 - An item with one barcode shows ` ++  {barcode} ++`. An item with two barcodes, attached through the existing flow, shows both oldest first, joined with `, `.
 - An item with no barcode shows ` ++  [REDACTED] ++`. Hovering it with a mouse replaces the whole value with `// NO BARCODE SUPPLIED //`. Moving the mouse away restores the resting text.
 - Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed.
 - On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on.
 - Pressing the redacted control never submits the form.
-- At 360px, activating `Barcodes` shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2 and sets `aria-expanded` to false. The status and the name keep their styling. The `Barcodes` control does not submit the form.
+- At 360px, clicking the item name animates line 2 open and sets `aria-expanded` to true. Clicking the name again animates line 2 closed and sets `aria-expanded` to false. The status keeps its styling. The name click does not submit the form.
 
 ---
 
@@ -365,11 +365,11 @@ None. Vitest runs `src/**/*.test.ts` in node (`vitest.config.mts:15-16`) and has
 
 1. Sign in with a household that holds items at (count, minimum) of (0, 5), (2, 5), (4, 6), (3, 3), (4, 3), and (9, 3).
 2. Open `/inventory`, and check the `Restock` button is full width under Add item and Scan item.
-3. Open `/inventory/restock`, and check the order, the two-line rows, the links, the critical color, and the missing `[-]`, `[+]`, and `[CRITICAL]`.
+3. Open `/inventory/restock`. Below `sm`, check the two-line rows. From `sm` up, check the single line ending in `{count} // [{n} short]`. Check the order, the links, the critical color, and the missing `[-]`, `[+]`, and `[CRITICAL]`.
 4. Raise one listed item above its minimum on `/inventory`, return to `/inventory/restock`, and check the row is gone. Raise every item and check `Nothing needs restocking.`
 5. Open an item with no barcode. Check `[REDACTED]`, hover, focus, tap, second tap, and blur.
 6. Attach a second barcode to an item with one through the existing flow. Open it and check both barcodes, oldest first.
-7. At 360px, check that barcodes are hidden, expand `Barcodes`, and check line 2. At 1024px, check that both lines show and the `Barcodes` control is absent. Check the sizes and the separator at both widths.
+7. At 360px, check that barcodes are hidden, click the item name, and check that line 2 animates open. Click the name again and check that it closes. At 1024px, check that both lines show and the name is not a button. Check the sizes and the separator at both widths.
 
 ## Migration and Rollback
 
@@ -404,50 +404,50 @@ Not applicable. No migration, no table change, and no write path. To roll back, 
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes `src/lib/items/rank-restock-lines.test.ts`: an empty input returns `[]`, a line above its minimum is left out, a line at its minimum is included with shortfall 0, a count of 0 with the largest shortfall ranks first, equal shortfalls sort by name A to Z, and the input array is unchanged.
-- [ ] 1.2 `pnpm lint` and `pnpm typecheck` exit 0.
+- [x] 1.1 `pnpm test` passes `src/lib/items/rank-restock-lines.test.ts`: an empty input returns `[]`, a line above its minimum is left out, a line at its minimum is included with shortfall 0, a count of 0 with the largest shortfall ranks first, equal shortfalls sort by name A to Z, and the input array is unchanged.
+- [x] 1.2 `pnpm lint` and `pnpm typecheck` exit 0.
 
 #### Manual
 
-- [ ] 1.3 `rg "sortTallyLines|from 'next|from 'react|supabase" src/lib/items/rank-restock-lines.ts` prints nothing, so the function is pure and does not reuse the tally sort.
-- [ ] 1.4 The inclusion predicate, the shortfall formula, the sort order, and the unchanged input each have a named test in `src/lib/items/rank-restock-lines.test.ts`.
+- [x] 1.3 `rg "sortTallyLines|from 'next|from 'react|supabase" src/lib/items/rank-restock-lines.ts` prints nothing, so the function is pure and does not reuse the tally sort.
+- [x] 1.4 The inclusion predicate, the shortfall formula, the sort order, and the unchanged input each have a named test in `src/lib/items/rank-restock-lines.test.ts`.
 
 ### Phase 2: Show the restock page
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes, including `src/lib/items/rank-restock-lines.test.ts` from Phase 1.
-- [ ] 2.2 `pnpm lint` and `pnpm typecheck` exit 0, and `pnpm typecheck` generates the `/inventory/restock` route type.
-- [ ] 2.3 `pnpm worker:check` exits 0 with the new route.
+- [x] 2.1 `pnpm test` passes, including `src/lib/items/rank-restock-lines.test.ts` from Phase 1.
+- [x] 2.2 `pnpm lint` and `pnpm typecheck` exit 0, and `pnpm typecheck` generates the `/inventory/restock` route type.
+- [x] 2.3 `pnpm worker:check` exits 0 with the new route.
 
 #### Manual
 
-- [ ] 2.4 On `/inventory`, a full-width `Restock` button sits under Add item and Scan item, spans the width of the pair, and opens `/inventory/restock`.
-- [ ] 2.5 With items at (count, minimum) of (0, 5), (2, 5), (4, 6), (3, 3), (4, 3), and (9, 3), `/inventory/restock` lists (0, 5) first with shortfall 5, then (2, 5) with shortfall 3, then (4, 6) with shortfall 2, then (3, 3) with `3 short 0`. The (4, 3) WARNING row and the (9, 3) IN STOCK row are absent.
-- [ ] 2.6 Each row is two lines: name then dots, then dots then `{count} short {n}`. The name is a link to `/inventory/{itemId}`. The row text is the critical color and shows no `[-]`, `[+]`, or `[CRITICAL]` text.
-- [ ] 2.7 Raising a count on `/inventory` past its minimum removes that row from `/inventory/restock` after navigating there.
-- [ ] 2.8 With every item above its minimum, or with no items, the page shows `Nothing needs restocking.`
-- [ ] 2.9 The heading reads `Restock`, and exactly one `Back to inventory` link shows and returns to `/inventory`.
-- [ ] 2.10 Signed out, `/inventory/restock` redirects to `/login`.
+- [x] 2.4 On `/inventory`, a full-width `Restock` button sits under Add item and Scan item, spans the width of the pair, and opens `/inventory/restock`.
+- [x] 2.5 With items at (count, minimum) of (0, 5), (2, 5), (4, 6), (3, 3), (4, 3), and (9, 3), `/inventory/restock` lists (0, 5) first with shortfall 5, then (2, 5) with shortfall 3, then (4, 6) with shortfall 2, then (3, 3) with `3 // [0 short]`. The (4, 3) WARNING row and the (9, 3) IN STOCK row are absent.
+- [x] 2.6 Below `sm` each row is two lines: `>` then name then dots, then dots then `{count} // [{n} short]`. From `sm` up each row is one line ending in `{count} // [{n} short]`. The name is a link to `/inventory/{itemId}`. The row text is the critical color and shows no `[-]`, `[+]`, or `[CRITICAL]` text. The `>` is `aria-hidden`.
+- [x] 2.7 Raising a count on `/inventory` past its minimum removes that row from `/inventory/restock` after navigating there.
+- [x] 2.8 With every item above its minimum, or with no items, the page shows `Nothing needs restocking.`
+- [x] 2.9 The heading reads `Restock`, and exactly one `Back to inventory` link shows and returns to `/inventory`.
+- [x] 2.10 Signed out, `/inventory/restock` redirects to `/login`.
 
 ### Phase 3: Split the item heading and list every barcode
 
 #### Automated
 
-- [ ] 3.1 `pnpm test` passes `src/lib/items/get-barcode-line-text.test.ts`: no barcode returns ` ++  [REDACTED] ++`, no barcode with `isRevealed` true returns `// NO BARCODE SUPPLIED //`, one barcode returns ` ++  {barcode} ++`, and several barcodes join with `, `.
-- [ ] 3.2 `pnpm test` passes `src/lib/items/load-item-barcodes.test.ts`: rows keep their order, an empty list returns `[]`, and a row without a string `barcode` or a non-array input returns `null`.
-- [ ] 3.3 `pnpm lint` and `pnpm typecheck` exit 0.
-- [ ] 3.4 `rg "loadItemBarcode\b|load-item-barcode'" src` prints nothing, and `src/lib/items/load-item-barcode.ts` no longer exists.
+- [x] 3.1 `pnpm test` passes `src/lib/items/get-barcode-line-text.test.ts`: no barcode returns ` ++  [REDACTED] ++`, no barcode with `isRevealed` true returns `// NO BARCODE SUPPLIED //`, one barcode returns ` ++  {barcode} ++`, and several barcodes join with `, `.
+- [x] 3.2 `pnpm test` passes `src/lib/items/load-item-barcodes.test.ts`: rows keep their order, an empty list returns `[]`, and a row without a string `barcode` or a non-array input returns `null`.
+- [x] 3.3 `pnpm lint` and `pnpm typecheck` exit 0.
+- [x] 3.4 `rg "loadItemBarcode\b|load-item-barcode'" src` prints nothing, and `src/lib/items/load-item-barcode.ts` no longer exists.
 
 #### Manual
 
-- [ ] 3.5 At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. There is no `Barcodes` control. At 360px line 1 is visible, line 2 is hidden, and a `Barcodes` control is shown with `aria-expanded` false.
-- [ ] 3.6 The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before.
-- [ ] 3.7 The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`.
-- [ ] 3.8 A horizontal rule sits under the heading and above Count.
-- [ ] 3.9 An item with one barcode shows ` ++  {barcode} ++`. An item with two barcodes, attached through the existing flow, shows both oldest first, joined with `, `.
-- [ ] 3.10 An item with no barcode shows ` ++  [REDACTED] ++`. Hovering it with a mouse replaces the whole value with `// NO BARCODE SUPPLIED //`. Moving the mouse away restores the resting text.
-- [ ] 3.11 Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed.
-- [ ] 3.12 On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on.
-- [ ] 3.13 Pressing the redacted control never submits the form.
-- [ ] 3.14 At 360px, activating `Barcodes` shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2 and sets `aria-expanded` to false. The status and the name keep their styling. The `Barcodes` control does not submit the form.
+- [x] 3.5 At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. At 360px line 1 is visible, line 2 is hidden, and the item name is a label with `aria-expanded` false. There is no `Barcodes` control and no name button.
+- [x] 3.6 The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before. Below 460px the visible label is `[C]`, `[W]`, or `[I]`. From 460px up it is the full word.
+- [x] 3.7 The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`.
+- [x] 3.8 A horizontal rule sits under the heading and above Count. It is 2px thick, the same as the panel border, with a slight primary glow.
+- [x] 3.9 An item with one barcode shows ` ++  {barcode} ++`. An item with two barcodes, attached through the existing flow, shows both oldest first, joined with `, `.
+- [x] 3.10 An item with no barcode shows ` ++  [REDACTED] ++`. Hovering it with a mouse replaces the whole value with `// NO BARCODE SUPPLIED //`. Moving the mouse away restores the resting text.
+- [x] 3.11 Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed.
+- [x] 3.12 On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on.
+- [x] 3.13 Pressing the redacted control never submits the form.
+- [x] 3.14 At 360px, clicking the item name animates line 2 open and sets `aria-expanded` to true. Clicking the name again animates line 2 closed and sets `aria-expanded` to false. The status keeps its styling. The name click does not submit the form.

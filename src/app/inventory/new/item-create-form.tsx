@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react'
 import { attachBarcode, createItem } from '../actions'
 import { clsx } from 'clsx'
 import { FormAlert } from '@/components/form-alert'
+import { ItemListMarker } from '@/components/item-list-marker'
 import { Button } from '@/components/ui/button'
 import {
   fieldControl,
@@ -233,7 +234,7 @@ const ItemCreateForm = ({
                   <ul className={attachList}>
                     {offeredItems.map((item) => (
                       <li key={item.itemId} className="px-2">
-                        <label className="block cursor-pointer">
+                        <label className="flex cursor-pointer items-baseline gap-2">
                           <input
                             type="radio"
                             name="itemId"
@@ -241,6 +242,7 @@ const ItemCreateForm = ({
                             required
                             className="peer sr-only"
                           />
+                          <ItemListMarker />
                           <span className={attachName}>{item.name}</span>
                         </label>
                       </li>

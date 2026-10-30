@@ -64,6 +64,14 @@ const InventoryPage = async () => {
           >
             Scan item
           </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/restock" />}
+            className={clsx(inventoryActionButton, 'col-span-2')}
+          >
+            Restock
+          </Button>
         </div>
       </section>
     </main>

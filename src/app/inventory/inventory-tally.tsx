@@ -14,6 +14,7 @@ import {
   type TallySortField,
 } from '@/lib/items/sort-tally-lines'
 import { STOCK_STATE_LABELS, getStockState } from '@/lib/items/stock-state'
+import { ItemListMarker } from '@/components/item-list-marker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -134,6 +135,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                   stockStateLabel={STOCK_STATE_LABELS[stockState]}
                   stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
                 >
+                  <ItemListMarker />
                   <Link
                     href={`/inventory/${line.itemId}`}
                     className={tallyName}
