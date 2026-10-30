@@ -379,8 +379,8 @@ Both migrations only add functions. They change no table and no existing functio
 
 #### Automated
 
-- [x] 3.1 `pnpm test` passes `src/lib/items/create-new-item-without-barcode.test.ts`: a returned id comes back unchanged, and an RPC error or a non-string result throws an `Error` that names the item.
-- [x] 3.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 3.1 `pnpm test` passes `src/lib/items/create-new-item-without-barcode.test.ts`: a returned id comes back unchanged, and an RPC error or a non-string result throws an `Error` that names the item. `c43a151`
+- [x] 3.2 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0. `c43a151`
 
 #### Manual
 
