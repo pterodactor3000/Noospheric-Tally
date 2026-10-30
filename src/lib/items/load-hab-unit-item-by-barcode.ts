@@ -8,6 +8,7 @@ import { Item } from '../types'
 
 interface HabUnitStockedItem extends Item {
   readonly quantity: number
+  readonly minimumQuantity: number
 }
 
 // Local row type: the shared dbHabUnitInventory type stays quantity-free
@@ -16,6 +17,7 @@ interface HabUnitItemRow {
   readonly item_id: string
   readonly name: string
   readonly quantity: number
+  readonly minimum_quantity: number
 }
 
 const loadHabUnitItemByBarcode = async (
@@ -38,7 +40,7 @@ const loadHabUnitItemByBarcode = async (
 
   const { data: habUnitItem, error: itemError } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity')
+    .select('item_id, name, quantity, minimum_quantity')
     .eq('item_id', findItem.item_id)
     .maybeSingle<HabUnitItemRow>()
 
@@ -56,6 +58,7 @@ const loadHabUnitItemByBarcode = async (
     itemId: habUnitItem.item_id,
     name: habUnitItem.name,
     quantity: habUnitItem.quantity,
+    minimumQuantity: habUnitItem.minimum_quantity,
   }
 }
 

@@ -439,16 +439,16 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes, including `stock-state.test.ts`, `set-hab-unit-minimum-quantity.test.ts`, and `load-hab-unit-items.test.ts`
-- [ ] 2.2 `pnpm lint` exits 0
-- [ ] 2.3 `pnpm typecheck` exits 0
+- [x] 2.1 `pnpm test` passes, including `stock-state.test.ts`, `set-hab-unit-minimum-quantity.test.ts`, and `load-hab-unit-items.test.ts`
+- [x] 2.2 `pnpm lint` exits 0
+- [x] 2.3 `pnpm typecheck` exits 0
 
 #### Manual
 
-- [ ] 2.4 `count(*)` and `sum(quantity)` on `household_inventory` match before and after `pnpm exec supabase db push`
-- [ ] 2.5 No row has `minimum_quantity <> 3` after the push
-- [ ] 2.6 `anon` cannot execute `set_household_minimum_quantity(uuid, integer)`, and `authenticated` can
-- [ ] 2.7 Setting `minimum_quantity = 1000` on a real row fails with a check violation on `household_inventory_minimum_quantity_range`
+- [x] 2.4 `count(*)` and `sum(quantity)` on `household_inventory` match before and after `pnpm exec supabase db push`
+- [x] 2.5 No row has `minimum_quantity <> 3` after the push
+- [x] 2.6 `anon` cannot execute `set_household_minimum_quantity(uuid, integer)`, and `authenticated` can
+- [x] 2.7 Setting `minimum_quantity = 1000` on a real row fails with a check violation on `household_inventory_minimum_quantity_range`
 - [ ] 2.8 With the migration applied, `/inventory` shows unchanged counts and a stocking scan still raises a count
 
 ### Phase 3: Add the item page and the minimum form
