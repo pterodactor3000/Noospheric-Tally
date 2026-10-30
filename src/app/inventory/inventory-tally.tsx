@@ -29,7 +29,15 @@ import TallyCountControls from './tally-count-controls'
 
 const TALLY_DOT_LEADER = '.'.repeat(300)
 
-const tallyList = clsx('mt-[1rem]', 'text-[14px]', 'sm:text-[16px]')
+const tallyRoot = clsx('flex', 'min-h-0', 'flex-1', 'flex-col')
+const tallyList = clsx(
+  'mt-[1rem]',
+  'min-h-0',
+  'flex-1',
+  'overflow-y-auto',
+  'text-[14px]',
+  'sm:text-[16px]',
+)
 const tallyMiss = clsx('mt-[1rem]')
 const tallySearchRow = clsx('flex', 'items-center', 'gap-2')
 const tallySortGroup = clsx('flex', 'shrink-0', 'gap-2')
@@ -76,7 +84,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
   const visibleLines = sortTallyLines(filterItemsByName(lines, query), sort)
 
   return (
-    <>
+    <div className={tallyRoot}>
       <div className={fieldStack}>
         <Label htmlFor="inventory-name-search" className={fieldLabel}>
           Search by name
@@ -151,7 +159,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
           })}
         </ul>
       )}
-    </>
+    </div>
   )
 }
 

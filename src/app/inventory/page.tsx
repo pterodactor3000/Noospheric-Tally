@@ -15,6 +15,19 @@ const inventorySection = clsx(
   '[width:-webkit-fill-available]',
   '[width:stretch]',
   'max-w-[900px]',
+  'flex',
+  'min-h-0',
+  'flex-col',
+  'overflow-hidden',
+  // Header is py-4 + h-8 + a 2px border. The page adds py-6.
+  'max-h-[calc(100svh-7rem-2px)]',
+)
+
+const inventoryTallyRegion = clsx(
+  'flex',
+  'min-h-0',
+  'flex-1',
+  'flex-col',
 )
 
 const inventoryActions = clsx(
@@ -46,7 +59,9 @@ const InventoryPage = async () => {
           tally
         </h1>
         <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
-        <InventoryTally lines={tallyLines} />
+        <div className={inventoryTallyRegion}>
+          <InventoryTally lines={tallyLines} />
+        </div>
         <div className={inventoryActions}>
           <Button
             variant="outline"
@@ -68,9 +83,17 @@ const InventoryPage = async () => {
             variant="outline"
             nativeButton={false}
             render={<Link href="/inventory/restock" />}
-            className={clsx(inventoryActionButton, 'col-span-2')}
+            className={inventoryActionButton}
           >
             Restock
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/lookup" />}
+            className={inventoryActionButton}
+          >
+            Lookup
           </Button>
         </div>
       </section>

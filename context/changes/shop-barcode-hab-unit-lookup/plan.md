@@ -307,8 +307,8 @@ No migration. Revert the branch to remove the route, the button, and the scroll 
 
 #### Automated
 
-- [ ] 3.1 `npm test` passes
-- [ ] 3.2 Typecheck passes
+- [x] 3.1 `npm test` passes
+- [x] 3.2 Typecheck passes
 
 #### Manual
 
