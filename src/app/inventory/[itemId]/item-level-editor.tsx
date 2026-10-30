@@ -35,17 +35,17 @@ const itemTitle = clsx(
   'sm:text-lg',
 )
 const itemHeadingLine = clsx(itemLine, 'w-full', 'min-w-0')
+const itemNameText = clsx('min-w-0', 'truncate', 'leading-11')
 const itemNameButton = clsx(
-  'min-w-0',
-  'truncate',
+  itemNameText,
   'border-0',
   'bg-transparent',
   'p-0',
   'text-left',
   'font-[inherit]',
   'text-[length:inherit]',
-  'leading-11',
   'text-inherit',
+  'sm:hidden',
 )
 const itemStatus = clsx('shrink-0', 'font-bold', 'leading-11')
 const barcodeReveal = clsx(
@@ -201,17 +201,13 @@ const ItemLevelEditor = ({
                 [{STOCK_STATE_INITIALS[stockState]}]
               </span>
             </span>
+            <span className={clsx(itemNameText, 'max-sm:hidden')}>{name}</span>
             <button
               type="button"
               className={itemNameButton}
-              aria-expanded={isBarcodeLineShown}
+              aria-expanded={isBarcodeLineOpen}
               aria-controls="item-barcode-line"
-              onClick={() => {
-                if (isWideItemHeading) {
-                  return
-                }
-                setIsBarcodeLineOpen((current) => !current)
-              }}
+              onClick={() => setIsBarcodeLineOpen((current) => !current)}
             >
               {name}
             </button>
