@@ -1,7 +1,7 @@
 ---
 change_id: consumption-rate-view
 title: Consumption rate view
-status: planned
+status: implementing
 created: 2026-10-30
 updated: 2026-10-30
 archived_at: null
