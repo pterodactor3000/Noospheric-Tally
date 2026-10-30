@@ -7,6 +7,7 @@ import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
 import { adjustHabUnitQuantity } from '@/lib/items/adjust-hab-unit-quantity'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
 import { createNewItem } from '@/lib/items/create-new-item'
+import { createNewItemWithoutBarcode } from '@/lib/items/create-new-item-without-barcode'
 import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
@@ -135,6 +136,28 @@ const createItem = async (formData: FormData): Promise<ItemActionResult> => {
     }
   } catch (error: unknown) {
     console.error('createItem failed', { barcode, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  return redirectToInventory()
+}
+
+const createItemWithoutBarcode = async (
+  formData: FormData,
+): Promise<ItemActionResult> => {
+  const nameResult = validateItemName(getFormString(formData, 'name'))
+  if (nameResult.status === 'invalid') {
+    return { status: 'error', message: nameResult.message, field: 'name' }
+  }
+
+  try {
+    const supabase = await createClient()
+    await createNewItemWithoutBarcode(nameResult.name, supabase)
+  } catch (error: unknown) {
+    console.error('createItemWithoutBarcode failed', {
+      name: nameResult.name,
+      error,
+    })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
@@ -398,6 +421,7 @@ const adjustItemQuantity = async (
 
 export {
   createItem,
+  createItemWithoutBarcode,
   attachBarcode,
   addItemToHousehold,
   stockScannedItem,
