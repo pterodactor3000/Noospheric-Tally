@@ -42,7 +42,7 @@ const attachName = clsx(
   'min-w-0',
   'truncate',
   'leading-[36px]',
-  'peer-checked:text-stock-warning',
+  'peer-checked:text-stock-warning-text',
   'peer-focus-visible:ring-2',
   'peer-focus-visible:ring-ring',
 )
@@ -50,7 +50,7 @@ const attachBracket = clsx(
   'hidden',
   'shrink-0',
   'peer-checked:inline',
-  'peer-checked:text-stock-warning',
+  'peer-checked:text-stock-warning-text',
 )
 
 const AttachChevron = ({ isOpen }: AttachChevronProps) => (
@@ -248,7 +248,7 @@ const ItemCreateForm = ({
                             required
                             className="peer sr-only"
                           />
-                          <ItemListMarker className="peer-checked:text-stock-warning" />
+                          <ItemListMarker className="peer-checked:text-stock-warning-text" />
                           <span aria-hidden="true" className={attachBracket}>
                             {'['}
                           </span>

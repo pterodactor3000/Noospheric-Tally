@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from 'react'
 import { PackageMinus, PackagePlus, type LucideIcon } from 'lucide-react'
+import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -22,6 +23,21 @@ const SCAN_DIRECTION_ICONS: Record<ScanDirection, LucideIcon> = {
   [SCAN_DIRECTION_USING]: PackageMinus,
   [SCAN_DIRECTION_STOCKING]: PackagePlus,
 }
+
+const SCAN_DIRECTION_LABELS: Record<ScanDirection, string> = {
+  [SCAN_DIRECTION_USING]: 'consume',
+  [SCAN_DIRECTION_STOCKING]: 'tally',
+}
+
+const scanDirectionLabel = clsx(
+  'absolute',
+  'bottom-full',
+  'left-1/2',
+  'mb-2',
+  '-translate-x-1/2',
+  'font-semibold',
+  'whitespace-nowrap',
+)
 
 const scanDirectionListeners = new Set<() => void>()
 
@@ -76,7 +92,14 @@ const ScanDirectionButtons = () => {
   }
 
   return (
-    <div role="radiogroup" aria-label="Scan direction" className="flex gap-2">
+    <div
+      role="radiogroup"
+      aria-label="Scan direction"
+      className="relative flex gap-2"
+    >
+      <p className={scanDirectionLabel}>
+        [{SCAN_DIRECTION_LABELS[selectedDirection]}]
+      </p>
       {SCAN_DIRECTIONS.map((direction) => {
         const isSelected = direction === selectedDirection
         const DirectionIcon = SCAN_DIRECTION_ICONS[direction]
@@ -87,7 +110,7 @@ const ScanDirectionButtons = () => {
             type="button"
             role="radio"
             aria-checked={isSelected}
-            aria-label={direction}
+            aria-label={SCAN_DIRECTION_LABELS[direction]}
             variant={isSelected ? 'default' : 'outline'}
             size="icon"
             onClick={() => handleSelectDirection(direction)}

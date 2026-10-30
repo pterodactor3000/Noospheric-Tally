@@ -37,7 +37,7 @@ const InventoryPage = async () => {
   const tallyLines = await loadHabUnitTallyLines()
 
   return (
-    <main className={centeredPage}>
+    <main className={clsx(centeredPage, 'py-6')}>
       <section className={inventorySection}>
         <h1 className={inventoryTitle}>
           <span className={STOCK_STATE_TEXT_CLASS_NAMES['in-stock']}>

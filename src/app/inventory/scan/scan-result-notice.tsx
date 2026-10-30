@@ -4,11 +4,34 @@ import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 
-import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 import { STOCK_STATE_LABELS, type StockState } from '@/lib/items/stock-state'
 
 const SCAN_RESULT_NOTICE_MS = 5000
 const SCAN_RESULT_NOTICE_EXIT_MS = 280
+const SCAN_NOTICE_DOT_LEADER = '.'.repeat(300)
+const SCAN_NOTICE_COUNT_LABEL = 'Count'
+
+const noticeCountLine = clsx(
+  'mt-2',
+  'flex',
+  'w-full',
+  'min-w-0',
+  'items-baseline',
+  'gap-2',
+  'text-base',
+  'leading-6',
+)
+const noticeDots = clsx(
+  'min-w-0',
+  'flex-1',
+  'overflow-hidden',
+  'whitespace-nowrap',
+)
+const noticeCountValue = clsx('shrink-0', 'whitespace-nowrap')
+
+const hasStatusLabel = (stockState: StockState): boolean =>
+  stockState === 'warning' || stockState === 'critical'
 
 type NoticePhase = 'shown' | 'leaving' | 'hidden'
 
@@ -82,6 +105,11 @@ const ScanResultNotice = ({
     return null
   }
 
+  const showsStatusLabel = hasStatusLabel(stockState)
+  const statusTextClassName = showsStatusLabel
+    ? STOCK_STATE_TEXT_CLASS_NAMES[stockState]
+    : undefined
+
   return (
     <div
       role="status"
@@ -91,10 +119,11 @@ const ScanResultNotice = ({
         'pointer-events-auto',
         'border-2',
         'border-ring',
+        'bg-card',
         'px-4',
         'py-3',
         'font-mono',
-        STOCK_STATE_CLASS_NAMES[stockState],
+        'text-card-foreground',
         'shadow-lg',
         'shadow-primary/25',
         phase === 'leaving'
@@ -102,9 +131,23 @@ const ScanResultNotice = ({
           : 'motion-safe:animate-scan-notice-in',
       )}
     >
-      <span className="sr-only">{STOCK_STATE_LABELS[stockState]}</span>
+      {showsStatusLabel ? (
+        <p
+          className={clsx(
+            'font-bold',
+            'uppercase',
+            'tracking-tight',
+            statusTextClassName,
+          )}
+        >
+          [{STOCK_STATE_LABELS[stockState]}]
+        </p>
+      ) : (
+        <span className="sr-only">{STOCK_STATE_LABELS[stockState]}</span>
+      )}
       <p
         className={clsx(
+          showsStatusLabel && 'mt-2',
           'text-xl',
           'font-semibold',
           'tracking-tight',
@@ -114,16 +157,12 @@ const ScanResultNotice = ({
       >
         {title}
       </p>
-      <p
-        className={clsx(
-          'mt-2',
-          'text-base',
-          'leading-6',
-          'text-pretty',
-          'wrap-break-word',
-        )}
-      >
-        {detail}
+      <p className={clsx(noticeCountLine, statusTextClassName)}>
+        <span>{SCAN_NOTICE_COUNT_LABEL}</span>
+        <span aria-hidden="true" className={noticeDots}>
+          {SCAN_NOTICE_DOT_LEADER}
+        </span>
+        <span className={noticeCountValue}>{detail}</span>
       </p>
       {latchedConfirmation ? (
         <p
