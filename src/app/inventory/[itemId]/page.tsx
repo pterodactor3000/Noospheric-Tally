@@ -54,6 +54,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
           quantity={item.quantity}
           minimumQuantity={item.minimumQuantity}
           consumptionRate={consumptionRate}
+          category={item.category}
           barcodes={barcodes}
         />
       </section>

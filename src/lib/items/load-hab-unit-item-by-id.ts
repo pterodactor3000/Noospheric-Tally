@@ -9,7 +9,7 @@ const loadHabUnitItemById = async (
 
   const { data, error } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity, minimum_quantity')
+    .select('item_id, name, quantity, minimum_quantity, category')
     .eq('item_id', itemId)
     .maybeSingle()
 

@@ -11,6 +11,11 @@ import { createNewItemWithoutBarcode } from '@/lib/items/create-new-item-without
 import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
+import {
+  DEFAULT_ITEM_CATEGORY,
+  isItemCategory,
+  type ItemCategory,
+} from '@/lib/items/item-category'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
 import {
   loadScanSessionLines,
@@ -114,6 +119,16 @@ const createItem = async (formData: FormData): Promise<ItemActionResult> => {
 
   const { name } = nameResult
   const { barcode } = barcodeResult
+  const categoryInput = getFormString(formData, 'category')
+  let category: ItemCategory = DEFAULT_ITEM_CATEGORY
+  if (isItemCategory(categoryInput)) {
+    category = categoryInput
+  } else {
+    console.error('createItem rejected category', {
+      barcode,
+      category: categoryInput,
+    })
+  }
 
   try {
     const householdItem = await loadHabUnitItemByBarcode(barcode)
@@ -126,7 +141,10 @@ const createItem = async (formData: FormData): Promise<ItemActionResult> => {
       await addItemToHabUnit(globalItem.itemId, name)
     } else {
       try {
-        await createNewItem(name, barcode)
+        await createNewItem(
+          { name, barcode, category },
+          await createClient(),
+        )
       } catch (error: unknown) {
         console.error('create_item failed, looking up barcode again', {
           barcode,
@@ -371,6 +389,8 @@ const saveItemLevels = async (
   const expectedQuantity = parseExpectedQuantity(
     getFormString(formData, 'expectedQuantity'),
   )
+  const category = getFormString(formData, 'category')
+  const expectedCategory = getFormString(formData, 'expectedCategory')
 
   if (!isScanSessionId(itemId)) {
     console.error('saveItemLevels rejected item id', { itemId })
@@ -396,6 +416,19 @@ const saveItemLevels = async (
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
+  if (!isItemCategory(category)) {
+    console.error('saveItemLevels rejected category', { itemId, category })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  if (!isItemCategory(expectedCategory)) {
+    console.error('saveItemLevels rejected expected category', {
+      itemId,
+      expectedCategory,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
   try {
     const supabase = await createClient()
     const result = await setHabUnitItemLevels(
@@ -404,6 +437,8 @@ const saveItemLevels = async (
         quantity: quantityResult.quantity,
         minimumQuantity: minimumResult.minimumQuantity,
         expectedQuantity,
+        expectedCategory,
+        category,
       },
       supabase,
     )

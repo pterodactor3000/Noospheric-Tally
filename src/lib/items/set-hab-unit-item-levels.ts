@@ -1,12 +1,15 @@
 import { DB_FUNCTION_SET_HOUSEHOLD_ITEM_LEVELS } from '../db/entities'
+import { type ItemCategory } from './item-category'
 
-// SQLSTATE serialization_failure. set_household_item_levels raises it for a stale count.
+// SQLSTATE serialization_failure. set_household_item_levels raises it for a stale count or category.
 const STALE_QUANTITY_ERROR_CODE = '40001'
 
 interface HouseholdItemLevels {
   readonly quantity: number
   readonly minimumQuantity: number
   readonly expectedQuantity: number
+  readonly expectedCategory: ItemCategory
+  readonly category: ItemCategory
 }
 
 interface SetHouseholdItemLevelsClient {
@@ -17,6 +20,8 @@ interface SetHouseholdItemLevelsClient {
       new_quantity: number
       new_minimum_quantity: number
       expected_quantity: number
+      expected_category: string
+      new_category: string
     },
   ): PromiseLike<{
     data: unknown
@@ -46,6 +51,8 @@ const setHabUnitItemLevels = async (
     new_quantity: levels.quantity,
     new_minimum_quantity: levels.minimumQuantity,
     expected_quantity: levels.expectedQuantity,
+    expected_category: levels.expectedCategory,
+    new_category: levels.category,
   })
 
   if (error?.code === STALE_QUANTITY_ERROR_CODE) {

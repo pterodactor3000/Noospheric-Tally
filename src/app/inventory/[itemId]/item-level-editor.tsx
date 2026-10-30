@@ -9,6 +9,12 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { actionButton } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import {
+  ITEM_CATEGORIES,
+  ITEM_CATEGORY_LABELS,
+  isItemCategory,
+  type ItemCategory,
+} from '@/lib/items/item-category'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
 import {
   getStockState,
@@ -112,6 +118,7 @@ interface ItemLevelEditorProps {
   readonly quantity: number
   readonly minimumQuantity: number
   readonly consumptionRate: string
+  readonly category: ItemCategory
   readonly barcodes: readonly string[]
 }
 
@@ -167,10 +174,12 @@ const ItemLevelEditor = ({
   quantity,
   minimumQuantity,
   consumptionRate,
+  category,
   barcodes,
 }: ItemLevelEditorProps) => {
   const [count, setCount] = useState(quantity)
   const [minimum, setMinimum] = useState(minimumQuantity)
+  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>(category)
   const [isBarcodeLineOpen, setIsBarcodeLineOpen] = useState(false)
   const isWideItemHeading = useIsWideItemHeading()
   const isBarcodeLineShown = isWideItemHeading || isBarcodeLineOpen
@@ -187,6 +196,7 @@ const ItemLevelEditor = ({
       <input type="hidden" name="quantity" value={count} />
       <input type="hidden" name="minimumQuantity" value={minimum} />
       <input type="hidden" name="expectedQuantity" value={quantity} />
+      <input type="hidden" name="expectedCategory" value={category} />
       <div className={itemRows}>
         <h1 className={itemTitle}>
           <span className={itemHeadingLine}>
@@ -258,6 +268,34 @@ const ItemLevelEditor = ({
           onDecrease={() => setMinimum((current) => current - 1)}
           onIncrease={() => setMinimum((current) => current + 1)}
         />
+        <div className={itemLine}>
+          <label htmlFor="item-category" className={itemLabel}>
+            Category
+          </label>
+          <span aria-hidden="true" className={itemDots}>
+            {ITEM_DOT_LEADER}
+          </span>
+          <span className={itemValue}>
+            <select
+              id="item-category"
+              name="category"
+              value={selectedCategory}
+              onChange={(event) => {
+                const nextCategory = event.currentTarget.value
+                if (isItemCategory(nextCategory)) {
+                  setSelectedCategory(nextCategory)
+                }
+              }}
+              className={clsx(itemControl, 'appearance-none', 'bg-none')}
+            >
+              {ITEM_CATEGORIES.map((itemCategory) => (
+                <option key={itemCategory} value={itemCategory}>
+                  [{ITEM_CATEGORY_LABELS[itemCategory]}]
+                </option>
+              ))}
+            </select>
+          </span>
+        </div>
         <div className={itemLine}>
           <span className={itemLabel}>Use</span>
           <span aria-hidden="true" className={itemDots}>

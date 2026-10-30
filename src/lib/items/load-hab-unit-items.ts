@@ -1,12 +1,14 @@
 import { DB_TABLE_HOUSEHOLD_INVENTORY } from '../db/entities'
 import { createClient } from '../supabase/server'
 import { Item } from '../types'
+import { isItemCategory, type ItemCategory } from './item-category'
 
 interface HabUnitTallyLine {
   readonly itemId: string
   readonly name: string
   readonly quantity: number
   readonly minimumQuantity: number
+  readonly category: ItemCategory
 }
 
 const loadHabUnitItems = async ({
@@ -50,6 +52,7 @@ const readHabUnitTallyLine = (row: unknown): HabUnitTallyLine | null => {
     name,
     quantity,
     minimum_quantity: minimumQuantity,
+    category,
   } = row
 
   if (
@@ -58,12 +61,13 @@ const readHabUnitTallyLine = (row: unknown): HabUnitTallyLine | null => {
     typeof quantity !== 'number' ||
     !Number.isInteger(quantity) ||
     typeof minimumQuantity !== 'number' ||
-    !Number.isInteger(minimumQuantity)
+    !Number.isInteger(minimumQuantity) ||
+    !isItemCategory(category)
   ) {
     return null
   }
 
-  return { itemId, name, quantity, minimumQuantity }
+  return { itemId, name, quantity, minimumQuantity, category }
 }
 
 const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
@@ -71,7 +75,7 @@ const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
 
   const { data, error } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity, minimum_quantity')
+    .select('item_id, name, quantity, minimum_quantity, category')
     .order('name', { ascending: true })
 
   const rows: unknown = data
