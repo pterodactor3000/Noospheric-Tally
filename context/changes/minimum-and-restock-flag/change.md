@@ -1,7 +1,7 @@
 ---
 change_id: minimum-and-restock-flag
 title: Minimum and restock flag
-status: planned
+status: implementing
 created: 2026-10-30
 updated: 2026-10-30
 archived_at: null
