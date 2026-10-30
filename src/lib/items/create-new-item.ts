@@ -1,23 +1,49 @@
 import { DB_FUNCTION_CREATE_ITEM } from '../db/entities'
-import { createClient } from '../supabase/server'
+import { type ItemCategory } from './item-category'
+
+interface CreateNewItemInput {
+  readonly name: string
+  readonly barcode: string
+  readonly category: ItemCategory
+}
+
+interface CreateItemClient {
+  rpc(
+    functionName: typeof DB_FUNCTION_CREATE_ITEM,
+    args: {
+      item_name: string
+      item_barcode: string
+      item_category: string
+    },
+  ): PromiseLike<{
+    data: unknown
+    error: { message: string } | null
+  }>
+}
+
+const isNonEmptyItemId = (value: unknown): value is string =>
+  typeof value === 'string' && value.length > 0
 
 const createNewItem = async (
-  itemName: string,
-  itemBarcode: string,
+  input: CreateNewItemInput,
+  client: CreateItemClient,
 ): Promise<string> => {
-  const supabase = await createClient()
-  const { data, error } = await supabase.rpc(DB_FUNCTION_CREATE_ITEM, {
-    item_name: itemName,
-    item_barcode: itemBarcode,
+  const { name, barcode, category } = input
+  const { data, error } = await client.rpc(DB_FUNCTION_CREATE_ITEM, {
+    item_name: name,
+    item_barcode: barcode,
+    item_category: category,
   })
 
-  if (error || !data) {
-    throw new Error(`create_item failed for barcode ${itemBarcode}`, {
-      cause: error,
-    })
+  if (error || !isNonEmptyItemId(data)) {
+    throw new Error(
+      `create_item failed for barcode ${barcode}`,
+      error ? { cause: error } : undefined,
+    )
   }
 
   return data
 }
 
 export { createNewItem }
+export type { CreateItemClient }

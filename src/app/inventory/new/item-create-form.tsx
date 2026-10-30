@@ -17,11 +17,13 @@ import {
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { type ItemCategory } from '@/lib/items/item-category'
 import { Item } from '@/lib/types'
 import { AlreadyStocked } from './already-stocked'
 
 interface ItemCreateFormProps {
   barcode: string
+  category: ItemCategory
   habUnitItems: Item[]
   defaultName?: string
   householdMissMessage: string
@@ -78,6 +80,7 @@ const AttachChevron = ({ isOpen }: AttachChevronProps) => (
 
 const ItemCreateForm = ({
   barcode,
+  category,
   habUnitItems,
   defaultName = '',
   householdMissMessage,
@@ -131,6 +134,7 @@ const ItemCreateForm = ({
         className={formStack}
       >
         <input type="hidden" name="barcode" value={barcode} />
+        <input type="hidden" name="category" value={category} />
         <div className={fieldStack}>
           <Label
             htmlFor="name"

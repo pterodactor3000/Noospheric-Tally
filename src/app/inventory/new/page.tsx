@@ -74,6 +74,7 @@ const NewItemPage = async ({
         body = (
           <ItemCreateForm
             barcode={barcode}
+            category={lookupProduct.category}
             habUnitItems={items}
             defaultName={defaultName}
             householdMissMessage={householdMissMessage}

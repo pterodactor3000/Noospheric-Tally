@@ -19,6 +19,7 @@ const CATALOG_URLS = [
 
 const emptyLookup = {
   status: 'empty',
+  category: 'uncategorized',
 } as const
 
 interface CatalogFetchInit {
@@ -45,6 +46,15 @@ const createProductResponse = (productName: string) =>
     },
     status: 1,
     status_verbose: 'product found',
+  })
+
+const answerOnly = (catalogUrl: string, response: Response) =>
+  vi.fn(async (url: string) => {
+    if (url.startsWith(catalogUrl)) {
+      return response
+    }
+
+    return new Response(null, { status: 404 })
   })
 
 const throwIfRequestAborted = (signal: AbortSignal) => {
@@ -117,12 +127,13 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async () => createProductResponse('Nutella')),
+        answerOnly(BEAUTY_CATALOG_URL, createProductResponse('Nutella')),
       )
 
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'Nutella',
+        category: 'beauty',
       })
     })
   })
@@ -131,7 +142,8 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async () =>
+        answerOnly(
+          BEAUTY_CATALOG_URL,
           Response.json({
             code: BARCODE,
             product: {
@@ -147,6 +159,7 @@ describe('lookupCatalogName', () => {
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'Nom français',
+        category: 'beauty',
       })
     })
   })
@@ -157,12 +170,13 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async () => createProductResponse(productName)),
+        answerOnly(BEAUTY_CATALOG_URL, createProductResponse(productName)),
       )
 
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'n'.repeat(120),
+        category: 'beauty',
       })
     })
   })
@@ -171,7 +185,8 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async () =>
+        answerOnly(
+          BEAUTY_CATALOG_URL,
           Response.json({
             code: BARCODE,
             product: {
@@ -187,6 +202,7 @@ describe('lookupCatalogName', () => {
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'English name',
+        category: 'beauty',
       })
     })
   })
@@ -195,7 +211,8 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async () =>
+        answerOnly(
+          PET_CATALOG_URL,
           Response.json({
             code: BARCODE,
             product: {
@@ -208,7 +225,10 @@ describe('lookupCatalogName', () => {
         ),
       )
 
-      await expect(lookupCatalogName(BARCODE)).resolves.toEqual(emptyLookup)
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'empty',
+        category: 'pet-food',
+      })
     })
   })
 
@@ -216,18 +236,73 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async (url: string) => {
-          if (url.startsWith(FOOD_CATALOG_URL)) {
-            return createProductResponse('Nutella')
-          }
-
-          return new Response(null, { status: 404 })
-        }),
+        answerOnly(FOOD_CATALOG_URL, createProductResponse('Nutella')),
       )
 
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'Nutella',
+        category: 'food',
+      })
+    })
+  })
+
+  test('returns category beauty when only that catalog answers with a name', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        answerOnly(BEAUTY_CATALOG_URL, createProductResponse('Lipstick')),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'found',
+        name: 'Lipstick',
+        category: 'beauty',
+      })
+    })
+  })
+
+  test('returns category food when only that catalog answers with a name', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        answerOnly(FOOD_CATALOG_URL, createProductResponse('Nutella')),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'found',
+        name: 'Nutella',
+        category: 'food',
+      })
+    })
+  })
+
+  test('returns category pet-food when only that catalog answers with a name', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        answerOnly(PET_CATALOG_URL, createProductResponse('Kibble')),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'found',
+        name: 'Kibble',
+        category: 'pet-food',
+      })
+    })
+  })
+
+  test('returns category other when only that catalog answers with a name', async () => {
+    await runWithCatalogEnv(async (lookupCatalogName) => {
+      vi.stubGlobal(
+        'fetch',
+        answerOnly(PRODUCTS_CATALOG_URL, createProductResponse('Battery')),
+      )
+
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'found',
+        name: 'Battery',
+        category: 'other',
       })
     })
   })
@@ -260,16 +335,19 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(
-          async () =>
-            new Response('not-json', {
-              status: 200,
-              headers: { 'Content-Type': 'application/json' },
-            }),
+        answerOnly(
+          PRODUCTS_CATALOG_URL,
+          new Response('not-json', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
         ),
       )
 
-      await expect(lookupCatalogName(BARCODE)).resolves.toEqual(emptyLookup)
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'empty',
+        category: 'other',
+      })
     })
   })
 
@@ -277,7 +355,8 @@ describe('lookupCatalogName', () => {
     await runWithCatalogEnv(async (lookupCatalogName) => {
       vi.stubGlobal(
         'fetch',
-        vi.fn(async () =>
+        answerOnly(
+          BEAUTY_CATALOG_URL,
           Response.json({
             code: BARCODE,
             status: 0,
@@ -286,7 +365,10 @@ describe('lookupCatalogName', () => {
         ),
       )
 
-      await expect(lookupCatalogName(BARCODE)).resolves.toEqual(emptyLookup)
+      await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
+        status: 'empty',
+        category: 'beauty',
+      })
     })
   })
 
@@ -341,6 +423,7 @@ describe('lookupCatalogName', () => {
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'Nutella',
+        category: 'food',
       })
 
       expect(pendingSignals.map((signal) => signal.aborted)).toEqual([
@@ -369,6 +452,7 @@ describe('lookupCatalogName', () => {
       await expect(lookupCatalogName(BARCODE)).resolves.toEqual({
         status: 'found',
         name: 'Nutella',
+        category: 'food',
       })
     })
   })
