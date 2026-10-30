@@ -426,14 +426,14 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 #### Automated
 
-- [x] 1.1 `rg -n "S-10" context/foundation/roadmap.md` matches only the Merged line under S-06 and the S-06 Backlog Handoff Notes line
-- [x] 1.2 `rg -n "shortage-threshold-labels" context/foundation/roadmap.md` matches only the Merged line under S-06
-- [x] 1.3 `git diff --stat` lists only `context/foundation/roadmap.md` for this phase
+- [x] 1.1 `rg -n "S-10" context/foundation/roadmap.md` matches only the Merged line under S-06 and the S-06 Backlog Handoff Notes line. `7522b57`
+- [x] 1.2 `rg -n "shortage-threshold-labels" context/foundation/roadmap.md` matches only the Merged line under S-06. `7522b57`
+- [x] 1.3 `git diff --stat` lists only `context/foundation/roadmap.md` for this phase. `7522b57`
 
 #### Manual
 
-- [x] 1.4 At a glance shows S-06 with the default of 3 and the three labels, no S-10 row, and S-11 with prerequisite S-06
-- [x] 1.5 The S-06 body Outcome matches FR-007 and FR-008 in `prd.md` lines 128 and 132
+- [x] 1.4 At a glance shows S-06 with the default of 3 and the three labels, no S-10 row, and S-11 with prerequisite S-06. `7522b57`
+- [x] 1.5 The S-06 body Outcome matches FR-007 and FR-008 in `prd.md` lines 128 and 132. `7522b57`
 
 ### Phase 2: Store the minimum and add the stock rules
 
