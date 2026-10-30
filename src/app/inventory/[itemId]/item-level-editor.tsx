@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 
@@ -35,7 +35,18 @@ const itemTitle = clsx(
   'sm:text-lg',
 )
 const itemHeadingLine = clsx(itemLine, 'w-full', 'min-w-0')
-const itemNameLabel = clsx('min-w-0', 'truncate', 'leading-11')
+const itemNameButton = clsx(
+  'min-w-0',
+  'truncate',
+  'border-0',
+  'bg-transparent',
+  'p-0',
+  'text-left',
+  'font-[inherit]',
+  'text-[length:inherit]',
+  'leading-11',
+  'text-inherit',
+)
 const itemStatus = clsx('shrink-0', 'font-bold', 'leading-11')
 const barcodeReveal = clsx(
   'grid',
@@ -65,24 +76,25 @@ const itemDots = clsx(
 const itemValue = clsx('shrink-0', 'whitespace-nowrap')
 const WIDE_ITEM_HEADING_QUERY = '(min-width: 40rem)'
 
-const useIsWideItemHeading = (): boolean => {
-  const [isWide, setIsWide] = useState(false)
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(WIDE_ITEM_HEADING_QUERY)
-    const updateIsWide = () => {
-      setIsWide(mediaQuery.matches)
-    }
-
-    updateIsWide()
-    mediaQuery.addEventListener('change', updateIsWide)
-    return () => {
-      mediaQuery.removeEventListener('change', updateIsWide)
-    }
-  }, [])
-
-  return isWide
+const subscribeToWideItemHeading = (onStoreChange: () => void) => {
+  const mediaQuery = window.matchMedia(WIDE_ITEM_HEADING_QUERY)
+  mediaQuery.addEventListener('change', onStoreChange)
+  return () => {
+    mediaQuery.removeEventListener('change', onStoreChange)
+  }
 }
+
+const getIsWideItemHeading = () =>
+  window.matchMedia(WIDE_ITEM_HEADING_QUERY).matches
+
+const getServerIsWideItemHeading = () => false
+
+const useIsWideItemHeading = (): boolean =>
+  useSyncExternalStore(
+    subscribeToWideItemHeading,
+    getIsWideItemHeading,
+    getServerIsWideItemHeading,
+  )
 const itemActions = clsx(
   'mx-auto',
   'mt-8',
@@ -189,14 +201,20 @@ const ItemLevelEditor = ({
                 [{STOCK_STATE_INITIALS[stockState]}]
               </span>
             </span>
-            <label
-              className={itemNameLabel}
-              aria-expanded={isBarcodeLineOpen}
+            <button
+              type="button"
+              className={itemNameButton}
+              aria-expanded={isBarcodeLineShown}
               aria-controls="item-barcode-line"
-              onClick={() => setIsBarcodeLineOpen((current) => !current)}
+              onClick={() => {
+                if (isWideItemHeading) {
+                  return
+                }
+                setIsBarcodeLineOpen((current) => !current)
+              }}
             >
               {name}
-            </label>
+            </button>
             <span aria-hidden="true" className={itemDots}>
               {ITEM_DOT_LEADER}
             </span>
@@ -225,7 +243,7 @@ const ItemLevelEditor = ({
             </div>
           </div>
         </h1>
-        <Separator className="my-2 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
+        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
         <LevelStepper
           label="Count"
           value={count}

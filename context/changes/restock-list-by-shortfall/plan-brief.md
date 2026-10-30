@@ -72,7 +72,7 @@ Three phases in dependency order. Phase 1 is a pure function with tests. Phase 2
 - Shortfall ordering can rank a large spice shortfall above a small pet food one. The roadmap records this as an unknown to settle by real use, not a blocker.
 - Below `sm`, the barcode line starts hidden. A long list is shown only after the item name is clicked. From `sm` up, the value may wrap.
 - The reveal behavior has no component test, because Vitest runs node-only `.ts` tests. Manual steps cover hover, focus, and tap.
-- The separator margin (`my-2`) is a plan choice, because the closed decisions do not give a spacing.
+- The separator margin is 16px above and below (`my-4`).
 
 ## Success Criteria
 

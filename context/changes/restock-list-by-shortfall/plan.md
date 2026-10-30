@@ -315,14 +315,14 @@ const getBarcodeLineText = (
 **Contract:**
 
 - `ItemLevelEditorProps.barcode: string | null` (`:72`) becomes `readonly barcodes: readonly string[]`, and the destructured prop at `:126` changes with it.
-- Remove the collapse. `itemTitle` (`:25-32`) loses `flex-col`, `sm:flex-row`, `sm:items-baseline`, and `sm:gap-2`. `itemTitleDots` (`:40`) loses `hidden sm:block`. The `w-full sm:w-auto` on the label (`:145`) and the `leading-11 sm:leading-[inherit]` on the value (`:161`) go away.
+- Remove the side-by-side collapse. `itemTitle` keeps `flex-col` so the two heading rows stack. It loses `sm:flex-row`, `sm:items-baseline`, and `sm:gap-2`. `itemTitleDots` (`:40`) loses `hidden sm:block`. The `w-full sm:w-auto` on the label (`:145`) and the `leading-11 sm:leading-[inherit]` on the value (`:161`) go away.
 - The `<h1>` (`:144`) is `m-0 text-base sm:text-lg`, so the whole heading is 16px, and 18px from `sm`. The `itemRows` wrapper (`:23`, `:143`) stays `text-[14px] sm:text-[16px]`, so Count and Minimum keep 14px and 16px from `sm`.
 - The `<h1>` holds two flex rows, each a `<span>` with `items-baseline` and `gap-2` (`itemLine`, `:24`).
   - Line 1: the label span (`itemLabel`, `:33`) with the status and the name, then the dots span.
   - Line 2: a dots span, then `<BarcodeLine barcodes={barcodes} />`.
-- The status span is unchanged: bold, bracketed `[{STOCK_STATE_LABELS[stockState]}]`, and `STOCK_STATE_TEXT_CLASS_NAMES[stockState]`. The name is a `<label>` with `onClick`, `aria-expanded`, and `aria-controls` pointing at line 2. It is the same text as the wide name, not a button. Activating it below `sm` shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2. The label does not submit the form. From `sm` up, line 2 stays visible.
+- The status span is unchanged: bold, bracketed `[{STOCK_STATE_LABELS[stockState]}]`, and `STOCK_STATE_TEXT_CLASS_NAMES[stockState]`. The name is a `<button type="button">` with the heading text styles, `aria-controls` pointing at line 2, and `aria-expanded` set from whether line 2 is shown. Below `sm`, activating it shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2. The button does not submit the form. From `sm` up, line 2 stays shown and a click does not change the narrow open state.
 - Line 2 is in the document, including when `barcodes` is empty. The dots are `aria-hidden`. Below `sm` it starts closed. Opening it uses the same grid-row height animation and slide as the attach panel (`transition-[grid-template-rows]` and `translate-y`, 500ms, `motion-reduce:transition-none`). From `sm` up, line 2 is shown whether or not the narrow control was used. The open state starts closed on each visit and is not stored.
-- Add `<Separator />` from `@/components/ui/separator` between the `</h1>` (`:166`) and the Count `LevelStepper` (`:167`), inside the `itemRows` div. It is horizontal, full width, 2px thick to match `border-2`, with a small vertical margin (`my-2`) and a slight primary glow (`shadow-[0_0_8px] shadow-primary/40`).
+- Add `<Separator />` from `@/components/ui/separator` between the `</h1>` (`:166`) and the Count `LevelStepper` (`:167`), inside the `itemRows` div. It is horizontal, full width, 2px thick to match `border-2`, with a 16px vertical margin (`my-4`) and a slight primary glow (`shadow-[0_0_8px] shadow-primary/40`).
 - Count and Minimum steppers, the hidden inputs, the form action, Save, and Cancel do not change.
 
 ### Success Criteria
@@ -336,7 +336,7 @@ const getBarcodeLineText = (
 
 #### Manual Verification
 
-- At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. At 360px line 1 is visible, line 2 is hidden, and the item name is a label with `aria-expanded` false. There is no `Barcodes` control and no name button.
+- At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. The name reports `aria-expanded` true. At 360px line 1 is visible, line 2 is hidden, and the item name is a button with `aria-expanded` false. There is no `Barcodes` control.
 - The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before. Below 460px the visible label is `[C]`, `[W]`, or `[I]`. From 460px up it is the full word.
 - The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`.
 - A horizontal rule sits under the heading and above Count. It is 2px thick, the same as the panel border, with a slight primary glow.
@@ -345,7 +345,7 @@ const getBarcodeLineText = (
 - Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed.
 - On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on.
 - Pressing the redacted control never submits the form.
-- At 360px, clicking the item name animates line 2 open and sets `aria-expanded` to true. Clicking the name again animates line 2 closed and sets `aria-expanded` to false. The status keeps its styling. The name click does not submit the form.
+- At 360px, activating the item name with a click or the keyboard animates line 2 open and sets `aria-expanded` to true. Activating it again animates line 2 closed and sets `aria-expanded` to false. The status keeps its styling. The name control does not submit the form. At 1024px, activating the name does not change the line.
 
 ---
 
@@ -369,7 +369,7 @@ None. Vitest runs `src/**/*.test.ts` in node (`vitest.config.mts:15-16`) and has
 4. Raise one listed item above its minimum on `/inventory`, return to `/inventory/restock`, and check the row is gone. Raise every item and check `Nothing needs restocking.`
 5. Open an item with no barcode. Check `[REDACTED]`, hover, focus, tap, second tap, and blur.
 6. Attach a second barcode to an item with one through the existing flow. Open it and check both barcodes, oldest first.
-7. At 360px, check that barcodes are hidden, click the item name, and check that line 2 animates open. Click the name again and check that it closes. At 1024px, check that both lines show and the name is not a button. Check the sizes and the separator at both widths.
+7. At 360px, check that barcodes are hidden, activate the item name with a click and with the keyboard, and check that line 2 animates open and closed. At 1024px, check that both lines show, the name reports expanded, and activating the name does not change the line. Check the sizes and the separator at both widths.
 
 ## Migration and Rollback
 
@@ -441,7 +441,7 @@ Not applicable. No migration, no table change, and no write path. To roll back, 
 
 #### Manual
 
-- [x] 3.5 At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. At 360px line 1 is visible, line 2 is hidden, and the item name is a label with `aria-expanded` false. There is no `Barcodes` control and no name button. (d6476c0)
+- [x] 3.5 At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. The name reports `aria-expanded` true. At 360px line 1 is visible, line 2 is hidden, and the item name is a button with `aria-expanded` false. There is no `Barcodes` control. (d6476c0)
 - [x] 3.6 The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before. Below 460px the visible label is `[C]`, `[W]`, or `[I]`. From 460px up it is the full word. (d6476c0)
 - [x] 3.7 The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`. (d6476c0)
 - [x] 3.8 A horizontal rule sits under the heading and above Count. It is 2px thick, the same as the panel border, with a slight primary glow. (d6476c0)
@@ -450,4 +450,4 @@ Not applicable. No migration, no table change, and no write path. To roll back, 
 - [x] 3.11 Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed. (d6476c0)
 - [x] 3.12 On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on. (d6476c0)
 - [x] 3.13 Pressing the redacted control never submits the form. (d6476c0)
-- [x] 3.14 At 360px, clicking the item name animates line 2 open and sets `aria-expanded` to true. Clicking the name again animates line 2 closed and sets `aria-expanded` to false. The status keeps its styling. The name click does not submit the form. (d6476c0)
+- [x] 3.14 At 360px, activating the item name with a click or the keyboard animates line 2 open and sets `aria-expanded` to true. Activating it again animates line 2 closed and sets `aria-expanded` to false. The status keeps its styling. The name control does not submit the form. At 1024px, activating the name does not change the line. (d6476c0)

@@ -46,6 +46,12 @@ const attachName = clsx(
   'peer-focus-visible:ring-2',
   'peer-focus-visible:ring-ring',
 )
+const attachBracket = clsx(
+  'hidden',
+  'shrink-0',
+  'peer-checked:inline',
+  'peer-checked:text-stock-warning',
+)
 
 const AttachChevron = ({ isOpen }: AttachChevronProps) => (
   <svg
@@ -242,8 +248,14 @@ const ItemCreateForm = ({
                             required
                             className="peer sr-only"
                           />
-                          <ItemListMarker />
+                          <ItemListMarker className="peer-checked:text-stock-warning" />
+                          <span aria-hidden="true" className={attachBracket}>
+                            {'['}
+                          </span>
                           <span className={attachName}>{item.name}</span>
+                          <span aria-hidden="true" className={attachBracket}>
+                            {']'}
+                          </span>
                         </label>
                       </li>
                     ))}
