@@ -14,14 +14,20 @@ import {
   fieldLabel,
   fieldStack,
 } from '@/app/styles/class-names'
-import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 import TallyCountControls from './tally-count-controls'
 
 const TALLY_DOT_LEADER = '.'.repeat(300)
 
 const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
-const tallyName = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
+const tallyName = clsx(
+  'min-h-11',
+  'min-w-0',
+  'truncate',
+  'leading-11',
+  'text-inherit',
+)
 const tallyDots = clsx(
   'min-w-0',
   'flex-1',
@@ -69,15 +75,13 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
             )
 
             return (
-              <li
-                key={line.itemId}
-                className={clsx('px-2', STOCK_STATE_CLASS_NAMES[stockState])}
-              >
+              <li key={line.itemId} className="px-2">
                 <TallyCountControls
                   itemId={line.itemId}
                   name={line.name}
                   quantity={line.quantity}
                   stockStateLabel={STOCK_STATE_LABELS[stockState]}
+                  stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
                 >
                   <Link
                     href={`/inventory/${line.itemId}`}

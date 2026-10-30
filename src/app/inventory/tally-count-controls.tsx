@@ -13,6 +13,7 @@ interface TallyCountControlsProps {
   readonly name: string
   readonly quantity: number
   readonly stockStateLabel: string
+  readonly stockTextClassName: string
   readonly children: ReactNode
 }
 
@@ -39,6 +40,7 @@ const TallyCountControls = ({
   name,
   quantity,
   stockStateLabel,
+  stockTextClassName,
   children,
 }: TallyCountControlsProps) => {
   const [isPending, startTransition] = useTransition()
@@ -65,7 +67,7 @@ const TallyCountControls = ({
 
   return (
     <div>
-      <div className={tallyLine}>
+      <div className={clsx(tallyLine, stockTextClassName)}>
         {children}
         <span className={tallyCount}>
           <button

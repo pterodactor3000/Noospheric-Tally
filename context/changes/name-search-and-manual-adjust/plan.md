@@ -24,7 +24,7 @@ The slice has three parts. Part one turns the disabled `[-]` and `[+]` buttons o
 
 ## Desired End State
 
-On `/inventory`, every row's `[-]` and `[+]` change that item's count by 1 per press. The count shown, the row color, and the count on `/inventory/{itemId}` update. `[-]` is disabled at 0. A refused or failed write shows a message under the row.
+On `/inventory`, every row's `[-]` and `[+]` change that item's count by 1 per press. The count shown, the name, count, and `[+]` / `[-]` text color, and the count on `/inventory/{itemId}` update. The row background stays plain. `[-]` is disabled at 0. A refused or failed write shows a message under the row.
 
 Above the tally, a search field filters rows by name, ignoring case and surrounding spaces. A query with no match shows `No item matches "{query}".`. The filter text survives a count change.
 
@@ -146,7 +146,7 @@ Every row's `[-]` and `[+]` change that item's count by 1 through a new RPC. The
 
 **Intent:** Use the live controls in place of the placeholders.
 
-**Contract:** Replace the `tallyCount` span (lines 77-99) with `<TallyCountControls />` and move `tallyCount` and `tallyControl` into the new file. Keep the name link, the dot leader, the row color from `STOCK_STATE_CLASS_NAMES`, and the layout unchanged. The page stays a server component.
+**Contract:** Replace the `tallyCount` span (lines 77-99) with `<TallyCountControls />` and move `tallyCount` and `tallyControl` into the new file. Keep the name link, the dot leader, and the layout unchanged. The name, the count, and `[+]` / `[-]` use the stock text color. The row background stays plain. The page stays a server component.
 
 ### Success Criteria
 
@@ -160,7 +160,7 @@ Every row's `[-]` and `[+]` change that item's count by 1 through a new RPC. The
 
 - `pnpm exec supabase db push` applies the migration. `select to_regprocedure('public.adjust_household_quantity(uuid, integer)')` is not null. `has_function_privilege('anon', ..., 'execute')` is false and `has_function_privilege('authenticated', ..., 'execute')` is true.
 - As a member in SQL, a delta of `1` returns the count plus 1 and a delta of `-1` returns the count minus 1. A delta of `0` or `2` raises the delta message. A delta of `-1` on an item at 0 raises with SQLSTATE `23514` and leaves the count at 0. An item id from another household raises the `does not stock` message. No call adds a row to `household_quantity_changes`.
-- On `/inventory`, `[+]` raises a row's count by 1 and `[-]` lowers it by 1. The row color follows the stock state, and a refresh keeps the count. `/inventory/{itemId}` shows the same count.
+- On `/inventory`, `[+]` raises a row's count by 1 and `[-]` lowers it by 1. The name, count, and `[+]` / `[-]` use the stock text color, the row background stays plain, and a refresh keeps the count. `/inventory/{itemId}` shows the same count.
 - On a row at 0, `[-]` is disabled. With the same item open at 0 in a second tab after it was lowered there, `[-]` in the stale tab shows `The count cannot go below 0.` under the row and the count stays 0.
 - A double tap on `[+]` raises the count by 1, and both buttons are disabled while a press is pending.
 
@@ -313,7 +313,7 @@ A member can add an item by name alone from `/inventory/new`. It starts at 0 wit
 ### Manual Testing Steps
 
 1. Run `pnpm exec supabase db push`, then `pnpm dev` and sign in with a household that has at least two scanned items.
-2. On `/inventory`, press `[+]` and `[-]` on one item. Check the count, the row color, and `/inventory/{itemId}`.
+2. On `/inventory`, press `[+]` and `[-]` on one item. Check the count, the stock text color on the name and buttons, and `/inventory/{itemId}`.
 3. Lower an item to 0. Check that `[-]` is disabled.
 4. Type part of an item name in lower case and in upper case. Check the filtered list, then a query that matches nothing, then clear the field.
 5. Adjust a count while the filter is set. Check the filter stays.
@@ -357,7 +357,7 @@ Both migrations only add functions. They change no table and no existing functio
 
 - [ ] 1.4 `pnpm exec supabase db push` applies the migration. `to_regprocedure('public.adjust_household_quantity(uuid, integer)')` is not null, `anon` cannot execute it, and `authenticated` can.
 - [ ] 1.5 As a member in SQL, a delta of `1` and `-1` move the count by 1, a delta of `0` or `2` raises, `-1` at 0 raises SQLSTATE `23514` and leaves the count at 0, another household's item id raises the `does not stock` message, and no call adds a row to `household_quantity_changes`.
-- [ ] 1.6 On `/inventory`, `[+]` and `[-]` change a row's count by 1, the row color follows the stock state, a refresh keeps the count, and `/inventory/{itemId}` shows the same count.
+- [ ] 1.6 On `/inventory`, `[+]` and `[-]` change a row's count by 1, the name, count, and `[+]` / `[-]` use the stock text color, the row background stays plain, a refresh keeps the count, and `/inventory/{itemId}` shows the same count.
 - [ ] 1.7 On a row at 0, `[-]` is disabled, and a stale tab that presses `[-]` after the count reached 0 elsewhere shows `The count cannot go below 0.` under the row and the count stays 0.
 - [ ] 1.8 A double tap on `[+]` raises the count by 1, and both buttons are disabled while a press is pending.
 
