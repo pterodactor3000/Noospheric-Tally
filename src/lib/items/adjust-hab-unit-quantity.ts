@@ -12,6 +12,9 @@ interface AdjustHouseholdQuantityClient {
   }>
 }
 
+// SQLSTATE numeric_value_out_of_range. adjust_household_quantity raises it above 999999.
+const NUMERIC_VALUE_OUT_OF_RANGE_ERROR_CODE = '22003'
+
 interface AdjustedHabUnitQuantity {
   readonly status: 'adjusted'
   readonly quantity: number
@@ -21,9 +24,14 @@ interface BelowZeroHabUnitQuantity {
   readonly status: 'below-zero'
 }
 
+interface AboveMaximumHabUnitQuantity {
+  readonly status: 'above-maximum'
+}
+
 type AdjustHabUnitQuantityResult =
   | AdjustedHabUnitQuantity
   | BelowZeroHabUnitQuantity
+  | AboveMaximumHabUnitQuantity
 
 const isIntegerQuantity = (value: unknown): value is number =>
   typeof value === 'number' && Number.isInteger(value)
@@ -40,6 +48,10 @@ const adjustHabUnitQuantity = async (
 
   if (error?.code === CHECK_VIOLATION_ERROR_CODE) {
     return { status: 'below-zero' }
+  }
+
+  if (error?.code === NUMERIC_VALUE_OUT_OF_RANGE_ERROR_CODE) {
+    return { status: 'above-maximum' }
   }
 
   if (error || !isIntegerQuantity(data)) {

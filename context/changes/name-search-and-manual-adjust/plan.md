@@ -24,11 +24,11 @@ The slice has three parts. Part one turns the disabled `[-]` and `[+]` buttons o
 
 ## Desired End State
 
-On `/inventory`, the heading is `Your [{hab unit name}] tally`. The bracketed name uses the in-stock green. Add item and Scan item share one width and sit centered under the list. Every row's `[-]` and `[+]` change that item's count by 1 per press. The name, dots, count, and buttons use the stock text color. The row background stays plain. Each row is 36px tall. `[-]` is disabled at 0. A refused or failed write shows a message under the row, and that message slides in.
+On `/inventory`, the heading is `Your [{hab unit name}] tally`. The bracketed name uses the in-stock green. Add item and Scan item share one width and sit centered under the list. Every row's `[-]` and `[+]` change that item's count by 1 per press. The name, dots, count, and buttons use the stock text color. The row background stays plain. Each row is 36px tall. `[-]` is disabled at 0. `[+]` is disabled at 999999. A refused or failed write shows a message under the row, and that message slides in.
 
 Above the tally, a search field filters rows by name, ignoring case and surrounding spaces, with 1rem between the field and the list. Two icons beside the field sort by name or by count. The first press of the active icon is ascending and the next reverses it. A count of 0 stays at the bottom. A query with no match shows `No item matches "{query}".`. The filter text survives a count change.
 
-On `/inventory/{itemId}`, the name row is `[LABEL] {name}` then dots then ` ++  {barcode} ++` when a barcode exists. The label is bold and uses the stock color. Below the `sm` breakpoint that row is two lines and has no dots. Count and Minimum each have `[-]` and `[+]`. Those presses stay local until Save. Save writes both through `set_household_item_levels` and returns to `/inventory`. Cancel returns without writing.
+On `/inventory/{itemId}`, the name row is `[LABEL] {name}` then dots then ` ++  {barcode} ++` when a barcode exists. The label is bold and uses the stock color. Below the `sm` breakpoint that row is two lines and has no dots. Count and Minimum each have `[-]` and `[+]`. Those presses stay local until Save. Save writes both through `set_household_item_levels` when the stored count still equals the count loaded with the page, then returns to `/inventory`. If that count changed, Save shows a reload message and writes nothing. Cancel returns without writing.
 
 On `/inventory/new` with no valid barcode, the member can open `Or add an item without a barcode`, which starts collapsed, in sentence case, at the same size as `Provide the barcode`. The item lands on `/inventory` at 0, with the default minimum of 3, with no barcode attached. `Attach to existing item` is the same text size. Its list is titled `Item designation`. Each name is a 36px row with no radio, count, or dots. The selected name uses the stock-warning yellow.
 
@@ -64,7 +64,7 @@ Before writing Next code in any phase, read these guides in `node_modules/next/d
 
 ## Critical Implementation Details
 
-**The floor is one conditional statement.** `adjust_household_quantity` runs a single `update ... where quantity + delta_quantity >= 0 returning quantity`. Two presses at the same moment lock the same row in turn, and the second sees the first result. When no row comes back and the inventory row exists, raise with `using errcode = 'check_violation'`. The wrapper branches on `error.code === '23514'`. Do not parse message text.
+**The floor is one conditional statement.** `adjust_household_quantity` runs a single `update ... where quantity + delta_quantity >= 0 returning quantity`. Two presses at the same moment lock the same row in turn, and the second sees the first result. A result below 0 raises `check_violation` (`23514`). A result above 999999 raises `numeric_value_out_of_range` (`22003`). A decrement still applies when the stored count is already above 999999. The wrapper branches on those codes. Do not parse message text. Save compares the stored count with the count the item page loaded, and a mismatch raises `serialization_failure` (`40001`) without writing.
 
 **Parameter names must not shadow columns.** The function takes `delta_quantity`, not `quantity_delta`, because `household_quantity_changes.quantity_delta` is a column in the same schema. Qualify every column with a table alias and the parameters with the function name, as `20261029182809_create_household_quantity_changes.sql` does.
 
@@ -327,7 +327,7 @@ A member can add an item by name alone from `/inventory/new`. It starts at 0 wit
 
 ## Migration and Rollback
 
-The migrations only add functions and one select policy. They change no table and no existing function, so the build on `main` keeps working when they are applied first. Apply them with `pnpm exec supabase db push` before deploying the app. To roll back, deploy the previous app build, then `drop function public.set_household_item_levels(uuid, integer, integer)`, `drop function public.adjust_household_quantity(uuid, integer)`, `drop function public.create_item_without_barcode(text)`, and `drop policy item_barcodes_select_if_member on public.item_barcodes`. Items created without a barcode stay as rows and keep working in the tally.
+The migrations only add functions and one select policy. They change no table and no existing function, so the build on `main` keeps working when they are applied first. Apply them with `pnpm exec supabase db push` before deploying the app. To roll back, deploy the previous app build, then `drop function public.set_household_item_levels(uuid, integer, integer, integer)`, `drop function public.adjust_household_quantity(uuid, integer)`, `drop function public.create_item_without_barcode(text)`, and `drop policy item_barcodes_select_if_member on public.item_barcodes`. Items created without a barcode stay as rows and keep working in the tally.
 
 ## References
 

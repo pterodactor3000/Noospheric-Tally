@@ -5,6 +5,7 @@ import { clsx } from 'clsx'
 
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import type { QuantityAdjustment } from '@/lib/items/quantity-adjustment'
+import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
 
 import { adjustItemQuantity } from './actions'
 
@@ -90,7 +91,7 @@ const TallyCountControls = ({
           {quantity}{' '}
           <button
             type="button"
-            disabled={isPending}
+            disabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
             aria-label={`Increase ${name}`}
             className={tallyControl}
             onClick={() => {

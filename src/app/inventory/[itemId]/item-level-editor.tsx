@@ -139,6 +139,7 @@ const ItemLevelEditor = ({
       <input type="hidden" name="itemId" value={itemId} />
       <input type="hidden" name="quantity" value={count} />
       <input type="hidden" name="minimumQuantity" value={minimum} />
+      <input type="hidden" name="expectedQuantity" value={quantity} />
       <div className={itemRows}>
         <h1 className={itemTitle}>
           <span className={clsx(itemLabel, 'w-full', 'sm:w-auto')}>

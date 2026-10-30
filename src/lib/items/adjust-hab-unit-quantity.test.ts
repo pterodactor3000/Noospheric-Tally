@@ -48,6 +48,22 @@ describe('adjustHabUnitQuantity', () => {
     ).resolves.toEqual({ status: 'adjusted', quantity: 0 })
   })
 
+  test('returns above-maximum when the rpc error code is 22003', async () => {
+    const client = createAdjustClientStub(
+      Promise.resolve({
+        data: null,
+        error: {
+          message: 'adjust_household_quantity refuses a quantity above 999999',
+          code: '22003',
+        },
+      }),
+    )
+
+    await expect(
+      adjustHabUnitQuantity(ITEM_ID, DELTA_QUANTITY, client),
+    ).resolves.toEqual({ status: 'above-maximum' })
+  })
+
   test('returns below-zero when the rpc error code is 23514', async () => {
     const client = createAdjustClientStub(
       Promise.resolve({

@@ -69,6 +69,24 @@ const REVERSAL_BELOW_ZERO_MESSAGE =
 
 const QUANTITY_BELOW_ZERO_MESSAGE = 'The count cannot go below 0.'
 
+const QUANTITY_ABOVE_MAXIMUM_MESSAGE = 'The count cannot go above 999999.'
+
+const STALE_ITEM_LEVELS_MESSAGE =
+  'The count changed. Reload the page before saving.'
+
+const parseExpectedQuantity = (rawValue: string): number | null => {
+  if (!/^\d+$/.test(rawValue)) {
+    return null
+  }
+
+  const quantity = Number(rawValue)
+  if (!Number.isSafeInteger(quantity)) {
+    return null
+  }
+
+  return quantity
+}
+
 const getFormString = (formData: FormData, key: string): string => {
   const value = formData.get(key)
   return typeof value === 'string' ? value : ''
@@ -350,6 +368,9 @@ const saveItemLevels = async (
   const itemId = getFormString(formData, 'itemId')
   const rawQuantity = getFormString(formData, 'quantity')
   const rawMinimumQuantity = getFormString(formData, 'minimumQuantity')
+  const expectedQuantity = parseExpectedQuantity(
+    getFormString(formData, 'expectedQuantity'),
+  )
 
   if (!isScanSessionId(itemId)) {
     console.error('saveItemLevels rejected item id', { itemId })
@@ -370,16 +391,25 @@ const saveItemLevels = async (
     }
   }
 
+  if (expectedQuantity === null) {
+    console.error('saveItemLevels rejected expected quantity', { itemId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
   try {
     const supabase = await createClient()
-    await setHabUnitItemLevels(
+    const result = await setHabUnitItemLevels(
       itemId,
       {
         quantity: quantityResult.quantity,
         minimumQuantity: minimumResult.minimumQuantity,
+        expectedQuantity,
       },
       supabase,
     )
+    if (result.status === 'stale') {
+      return { status: 'error', message: STALE_ITEM_LEVELS_MESSAGE }
+    }
   } catch (error: unknown) {
     console.error('saveItemLevels failed', { itemId, error })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
@@ -409,6 +439,10 @@ const adjustItemQuantity = async (
     const result = await adjustHabUnitQuantity(itemId, deltaQuantity, supabase)
     if (result.status === 'below-zero') {
       return { status: 'error', message: QUANTITY_BELOW_ZERO_MESSAGE }
+    }
+
+    if (result.status === 'above-maximum') {
+      return { status: 'error', message: QUANTITY_ABOVE_MAXIMUM_MESSAGE }
     }
 
     revalidatePath('/inventory')
