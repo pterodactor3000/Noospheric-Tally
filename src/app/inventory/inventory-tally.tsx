@@ -20,7 +20,8 @@ import TallyCountControls from './tally-count-controls'
 
 const TALLY_DOT_LEADER = '.'.repeat(300)
 
-const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
+const tallyList = clsx('mt-[1rem]', 'text-[14px]', 'sm:text-[16px]')
+const tallyMiss = clsx('mt-[1rem]')
 const tallyName = clsx(
   'min-h-11',
   'min-w-0',
@@ -65,7 +66,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
         />
       </div>
       {visibleLines.length === 0 ? (
-        <p role="status">{`No item matches "${trimmedQuery}".`}</p>
+        <p role="status" className={tallyMiss}>{`No item matches "${trimmedQuery}".`}</p>
       ) : (
         <ul className={tallyList}>
           {visibleLines.map((line) => {
