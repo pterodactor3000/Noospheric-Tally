@@ -18,8 +18,10 @@ const inventorySection = clsx(
   'flex',
   'min-h-0',
   'flex-col',
-  'overflow-hidden',
-  // Header is py-4 + h-8 + a 2px border. The page adds py-6.
+  'overflow-y-auto',
+  // Signed-in header is py-4, the Sign out control at h-8, and a 2px border.
+  // The page adds py-6. The list still scrolls on its own. The section scrolls
+  // only when that chrome is taller than a short viewport, so the buttons stay reachable.
   'max-h-[calc(100svh-7rem-2px)]',
 )
 

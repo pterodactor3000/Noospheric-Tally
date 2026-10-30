@@ -59,7 +59,7 @@ Split pure logic from rendering, as S-05 and S-07 did.
 
 **Scanner stays live.** Keep `BarcodeScanner` mounted after a found or blocked result. Pass the last submitted barcode as `holdBarcode` so that same code does not submit again. A different code still calls `onSubmitBarcode`. Do not add a control that unmounts the scanner or requires a separate "scan again" step.
 
-**Tally scroll.** The section is a column with a viewport max height and `overflow-hidden`. `InventoryTally` is a column with `min-h-0` and `flex-1`. Only the `ul` gets `overflow-y-auto`. The search row, the empty copy, and the no-match status stay outside that scroller. The action buttons stay outside `InventoryTally`, as they do now.
+**Tally scroll.** The section is a column with a viewport max height and `overflow-y-auto`. `InventoryTally` is a column with `min-h-0` and `flex-1`. Only the `ul` gets `overflow-y-auto`. The search row, the empty copy, and the no-match status stay outside that scroller. The action buttons stay outside `InventoryTally`, as they do now. On a short viewport the section itself scrolls so the buttons stay reachable when the title, search, and buttons are taller than the cap.
 
 ---
 
@@ -307,8 +307,8 @@ No migration. Revert the branch to remove the route, the button, and the scroll 
 
 #### Automated
 
-- [x] 3.1 `npm test` passes
-- [x] 3.2 Typecheck passes
+- [x] 3.1 `npm test` passes (c90d3e9)
+- [x] 3.2 Typecheck passes (c90d3e9)
 
 #### Manual
 
