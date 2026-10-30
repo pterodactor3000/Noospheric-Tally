@@ -455,10 +455,10 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 #### Automated
 
-- [ ] 3.1 `pnpm test` passes, including `validate-minimum-quantity.test.ts`
-- [ ] 3.2 `pnpm lint` exits 0
-- [ ] 3.3 `pnpm typecheck` exits 0, including `PageProps<'/inventory/[itemId]'>`
-- [ ] 3.4 `pnpm worker:check` exits 0
+- [x] 3.1 `pnpm test` passes, including `validate-minimum-quantity.test.ts`
+- [x] 3.2 `pnpm lint` exits 0
+- [x] 3.3 `pnpm typecheck` exits 0, including `PageProps<'/inventory/[itemId]'>`
+- [x] 3.4 `pnpm worker:check` exits 0
 
 #### Manual
 

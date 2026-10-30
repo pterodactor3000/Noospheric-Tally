@@ -16,7 +16,7 @@ const inventorySection = clsx(
 )
 const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
 const tallyRow = clsx('flex', 'items-baseline', 'gap-2')
-const tallyName = clsx('min-w-0', 'truncate')
+const tallyName = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
 const tallyDots = clsx(
   'min-w-0',
   'flex-1',
@@ -55,7 +55,12 @@ const InventoryPage = async () => {
           <ul className={tallyList}>
             {tallyLines.map((line) => (
               <li key={line.itemId} className={tallyRow}>
-                <span className={tallyName}>{line.name}</span>
+                <Link
+                  href={`/inventory/${line.itemId}`}
+                  className={tallyName}
+                >
+                  {line.name}
+                </Link>
                 <span aria-hidden="true" className={tallyDots}>
                   {TALLY_DOT_LEADER}
                 </span>
