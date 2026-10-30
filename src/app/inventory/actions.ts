@@ -389,6 +389,7 @@ const saveItemLevels = async (
   const expectedQuantity = parseExpectedQuantity(
     getFormString(formData, 'expectedQuantity'),
   )
+  const category = getFormString(formData, 'category')
 
   if (!isScanSessionId(itemId)) {
     console.error('saveItemLevels rejected item id', { itemId })
@@ -414,6 +415,11 @@ const saveItemLevels = async (
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
+  if (!isItemCategory(category)) {
+    console.error('saveItemLevels rejected category', { itemId, category })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
   try {
     const supabase = await createClient()
     const result = await setHabUnitItemLevels(
@@ -422,6 +428,7 @@ const saveItemLevels = async (
         quantity: quantityResult.quantity,
         minimumQuantity: minimumResult.minimumQuantity,
         expectedQuantity,
+        category,
       },
       supabase,
     )

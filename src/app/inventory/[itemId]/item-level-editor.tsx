@@ -9,6 +9,11 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { actionButton } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import {
+  ITEM_CATEGORIES,
+  ITEM_CATEGORY_LABELS,
+  type ItemCategory,
+} from '@/lib/items/item-category'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
 import {
   getStockState,
@@ -112,6 +117,7 @@ interface ItemLevelEditorProps {
   readonly quantity: number
   readonly minimumQuantity: number
   readonly consumptionRate: string
+  readonly category: ItemCategory
   readonly barcodes: readonly string[]
 }
 
@@ -167,6 +173,7 @@ const ItemLevelEditor = ({
   quantity,
   minimumQuantity,
   consumptionRate,
+  category,
   barcodes,
 }: ItemLevelEditorProps) => {
   const [count, setCount] = useState(quantity)
@@ -258,6 +265,28 @@ const ItemLevelEditor = ({
           onDecrease={() => setMinimum((current) => current - 1)}
           onIncrease={() => setMinimum((current) => current + 1)}
         />
+        <div className={itemLine}>
+          <label htmlFor="item-category" className={itemLabel}>
+            Category
+          </label>
+          <span aria-hidden="true" className={itemDots}>
+            {ITEM_DOT_LEADER}
+          </span>
+          <span className={itemValue}>
+            <select
+              id="item-category"
+              name="category"
+              defaultValue={category}
+              className={itemControl}
+            >
+              {ITEM_CATEGORIES.map((itemCategory) => (
+                <option key={itemCategory} value={itemCategory}>
+                  {ITEM_CATEGORY_LABELS[itemCategory]}
+                </option>
+              ))}
+            </select>
+          </span>
+        </div>
         <div className={itemLine}>
           <span className={itemLabel}>Use</span>
           <span aria-hidden="true" className={itemDots}>

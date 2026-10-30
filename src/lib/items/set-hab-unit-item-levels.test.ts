@@ -1,19 +1,26 @@
 import { describe, expect, test } from 'vitest'
 
 import { DB_FUNCTION_SET_HOUSEHOLD_ITEM_LEVELS } from '../db/entities'
+import { type ItemCategory } from './item-category'
 import {
   setHabUnitItemLevels,
   type SetHouseholdItemLevelsClient,
 } from './set-hab-unit-item-levels'
 
 const ITEM_ID = '7d4e1a90-3b2c-4f58-9a6d-8e0c5b1f2a37'
-const LEVELS = { quantity: 4, minimumQuantity: 2, expectedQuantity: 4 }
+const LEVELS = {
+  quantity: 4,
+  minimumQuantity: 2,
+  expectedQuantity: 4,
+  category: 'food',
+} as const
 
 const createLevelsClientStub = (
   result: PromiseLike<{
     data: unknown
     error: { message: string; code?: string } | null
   }>,
+  category: ItemCategory = LEVELS.category,
 ): SetHouseholdItemLevelsClient => ({
   rpc(functionName, args) {
     expect(functionName).toEqual(DB_FUNCTION_SET_HOUSEHOLD_ITEM_LEVELS)
@@ -22,6 +29,7 @@ const createLevelsClientStub = (
       new_quantity: LEVELS.quantity,
       new_minimum_quantity: LEVELS.minimumQuantity,
       expected_quantity: LEVELS.expectedQuantity,
+      new_category: category,
     })
     return result
   },
@@ -34,6 +42,20 @@ describe('setHabUnitItemLevels', () => {
     )
 
     await expect(setHabUnitItemLevels(ITEM_ID, LEVELS, client)).resolves.toEqual({
+      status: 'saved',
+    })
+  })
+
+  test('sends the category to the rpc', async () => {
+    const category: ItemCategory = 'pet-food'
+    const client = createLevelsClientStub(
+      Promise.resolve({ data: null, error: null }),
+      category,
+    )
+
+    await expect(
+      setHabUnitItemLevels(ITEM_ID, { ...LEVELS, category }, client),
+    ).resolves.toEqual({
       status: 'saved',
     })
   })

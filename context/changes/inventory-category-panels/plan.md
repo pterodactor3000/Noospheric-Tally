@@ -628,10 +628,10 @@ Phases 2 and 4 change an RPC signature. Apply each migration and deploy its code
 
 #### Automated
 
-- [ ] 4.1 `pnpm test -- src/lib/items/set-hab-unit-item-levels.test.ts` passes
-- [ ] 4.2 `pnpm test` passes
-- [ ] 4.3 Typecheck passes
-- [ ] 4.4 Lint passes
+- [x] 4.1 `pnpm test -- src/lib/items/set-hab-unit-item-levels.test.ts` passes
+- [x] 4.2 `pnpm test` passes
+- [x] 4.3 Typecheck passes
+- [x] 4.4 Lint passes
 
 #### Manual
 
