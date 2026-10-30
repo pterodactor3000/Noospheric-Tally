@@ -1,7 +1,7 @@
 ---
 change_id: restock-list-by-shortfall
 title: Restock list by shortfall
-status: implementing
+status: implemented
 created: 2026-10-30
 updated: 2026-10-30
 archived_at: null
