@@ -574,10 +574,10 @@ Phases 2 and 4 change an RPC signature. Apply each migration and deploy its code
 
 #### Automated
 
-- [ ] 1.1 `pnpm test -- src/lib/items/item-category.test.ts src/lib/items/load-hab-unit-items.test.ts src/lib/items/rank-restock-lines.test.ts` passes
-- [ ] 1.2 `pnpm test` passes
-- [ ] 1.3 Typecheck passes
-- [ ] 1.4 Lint passes
+- [x] 1.1 `pnpm test -- src/lib/items/item-category.test.ts src/lib/items/load-hab-unit-items.test.ts src/lib/items/rank-restock-lines.test.ts` passes
+- [x] 1.2 `pnpm test` passes
+- [x] 1.3 Typecheck passes
+- [x] 1.4 Lint passes
 
 #### Manual
 

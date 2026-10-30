@@ -1,12 +1,14 @@
 import { describe, expect, test } from 'vitest'
 
-import { rankRestockLines } from './rank-restock-lines'
+import type { ItemCategory } from './item-category'
 import type { HabUnitTallyLine } from './load-hab-unit-items'
+import { rankRestockLines } from './rank-restock-lines'
 
 interface RestockLineInput {
   readonly name: string
   readonly quantity: number
   readonly minimumQuantity: number
+  readonly category?: ItemCategory
 }
 
 let nextItemNumber = 0
@@ -15,6 +17,7 @@ const line = ({
   name,
   quantity,
   minimumQuantity,
+  category = 'uncategorized',
 }: RestockLineInput): HabUnitTallyLine => {
   nextItemNumber += 1
   return {
@@ -22,6 +25,7 @@ const line = ({
     name,
     quantity,
     minimumQuantity,
+    category,
   }
 }
 
@@ -48,6 +52,7 @@ describe('rankRestockLines', () => {
         name: 'Salt',
         quantity: 3,
         minimumQuantity: 3,
+        category: 'uncategorized',
         shortfall: 0,
       },
     ])
@@ -68,6 +73,7 @@ describe('rankRestockLines', () => {
         name: 'Basil',
         quantity: 1,
         minimumQuantity: 3,
+        category: 'uncategorized',
         shortfall: 2,
       },
     ])
@@ -82,6 +88,7 @@ describe('rankRestockLines', () => {
         name: 'Ash',
         quantity: 0,
         minimumQuantity: 0,
+        category: 'uncategorized',
         shortfall: 0,
       },
     ])
@@ -121,6 +128,40 @@ describe('rankRestockLines', () => {
     const spice = line({ name: 'Spice', quantity: 2, minimumQuantity: 5 })
 
     expect(rankRestockLines([spice])[0]?.shortfall).toEqual(3)
+  })
+
+  test('ranks by shortfall and not by category', () => {
+    const smallerShortfall = line({
+      name: 'Apple',
+      quantity: 2,
+      minimumQuantity: 3,
+      category: 'pet-food',
+    })
+    const largerShortfall = line({
+      name: 'Zebra',
+      quantity: 0,
+      minimumQuantity: 5,
+      category: 'uncategorized',
+    })
+
+    expect(rankRestockLines([smallerShortfall, largerShortfall])).toEqual([
+      {
+        itemId: largerShortfall.itemId,
+        name: 'Zebra',
+        quantity: 0,
+        minimumQuantity: 5,
+        category: 'uncategorized',
+        shortfall: 5,
+      },
+      {
+        itemId: smallerShortfall.itemId,
+        name: 'Apple',
+        quantity: 2,
+        minimumQuantity: 3,
+        category: 'pet-food',
+        shortfall: 1,
+      },
+    ])
   })
 
   test('does not change the input array', () => {

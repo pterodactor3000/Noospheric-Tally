@@ -18,6 +18,7 @@ const rankRestockLines = (
       name: line.name,
       quantity: line.quantity,
       minimumQuantity: line.minimumQuantity,
+      category: line.category,
       shortfall: line.minimumQuantity - line.quantity,
     }))
     .sort((left, right) => {
