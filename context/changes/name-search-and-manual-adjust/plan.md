@@ -355,7 +355,7 @@ Both migrations only add functions. They change no table and no existing functio
 
 #### Manual
 
-- [ ] 1.4 `pnpm exec supabase db push` applies the migration. `to_regprocedure('public.adjust_household_quantity(uuid, integer)')` is not null, `anon` cannot execute it, and `authenticated` can.
+- [x] 1.4 `pnpm exec supabase db push` applies the migration. `to_regprocedure('public.adjust_household_quantity(uuid, integer)')` is not null, `anon` cannot execute it, and `authenticated` can.
 - [ ] 1.5 As a member in SQL, a delta of `1` and `-1` move the count by 1, a delta of `0` or `2` raises, `-1` at 0 raises SQLSTATE `23514` and leaves the count at 0, another household's item id raises the `does not stock` message, and no call adds a row to `household_quantity_changes`.
 - [ ] 1.6 On `/inventory`, `[+]` and `[-]` change a row's count by 1, the name, count, and `[+]` / `[-]` use the stock text color, the row background stays plain, a refresh keeps the count, and `/inventory/{itemId}` shows the same count.
 - [ ] 1.7 On a row at 0, `[-]` is disabled, and a stale tab that presses `[-]` after the count reached 0 elsewhere shows `The count cannot go below 0.` under the row and the count stays 0.
@@ -384,7 +384,7 @@ Both migrations only add functions. They change no table and no existing functio
 
 #### Manual
 
-- [ ] 3.3 `pnpm exec supabase db push` applies the migration. `to_regprocedure('public.create_item_without_barcode(text)')` is not null, `anon` cannot execute it, and `authenticated` can.
+- [x] 3.3 `pnpm exec supabase db push` applies the migration. `to_regprocedure('public.create_item_without_barcode(text)')` is not null, `anon` cannot execute it, and `authenticated` can.
 - [ ] 3.4 As a member in SQL, `create_item_without_barcode('Cinnamon')` adds one `items` row, one `household_inventory` row at quantity 0 with minimum 3, and no `item_barcodes` row, and a blank name raises and adds nothing.
 - [ ] 3.5 On `/inventory/new` with no `barcode` parameter, both forms show, and submitting `Cinnamon` lands on `/inventory` with a `Cinnamon` row at `[-] 0 [+]` colored CRITICAL.
 - [ ] 3.6 Submitting a blank name shows `Item does not match length restrictions` under the field and creates no item.
