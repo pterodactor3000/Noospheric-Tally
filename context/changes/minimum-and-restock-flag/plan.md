@@ -81,7 +81,7 @@ Before writing Next code in Phases 3 and 4, read the matching guides in `node_mo
 
 ### Overview
 
-Rewrite `context/foundation/roadmap.md` so S-06 owns the default minimum and the three labels, and S-10 no longer exists as a separate slice. This phase edits no other file.
+Rewrite `context/foundation/roadmap.md` so S-06 owns the default minimum and the three labels, and S-10 no longer exists as a separate slice. This phase edits no application file. `plan.md` progress rows and `change.md` status may change with it.
 
 ### Changes Required
 
@@ -111,7 +111,7 @@ Rewrite `context/foundation/roadmap.md` so S-06 owns the default minimum and the
 
 - `rg -n "S-10" context/foundation/roadmap.md` matches only the Merged line under S-06 and the S-06 Backlog Handoff Notes line. Approved 2026-10-30: the Notes must say "merged from S-10", so that line is allowed.
 - `rg -n "shortage-threshold-labels" context/foundation/roadmap.md` matches only the Merged line under S-06.
-- `git diff --stat` lists only `context/foundation/roadmap.md` for this phase.
+- The product diff is only `context/foundation/roadmap.md`. `plan.md` progress rows and `change.md` status may change with it. Recorded from the phase 1 review on 2026-10-30.
 
 #### Manual Verification
 
@@ -428,7 +428,7 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 - [x] 1.1 `rg -n "S-10" context/foundation/roadmap.md` matches only the Merged line under S-06 and the S-06 Backlog Handoff Notes line. `7522b57`
 - [x] 1.2 `rg -n "shortage-threshold-labels" context/foundation/roadmap.md` matches only the Merged line under S-06. `7522b57`
-- [x] 1.3 `git diff --stat` lists only `context/foundation/roadmap.md` for this phase. `7522b57`
+- [x] 1.3 The product diff is only `context/foundation/roadmap.md`. `plan.md` progress rows and `change.md` status may change with it. `7522b57`
 
 #### Manual
 
