@@ -607,10 +607,10 @@ Phases 2 and 4 change an RPC signature. Apply each migration and deploy its code
 
 #### Automated
 
-- [ ] 3.1 `pnpm test -- src/lib/items/group-tally-lines-by-category.test.ts src/lib/items/get-category-shortage.test.ts src/lib/items/resolve-category-panel-open.test.ts` passes
-- [ ] 3.2 `pnpm test` passes
-- [ ] 3.3 Typecheck passes
-- [ ] 3.4 Lint passes
+- [x] 3.1 `pnpm test -- src/lib/items/group-tally-lines-by-category.test.ts src/lib/items/get-category-shortage.test.ts src/lib/items/resolve-category-panel-open.test.ts` passes
+- [x] 3.2 `pnpm test` passes
+- [x] 3.3 Typecheck passes
+- [x] 3.4 Lint passes
 
 #### Manual
 
