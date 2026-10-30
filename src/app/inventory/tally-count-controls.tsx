@@ -3,7 +3,6 @@
 import { useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
-import { formError } from '@/app/styles/class-names'
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import type { QuantityAdjustment } from '@/lib/items/quantity-adjustment'
 
@@ -33,6 +32,7 @@ const tallyControl = clsx(
   'disabled:opacity-100',
 )
 const tallyLine = clsx('flex', 'items-baseline', 'gap-2')
+const tallyAlert = clsx('min-h-6', 'text-sm', 'font-mono', 'font-semibold')
 
 const TallyCountControls = ({
   itemId,
@@ -95,7 +95,7 @@ const TallyCountControls = ({
         </span>
       </div>
       {errorMessage === null ? null : (
-        <p role="alert" className={formError}>
+        <p role="alert" className={tallyAlert}>
           {errorMessage}
         </p>
       )}
