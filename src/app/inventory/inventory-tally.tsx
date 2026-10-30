@@ -90,11 +90,15 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
   const isSearching = trimmedQuery.length > 0
   const visibleLines = sortTallyLines(filterItemsByName(lines, query), sort)
   const visibleGroups = groupTallyLinesByCategory(visibleLines)
+  const categoryGroups = groupTallyLinesByCategory(lines)
   const shortageByCategory = new Map<ItemCategory, 'critical' | 'warning' | null>(
-    groupTallyLinesByCategory(lines).map((group) => [
+    categoryGroups.map((group) => [
       group.category,
       getCategoryShortage(group.lines),
     ]),
+  )
+  const countByCategory = new Map<ItemCategory, number>(
+    categoryGroups.map((group) => [group.category, group.lines.length]),
   )
 
   return (
@@ -170,7 +174,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                   [group.category]: !isOpen,
                 }))
               }}
-              itemCount={group.lines.length}
+              itemCount={countByCategory.get(group.category) ?? 0}
               shortage={shortage}
             >
               <ul>
