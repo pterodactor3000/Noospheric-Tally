@@ -31,7 +31,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-02 | scan-to-create-item | scan an unknown barcode and record it as a named item | S-01 | FR-002, FR-005, FR-016 | done |
 | S-03 | stocking-mode-increase | scan items in stocking mode to raise their counts | S-02 | FR-003, FR-012, US-01 | done |
 | S-04 | using-mode-decrease-and-undo | scan items in using mode to lower counts, and undo a mis-scan | S-03 | FR-004, FR-009, US-02 | ready |
-| S-05 | name-search-and-manual-adjust | find an item by name and adjust it by hand, including items with no barcode | S-02 | FR-006, FR-013 | ready |
+| S-05 | name-search-and-manual-adjust | find an item by name, sort the tally, adjust a row by one, and save a count and minimum together on the item page, including items with no barcode | S-02 | FR-006, FR-013 | ready |
 | S-06 | minimum-and-restock-flag | set a minimum for an item, 3 by default, and see CRITICAL, WARNING, or IN STOCK from its count | S-02 | FR-007, FR-008, US-02 | ready |
 | S-07 | restock-list-by-shortfall | see everything needing restocking, largest shortfall first | S-06 | FR-010, FR-014 | ready |
 | S-08 | consumption-rate-view | see how fast each item is consumed | S-04 | FR-015 | proposed |
@@ -39,7 +39,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-06 | FR-018 | ready |
 | S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | done |
 | S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
-| S-14 | compact-attach-item-picker | choose an existing item for a new barcode from a compact selectable list | S-02 | FR-005 | ready |
+| S-14 | compact-attach-item-picker | choose an existing item from a 36px Item designation list, with the selection in yellow gold and no radio styling | S-02 | FR-005 | ready |
 
 ## Streams
 
@@ -77,7 +77,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ### S-01: Sign in to a household inventory
 
-- **Outcome:** user can sign in and reach an empty household inventory that belongs to their account
+- **Outcome:** user can sign in and reach an empty household inventory that belongs to their account. A new household name is prefilled with `Hab-unit#` and three digits, and the member can edit it before Apply.
 - **Change ID:** household-sign-in
 - **PRD refs:** FR-001
 - **Prerequisites:** F-01
@@ -125,7 +125,8 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ### S-05: Find an item by name and adjust it by hand
 
-- **Outcome:** user can search the inventory by name and change an item's count directly, including for items that have no barcode at all
+- **Outcome:** user can search the inventory by name, sort it by name or count, change a tally row by one, and save a count and minimum together from the item page, including for items that have no barcode at all. The item heading shows a bold stock label and, when a barcode exists, ` ++  {barcode} ++`.
+- **Decisions (2026-10-30):** tally rows are 36px and use stock text color on a plain background. A count of 0 stays at the bottom of a sort. The item page keeps `[-]` and `[+]` local until Save or Cancel, and both return to the tally. Uppercase styling stays on the app name and on `h1` titles. A form error appears only after a failed write, then slides in while the button under it moves with that space.
 - **Change ID:** name-search-and-manual-adjust
 - **PRD refs:** FR-006, FR-013
 - **Prerequisites:** S-02
@@ -223,6 +224,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 ### S-14: Compact attach item picker
 
 - **Outcome:** user can choose an existing household item to attach a new barcode from a compact selectable list of item rows, with single-select behavior and no native radio styling
+- **Built on the S-05 branch (2026-10-30):** the list is titled `Item designation`. Each row is the item name at 36px, with tally spacing and no count or dots. The selected name uses the stock-warning yellow. Mark this slice done when the S-05 pull request merges.
 - **Change ID:** compact-attach-item-picker
 - **PRD refs:** FR-005
 - **Prerequisites:** S-02
@@ -241,7 +243,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-02 | scan-to-create-item | Record a new item from a scanned barcode | yes | Four Open Facts calls in parallel. The first HTTP 200 prefills the name. Manual naming still ships if every call fails. |
 | S-03 | stocking-mode-increase | Raise counts by scanning in stocking mode | yes | Includes the visible mode indicator and its reset behavior. |
 | S-04 | using-mode-decrease-and-undo | Lower counts by scanning, with session undo | yes | Carries guardrail one: no silent double-count. |
-| S-05 | name-search-and-manual-adjust | Find an item by name and adjust it by hand | yes | Can be planned alongside stream B once items exist. |
+| S-05 | name-search-and-manual-adjust | Find an item by name and adjust it by hand | yes | Tally sort, item-page save, and the barcode-less collapse are recorded in the S-05 plan follow-on. |
 | S-06 | minimum-and-restock-flag | Set a minimum and see the restock flag | yes | North star. Completes the PRD primary criterion. Includes the default minimum of 3 and the three stock labels, merged from S-10. |
 | S-07 | restock-list-by-shortfall | See restocking needs ranked by shortfall | yes | Carries the domain rule's ranking and the secondary criterion. |
 | S-08 | consumption-rate-view | See how fast each item is consumed | no | Nice-to-have. Revisit once real history exists and the must-have path is done. |
@@ -249,7 +251,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-11 | inventory-category-panels | Group inventory into collapsible categories | yes | The first returned Open Facts hit sets the category. Default panel is uncategorized. User can edit it. |
 | S-12 | create-flow-lookup-feedback | Show lookup misses, loading, and a clear header | yes | Run `/rites-of-true-aim create-flow-lookup-feedback` |
 | S-13 | softer-green-interface | Restyle the app in muted green | no | Run `/rites-of-true-aim softer-green-interface` |
-| S-14 | compact-attach-item-picker | Replace attach radios with a compact selectable item list | yes | Run `/rites-of-true-aim compact-attach-item-picker` |
+| S-14 | compact-attach-item-picker | Replace attach radios with a compact selectable item list | yes | Built on the S-05 branch as Item designation. Mark done when that pull request merges. |
 
 ## Open Roadmap Questions
 

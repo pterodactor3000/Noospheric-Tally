@@ -1,14 +1,12 @@
 'use client'
 
 import { useActionState } from 'react'
-import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
 import {
   fieldControl,
   fieldLabel,
   fieldStack,
-  formError,
   formStack,
   fullWidthButton,
   pageLead,
@@ -16,6 +14,8 @@ import {
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FormAlert } from '@/components/form-alert'
+
 import { createHabUnit } from '../actions'
 
 interface HabUnitNameFormProps {
@@ -40,7 +40,7 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
       <h1 className={pageTitle}>
         Hab-unit data creation
       </h1>
-      <p className={clsx(pageLead, 'uppercase')}>
+      <p className={pageLead}>
         Provide your hab-unit designation
       </p>
 
@@ -51,7 +51,7 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
         <div className={fieldStack}>
           <Label
             htmlFor="name"
-            className={clsx(fieldLabel, 'uppercase')}
+            className={fieldLabel}
           >
             Hab-unit designation
           </Label>
@@ -62,25 +62,19 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
             autoComplete="name"
             defaultValue={defaultName}
             aria-invalid={state?.field === 'name'}
-            className={clsx(fieldControl, 'uppercase')}
+            className={fieldControl}
           />
         </div>
-        <div
-          role="alert"
-          aria-live="polite"
-          className={clsx(formError, 'uppercase')}
-        >
-          {state?.status === 'error' && state?.message}
-        </div>
-
-        <Button
-          variant="outline"
-          type="submit"
-          disabled={isPending}
-          className={clsx(fullWidthButton, 'uppercase')}
-        >
-          Apply
-        </Button>
+        <FormAlert message={state?.status === 'error' ? state.message : null}>
+          <Button
+            variant="outline"
+            type="submit"
+            disabled={isPending}
+            className={fullWidthButton}
+          >
+            Apply
+          </Button>
+        </FormAlert>
       </form>
     </>
   )

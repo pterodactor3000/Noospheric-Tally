@@ -3,12 +3,12 @@
 import { useActionState, useState } from 'react'
 import { attachBarcode, createItem } from '../actions'
 import { clsx } from 'clsx'
+import { FormAlert } from '@/components/form-alert'
 import { Button } from '@/components/ui/button'
 import {
   fieldControl,
   fieldLabel,
   fieldStack,
-  formError,
   formStack,
   fullWidthButton,
   pageLead,
@@ -33,6 +33,18 @@ type ItemAttachFormState = Awaited<ReturnType<typeof attachBarcode>> | null
 interface AttachChevronProps {
   readonly isOpen: boolean
 }
+
+const attachList = clsx('mt-[1rem]', 'text-[14px]', 'sm:text-[16px]')
+const attachName = clsx(
+  'block',
+  'min-h-[36px]',
+  'min-w-0',
+  'truncate',
+  'leading-[36px]',
+  'peer-checked:text-stock-warning',
+  'peer-focus-visible:ring-2',
+  'peer-focus-visible:ring-ring',
+)
 
 const AttachChevron = ({ isOpen }: AttachChevronProps) => (
   <svg
@@ -131,21 +143,18 @@ const ItemCreateForm = ({
             className={fieldControl}
           />
         </div>
-        <div
-          role="alert"
-          aria-live="polite"
-          className={formError}
+        <FormAlert
+          message={createState?.status === 'error' ? createState.message : null}
         >
-          {createState?.status === 'error' && createState.message}
-        </div>
-        <Button
-          variant="outline"
-          type="submit"
-          disabled={isCreatePending}
-          className={fullWidthButton}
-        >
-          Apply
-        </Button>
+          <Button
+            variant="outline"
+            type="submit"
+            disabled={isCreatePending}
+            className={fullWidthButton}
+          >
+            Apply
+          </Button>
+        </FormAlert>
       </form>
       {habUnitItems.length === 0 ? null : (
         <div className={clsx('mt-12', 'flex', 'flex-col')}>
@@ -163,9 +172,8 @@ const ItemCreateForm = ({
                 'gap-3',
                 'text-left',
                 'font-mono',
-                'text-2xl',
-                'font-semibold',
-                'tracking-tight',
+                'text-base',
+                'leading-7',
               )}
             >
               Attach to existing item
@@ -220,49 +228,39 @@ const ItemCreateForm = ({
                     className={fieldControl}
                   />
                 </div>
-                <fieldset
-                  className={fieldStack}
-                  aria-invalid={attachState?.status === 'error'}
-                >
-                  <legend className={fieldLabel}>
-                    Household items
-                  </legend>
-                  {offeredItems.map((item) => (
-                    <label
-                      key={item.itemId}
-                      className={clsx(
-                        'flex',
-                        'min-h-11',
-                        'items-center',
-                        'gap-3',
-                        'font-mono',
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="itemId"
-                        value={item.itemId}
-                        required
-                      />
-                      {item.name}
-                    </label>
-                  ))}
+                <fieldset aria-invalid={attachState?.status === 'error'}>
+                  <legend className={fieldLabel}>Item designation</legend>
+                  <ul className={attachList}>
+                    {offeredItems.map((item) => (
+                      <li key={item.itemId} className="px-2">
+                        <label className="block cursor-pointer">
+                          <input
+                            type="radio"
+                            name="itemId"
+                            value={item.itemId}
+                            required
+                            className="peer sr-only"
+                          />
+                          <span className={attachName}>{item.name}</span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
                 </fieldset>
-                <div
-                  role="alert"
-                  aria-live="polite"
-                  className={formError}
+                <FormAlert
+                  message={
+                    attachState?.status === 'error' ? attachState.message : null
+                  }
                 >
-                  {attachState?.status === 'error' && attachState.message}
-                </div>
-                <Button
-                  variant="outline"
-                  type="submit"
-                  disabled={isAttachPending}
-                  className={fullWidthButton}
-                >
-                  Attach
-                </Button>
+                  <Button
+                    variant="outline"
+                    type="submit"
+                    disabled={isAttachPending}
+                    className={fullWidthButton}
+                  >
+                    Attach
+                  </Button>
+                </FormAlert>
               </form>
             </div>
           </div>

@@ -3,12 +3,11 @@ import { clsx } from 'clsx'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
-import { STOCK_STATE_LABELS, getStockState } from '@/lib/items/stock-state'
 import { Button } from '@/components/ui/button'
 import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
-import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
-const TALLY_DOT_LEADER = '.'.repeat(300)
+import InventoryTally from './inventory-tally'
 
 const inventorySection = clsx(
   panel,
@@ -16,28 +15,20 @@ const inventorySection = clsx(
   '[width:stretch]',
   'max-w-[900px]',
 )
-const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
-const tallyRow = clsx('flex', 'items-baseline', 'gap-2', 'px-2')
-const tallyName = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
-const tallyDots = clsx(
-  'min-w-0',
-  'flex-1',
-  'overflow-hidden',
-  'whitespace-nowrap',
+
+const inventoryActions = clsx(
+  'mx-auto',
+  'mt-4',
+  'grid',
+  'w-full',
+  'max-w-lg',
+  'grid-cols-2',
+  'gap-4',
 )
-const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
-const tallyControl = clsx(
-  'border-0',
-  'bg-transparent',
-  'p-0',
-  'font-[inherit]',
-  'text-[length:inherit]',
-  'leading-[inherit]',
-  'text-inherit',
-  'no-underline',
-  'disabled:text-inherit',
-  'disabled:opacity-100',
-)
+
+const inventoryActionButton = clsx(actionButton, 'w-full')
+
+const inventoryTitle = clsx('mb-[1rem]', 'text-center', 'text-2xl', 'font-semibold')
 
 const InventoryPage = async () => {
   await requireCurrentUser()
@@ -46,79 +37,34 @@ const InventoryPage = async () => {
 
   return (
     <main className={centeredPage}>
-      <div>
-        <h1>Your {habUnit.name} tally</h1>
-      </div>
+      <h1 className={inventoryTitle}>
+        Your{' '}
+        <span className={STOCK_STATE_TEXT_CLASS_NAMES['in-stock']}>
+          [{habUnit.name}]
+        </span>{' '}
+        tally
+      </h1>
 
       <section className={inventorySection}>
-        {tallyLines.length === 0 ? (
-          <p>Nothing is added here yet.</p>
-        ) : (
-          <ul className={tallyList}>
-            {tallyLines.map((line) => {
-              const stockState = getStockState(
-                line.quantity,
-                line.minimumQuantity,
-              )
-
-              return (
-                <li
-                  key={line.itemId}
-                  className={clsx(tallyRow, STOCK_STATE_CLASS_NAMES[stockState])}
-                >
-                  <Link
-                    href={`/inventory/${line.itemId}`}
-                    className={tallyName}
-                  >
-                    {line.name}
-                  </Link>
-                  <span aria-hidden="true" className={tallyDots}>
-                    {TALLY_DOT_LEADER}
-                  </span>
-                  <span className={tallyCount}>
-                    <button
-                      type="button"
-                      disabled
-                      aria-label={`Decrease ${line.name}`}
-                      className={tallyControl}
-                    >
-                      [-]
-                    </button>{' '}
-                    {line.quantity}{' '}
-                    <button
-                      type="button"
-                      disabled
-                      aria-label={`Increase ${line.name}`}
-                      className={tallyControl}
-                    >
-                      [+]
-                    </button>
-                    <span className="sr-only">
-                      {STOCK_STATE_LABELS[stockState]}
-                    </span>
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-        )}
-        <br />
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/inventory/new" />}
-          className={actionButton}
-        >
-          Add item
-        </Button>
-        <Button
-          variant="outline"
-          nativeButton={false}
-          render={<Link href="/inventory/scan" />}
-          className={actionButton}
-        >
-          Scan item
-        </Button>
+        <InventoryTally lines={tallyLines} />
+        <div className={inventoryActions}>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/new" />}
+            className={inventoryActionButton}
+          >
+            Add item
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/scan" />}
+            className={inventoryActionButton}
+          >
+            Scan item
+          </Button>
+        </div>
       </section>
     </main>
   )

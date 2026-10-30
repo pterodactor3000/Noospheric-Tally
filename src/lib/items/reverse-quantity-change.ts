@@ -49,5 +49,5 @@ const reverseQuantityChange = async (
   return { status: 'reversed', quantity: data }
 }
 
-export { reverseQuantityChange }
+export { CHECK_VIOLATION_ERROR_CODE, reverseQuantityChange }
 export type { ReverseQuantityChangeClient, ReverseQuantityChangeResult }

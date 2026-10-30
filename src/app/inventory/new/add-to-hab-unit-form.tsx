@@ -6,7 +6,6 @@ import {
   fieldControl,
   fieldLabel,
   fieldStack,
-  formError,
   formStack,
   fullWidthButton,
   pageLead,
@@ -14,6 +13,7 @@ import {
 } from '@/app/styles/class-names'
 import { addItemToHousehold } from '../actions'
 import { useActionState } from 'react'
+import { FormAlert } from '@/components/form-alert'
 import { Button } from '@/components/ui/button'
 
 interface AddToHabUnitFormProps {
@@ -62,21 +62,16 @@ const AddToHabUnitForm = ({ itemId, canonicalName }: AddToHabUnitFormProps) => {
             className={fieldControl}
           />
         </div>
-        <div
-          role="alert"
-          aria-live="polite"
-          className={formError}
-        >
-          {state?.status === 'error' && state.message}
-        </div>
-        <Button
-          variant="outline"
-          type="submit"
-          disabled={isPending}
-          className={fullWidthButton}
-        >
-          Apply
-        </Button>
+        <FormAlert message={state?.status === 'error' ? state.message : null}>
+          <Button
+            variant="outline"
+            type="submit"
+            disabled={isPending}
+            className={fullWidthButton}
+          >
+            Apply
+          </Button>
+        </FormAlert>
       </form>
     </>
   )

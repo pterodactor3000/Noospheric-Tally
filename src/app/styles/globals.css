@@ -94,6 +94,7 @@
   --animate-scan-line: scan-line 1.8s ease-in-out infinite;
   --animate-scan-notice-in: scan-notice-in 280ms ease-out both;
   --animate-scan-notice-out: scan-notice-out 280ms ease-in both;
+  --animate-form-alert-in: form-alert-in 500ms ease-in-out both;
   --animate-loading-inner: loading-inner 5s infinite;
   --animate-loading-middle: loading-middle 5s infinite;
   --animate-loading-outer: loading-outer 5s infinite;
@@ -136,6 +137,17 @@
   }
   to {
     transform: translateY(calc(-100% - 0.75rem));
+  }
+}
+
+@keyframes form-alert-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

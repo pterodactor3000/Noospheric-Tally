@@ -3,12 +3,12 @@ import {
   fieldControl,
   fieldLabel,
   fieldStack,
-  formError,
   formStack,
   fullWidthButton,
   pageLead,
   pageTitle,
 } from '@/app/styles/class-names'
+import { FormAlert } from '@/components/form-alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -53,20 +53,15 @@ const BarcodeLookupForm = ({
             className={fieldControl}
           />
         </div>
-        <div
-          role="alert"
-          aria-live="polite"
-          className={formError}
-        >
-          {errorMessage}
-        </div>
-        <Button
-          variant="outline"
-          type="submit"
-          className={fullWidthButton}
-        >
-          Apply
-        </Button>
+        <FormAlert message={errorMessage ?? null}>
+          <Button
+            variant="outline"
+            type="submit"
+            className={fullWidthButton}
+          >
+            Apply
+          </Button>
+        </FormAlert>
       </form>
     </>
   )

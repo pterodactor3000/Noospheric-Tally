@@ -3,12 +3,11 @@ import { notFound } from 'next/navigation'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitItemById } from '@/lib/items/load-hab-unit-item-by-id'
+import { loadItemBarcode } from '@/lib/items/load-item-barcode'
 import { isScanSessionId } from '@/lib/items/scan-session'
-import { getStockState, STOCK_STATE_LABELS } from '@/lib/items/stock-state'
 import { centeredPage, panel } from '@/app/styles/class-names'
-import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
-import ItemMinimumForm from './item-minimum-form'
+import { ItemLevelEditor } from './item-level-editor'
 
 const itemSection = clsx(
   panel,
@@ -16,7 +15,6 @@ const itemSection = clsx(
   '[width:stretch]',
   'max-w-[900px]',
 )
-const stockBlock = clsx('mt-6', 'p-4', 'font-mono', 'font-semibold')
 
 const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
   await requireCurrentUser()
@@ -34,20 +32,17 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
     notFound()
   }
 
-  const stockState = getStockState(item.quantity, item.minimumQuantity)
+  const barcode = await loadItemBarcode(item.itemId)
 
   return (
     <main className={centeredPage}>
       <section className={itemSection}>
-        <h1>{item.name}</h1>
-        <div className={clsx(stockBlock, STOCK_STATE_CLASS_NAMES[stockState])}>
-          <p>Count: {item.quantity}</p>
-          <p>Minimum: {item.minimumQuantity}</p>
-          <p>{STOCK_STATE_LABELS[stockState]}</p>
-        </div>
-        <ItemMinimumForm
+        <ItemLevelEditor
           itemId={item.itemId}
+          name={item.name}
+          quantity={item.quantity}
           minimumQuantity={item.minimumQuantity}
+          barcode={barcode}
         />
       </section>
     </main>

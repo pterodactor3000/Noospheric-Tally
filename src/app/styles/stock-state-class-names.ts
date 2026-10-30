@@ -6,4 +6,10 @@ const STOCK_STATE_CLASS_NAMES: Readonly<Record<StockState, string>> = {
   'in-stock': 'bg-stock-in-stock text-stock-in-stock-foreground',
 }
 
-export { STOCK_STATE_CLASS_NAMES }
+const STOCK_STATE_TEXT_CLASS_NAMES: Readonly<Record<StockState, string>> = {
+  critical: 'text-stock-critical',
+  warning: 'text-stock-warning',
+  'in-stock': 'text-stock-in-stock',
+}
+
+export { STOCK_STATE_CLASS_NAMES, STOCK_STATE_TEXT_CLASS_NAMES }

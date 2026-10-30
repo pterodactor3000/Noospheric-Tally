@@ -11,6 +11,7 @@ import { loadHabUnitItems } from '@/lib/items/load-hab-unit-items'
 import { AlreadyStocked } from './already-stocked'
 import { AddToHabUnitForm } from './add-to-hab-unit-form'
 import { BarcodeLookupForm } from './barcode-lookup-form'
+import { BarcodelessItemForm } from './barcodeless-item-form'
 import { ItemCreateForm } from './item-create-form'
 import { lookupCatalogName } from '@/lib/catalog/lookup-catalog-name'
 import { getCreateLookupNotices } from '@/lib/catalog/get-create-lookup-notices'
@@ -33,14 +34,17 @@ const NewItemPage = async ({
   console.log('new item page', barcode)
   if (!barcode) {
     body = (
-      <BarcodeLookupForm
-        defaultBarcode={rawBarcode}
-        errorMessage={
-          validationResult?.status === 'invalid'
-            ? validationResult.message
-            : undefined
-        }
-      />
+      <>
+        <BarcodeLookupForm
+          defaultBarcode={rawBarcode}
+          errorMessage={
+            validationResult?.status === 'invalid'
+              ? validationResult.message
+              : undefined
+          }
+        />
+        <BarcodelessItemForm />
+      </>
     )
   } else {
     const habUnitItem = await loadHabUnitItemByBarcode(barcode)

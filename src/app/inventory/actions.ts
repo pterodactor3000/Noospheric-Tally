@@ -4,8 +4,10 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
+import { adjustHabUnitQuantity } from '@/lib/items/adjust-hab-unit-quantity'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
 import { createNewItem } from '@/lib/items/create-new-item'
+import { createNewItemWithoutBarcode } from '@/lib/items/create-new-item-without-barcode'
 import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
@@ -14,14 +16,16 @@ import {
   loadScanSessionLines,
   type ScanSessionLine,
 } from '@/lib/items/load-scan-session-lines'
+import { isQuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { reverseQuantityChange } from '@/lib/items/reverse-quantity-change'
 import {
   ITEM_WRITE_FAILURE_MESSAGE,
   SCAN_SESSION_LOAD_FAILURE_MESSAGE,
 } from '@/lib/items/scan-failure-messages'
 import { isScanSessionId } from '@/lib/items/scan-session'
-import { setHabUnitMinimumQuantity } from '@/lib/items/set-hab-unit-minimum-quantity'
+import { setHabUnitItemLevels } from '@/lib/items/set-hab-unit-item-levels'
 import { validateBarcode } from '@/lib/items/validate-barcode'
+import { validateHouseholdQuantity } from '@/lib/items/validate-household-quantity'
 import { validateItemName } from '@/lib/items/validate-item-name'
 import { validateMinimumQuantity } from '@/lib/items/validate-minimum-quantity'
 import { createClient } from '@/lib/supabase/server'
@@ -53,15 +57,35 @@ interface ScanSessionLineReversed {
 
 type ScanSessionLineReversalResult = ScanSessionLineReversed | ItemActionError
 
-interface MinimumQuantitySaved {
-  status: 'saved'
-  minimumQuantity: number
+interface QuantityAdjusted {
+  status: 'adjusted'
+  quantity: number
 }
 
-type MinimumQuantityResult = MinimumQuantitySaved | ItemActionError
+type QuantityAdjustmentResult = QuantityAdjusted | ItemActionError
 
 const REVERSAL_BELOW_ZERO_MESSAGE =
   'This line cannot be reversed because the count would drop below 0.'
+
+const QUANTITY_BELOW_ZERO_MESSAGE = 'The count cannot go below 0.'
+
+const QUANTITY_ABOVE_MAXIMUM_MESSAGE = 'The count cannot go above 999999.'
+
+const STALE_ITEM_LEVELS_MESSAGE =
+  'The count changed. Reload the page before saving.'
+
+const parseExpectedQuantity = (rawValue: string): number | null => {
+  if (!/^\d+$/.test(rawValue)) {
+    return null
+  }
+
+  const quantity = Number(rawValue)
+  if (!Number.isSafeInteger(quantity)) {
+    return null
+  }
+
+  return quantity
+}
 
 const getFormString = (formData: FormData, key: string): string => {
   const value = formData.get(key)
@@ -124,6 +148,28 @@ const createItem = async (formData: FormData): Promise<ItemActionResult> => {
     }
   } catch (error: unknown) {
     console.error('createItem failed', { barcode, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  return redirectToInventory()
+}
+
+const createItemWithoutBarcode = async (
+  formData: FormData,
+): Promise<ItemActionResult> => {
+  const nameResult = validateItemName(getFormString(formData, 'name'))
+  if (nameResult.status === 'invalid') {
+    return { status: 'error', message: nameResult.message, field: 'name' }
+  }
+
+  try {
+    const supabase = await createClient()
+    await createNewItemWithoutBarcode(nameResult.name, supabase)
+  } catch (error: unknown) {
+    console.error('createItemWithoutBarcode failed', {
+      name: nameResult.name,
+      error,
+    })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
@@ -316,15 +362,24 @@ const reverseScanSessionLine = async (
   }
 }
 
-const saveItemMinimumQuantity = async (
+const saveItemLevels = async (
   formData: FormData,
-): Promise<MinimumQuantityResult> => {
+): Promise<ItemActionError> => {
   const itemId = getFormString(formData, 'itemId')
+  const rawQuantity = getFormString(formData, 'quantity')
   const rawMinimumQuantity = getFormString(formData, 'minimumQuantity')
+  const expectedQuantity = parseExpectedQuantity(
+    getFormString(formData, 'expectedQuantity'),
+  )
 
   if (!isScanSessionId(itemId)) {
-    console.error('saveItemMinimumQuantity rejected item id', { itemId })
+    console.error('saveItemLevels rejected item id', { itemId })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  const quantityResult = validateHouseholdQuantity(rawQuantity)
+  if (quantityResult.status === 'invalid') {
+    return { status: 'error', message: quantityResult.message }
   }
 
   const minimumResult = validateMinimumQuantity(rawMinimumQuantity)
@@ -336,28 +391,82 @@ const saveItemMinimumQuantity = async (
     }
   }
 
-  const { minimumQuantity } = minimumResult
+  if (expectedQuantity === null) {
+    console.error('saveItemLevels rejected expected quantity', { itemId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
 
   try {
     const supabase = await createClient()
-    await setHabUnitMinimumQuantity(itemId, minimumQuantity, supabase)
+    const result = await setHabUnitItemLevels(
+      itemId,
+      {
+        quantity: quantityResult.quantity,
+        minimumQuantity: minimumResult.minimumQuantity,
+        expectedQuantity,
+      },
+      supabase,
+    )
+    if (result.status === 'stale') {
+      return { status: 'error', message: STALE_ITEM_LEVELS_MESSAGE }
+    }
   } catch (error: unknown) {
-    console.error('saveItemMinimumQuantity failed', { itemId, error })
+    console.error('saveItemLevels failed', { itemId, error })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
   revalidatePath('/inventory')
   revalidatePath(`/inventory/${itemId}`)
-  return { status: 'saved', minimumQuantity }
+  redirect('/inventory')
+}
+
+const adjustItemQuantity = async (
+  itemId: unknown,
+  deltaQuantity: unknown,
+): Promise<QuantityAdjustmentResult> => {
+  if (!isScanSessionId(itemId)) {
+    console.error('adjustItemQuantity rejected item id', { itemId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  if (!isQuantityAdjustment(deltaQuantity)) {
+    console.error('adjustItemQuantity rejected delta', { deltaQuantity })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const result = await adjustHabUnitQuantity(itemId, deltaQuantity, supabase)
+    if (result.status === 'below-zero') {
+      return { status: 'error', message: QUANTITY_BELOW_ZERO_MESSAGE }
+    }
+
+    if (result.status === 'above-maximum') {
+      return { status: 'error', message: QUANTITY_ABOVE_MAXIMUM_MESSAGE }
+    }
+
+    revalidatePath('/inventory')
+    revalidatePath(`/inventory/${itemId}`)
+    return { status: 'adjusted', quantity: result.quantity }
+  } catch (error: unknown) {
+    console.error('adjustItemQuantity failed', {
+      itemId,
+      deltaQuantity,
+      error,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
 }
 
 export {
   createItem,
+  createItemWithoutBarcode,
   attachBarcode,
   addItemToHousehold,
   stockScannedItem,
   consumeScannedItem,
   fetchScanSessionLines,
   reverseScanSessionLine,
-  saveItemMinimumQuantity,
+  saveItemLevels,
+  adjustItemQuantity,
 }

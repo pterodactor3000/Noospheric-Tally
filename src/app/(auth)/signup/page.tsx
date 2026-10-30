@@ -9,7 +9,6 @@ import {
   fieldLabel,
   fieldStack,
   footnote,
-  formError,
   formStack,
   fullWidthButton,
   pageLead,
@@ -18,6 +17,8 @@ import {
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+
+import { FormAlert } from '@/components/form-alert'
 
 import { signUpWithPassword } from '../actions'
 
@@ -81,22 +82,16 @@ const Signup = () => {
           />
         </div>
 
-        <div
-          role="alert"
-          aria-live="polite"
-          className={formError}
-        >
-          {state?.status === 'error' && state?.message}
-        </div>
-
-        <Button
-          variant="outline"
-          type="submit"
-          disabled={isPending}
-          className={fullWidthButton}
-        >
-          Sign up
-        </Button>
+        <FormAlert message={state?.status === 'error' ? state.message : null}>
+          <Button
+            variant="outline"
+            type="submit"
+            disabled={isPending}
+            className={fullWidthButton}
+          >
+            Sign up
+          </Button>
+        </FormAlert>
       </form>
 
       <p className={footnote}>

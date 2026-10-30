@@ -150,12 +150,26 @@ const ScanSessionList = ({ scanSessionId, reloadToken }: ScanSessionListProps) =
       className={clsx('w-full', 'max-w-sm', 'px-3', 'pb-6')}
     >
       {currentState?.status === 'failure' ? (
-        <p role="alert" className={clsx('text-sm', 'text-destructive')}>
+        <p
+          role="alert"
+          className={clsx(
+            'text-sm',
+            'text-destructive',
+            'motion-safe:animate-form-alert-in',
+          )}
+        >
           {currentState.message}
         </p>
       ) : null}
       {reversalFailure && reversalFailure.reloadToken === reloadToken ? (
-        <p role="alert" className={clsx('text-sm', 'text-destructive')}>
+        <p
+          role="alert"
+          className={clsx(
+            'text-sm',
+            'text-destructive',
+            'motion-safe:animate-form-alert-in',
+          )}
+        >
           {reversalFailure.message}
         </p>
       ) : null}
