@@ -111,6 +111,7 @@ interface ItemLevelEditorProps {
   readonly name: string
   readonly quantity: number
   readonly minimumQuantity: number
+  readonly consumptionRate: string
   readonly barcodes: readonly string[]
 }
 
@@ -165,6 +166,7 @@ const ItemLevelEditor = ({
   name,
   quantity,
   minimumQuantity,
+  consumptionRate,
   barcodes,
 }: ItemLevelEditorProps) => {
   const [count, setCount] = useState(quantity)
@@ -256,6 +258,13 @@ const ItemLevelEditor = ({
           onDecrease={() => setMinimum((current) => current - 1)}
           onIncrease={() => setMinimum((current) => current + 1)}
         />
+        <div className={itemLine}>
+          <span className={itemLabel}>Use</span>
+          <span aria-hidden="true" className={itemDots}>
+            {ITEM_DOT_LEADER}
+          </span>
+          <span className={itemValue}>{consumptionRate}</span>
+        </div>
       </div>
       <FormAlert
         message={state?.status === 'error' ? state.message : null}
