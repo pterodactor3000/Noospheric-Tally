@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 
+import { ItemListMarker } from '@/components/item-list-marker'
 import { Button } from '@/components/ui/button'
 import type { ScanSessionLine } from '@/lib/items/load-scan-session-lines'
 import {
@@ -179,6 +180,7 @@ const ScanSessionList = ({ scanSessionId, reloadToken }: ScanSessionListProps) =
             key={line.changeId}
             className={clsx('flex', 'items-center', 'gap-3', 'text-sm')}
           >
+            <ItemListMarker />
             <span className={clsx('w-8', 'font-mono', 'font-semibold')}>
               {formatQuantityDelta(line.quantityDelta)}
             </span>

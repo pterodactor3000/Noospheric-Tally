@@ -5,6 +5,7 @@ import {
   getStockState,
   MINIMUM_QUANTITY_MAX,
   MINIMUM_QUANTITY_MIN,
+  STOCK_STATE_INITIALS,
   STOCK_STATE_LABELS,
 } from './stock-state'
 
@@ -44,6 +45,16 @@ describe('STOCK_STATE_LABELS', () => {
       critical: 'CRITICAL',
       warning: 'WARNING',
       'in-stock': 'IN STOCK',
+    })
+  })
+})
+
+describe('STOCK_STATE_INITIALS', () => {
+  test('maps each state to the initial in brackets', () => {
+    expect(STOCK_STATE_INITIALS).toEqual({
+      critical: 'C',
+      warning: 'W',
+      'in-stock': 'I',
     })
   })
 })

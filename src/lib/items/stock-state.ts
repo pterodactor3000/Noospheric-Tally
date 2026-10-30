@@ -10,6 +10,12 @@ const STOCK_STATE_LABELS: Readonly<Record<StockState, string>> = {
   'in-stock': 'IN STOCK',
 }
 
+const STOCK_STATE_INITIALS: Readonly<Record<StockState, string>> = {
+  critical: 'C',
+  warning: 'W',
+  'in-stock': 'I',
+}
+
 const getStockState = (
   quantity: number,
   minimumQuantity: number,
@@ -30,6 +36,7 @@ export {
   getStockState,
   MINIMUM_QUANTITY_MAX,
   MINIMUM_QUANTITY_MIN,
+  STOCK_STATE_INITIALS,
   STOCK_STATE_LABELS,
 }
 export type { StockState }

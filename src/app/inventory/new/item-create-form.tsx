@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react'
 import { attachBarcode, createItem } from '../actions'
 import { clsx } from 'clsx'
 import { FormAlert } from '@/components/form-alert'
+import { ItemListMarker } from '@/components/item-list-marker'
 import { Button } from '@/components/ui/button'
 import {
   fieldControl,
@@ -44,6 +45,12 @@ const attachName = clsx(
   'peer-checked:text-stock-warning',
   'peer-focus-visible:ring-2',
   'peer-focus-visible:ring-ring',
+)
+const attachBracket = clsx(
+  'hidden',
+  'shrink-0',
+  'peer-checked:inline',
+  'peer-checked:text-stock-warning',
 )
 
 const AttachChevron = ({ isOpen }: AttachChevronProps) => (
@@ -233,7 +240,7 @@ const ItemCreateForm = ({
                   <ul className={attachList}>
                     {offeredItems.map((item) => (
                       <li key={item.itemId} className="px-2">
-                        <label className="block cursor-pointer">
+                        <label className="flex cursor-pointer items-baseline gap-2">
                           <input
                             type="radio"
                             name="itemId"
@@ -241,7 +248,14 @@ const ItemCreateForm = ({
                             required
                             className="peer sr-only"
                           />
+                          <ItemListMarker className="peer-checked:text-stock-warning" />
+                          <span aria-hidden="true" className={attachBracket}>
+                            {'['}
+                          </span>
                           <span className={attachName}>{item.name}</span>
+                          <span aria-hidden="true" className={attachBracket}>
+                            {']'}
+                          </span>
                         </label>
                       </li>
                     ))}

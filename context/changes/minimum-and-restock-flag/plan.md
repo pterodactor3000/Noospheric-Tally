@@ -449,7 +449,7 @@ To roll back, revert the app first, then run `drop function public.set_household
 - [x] 2.5 No row has `minimum_quantity <> 3` after the push. `eb7df5e`
 - [x] 2.6 `anon` cannot execute `set_household_minimum_quantity(uuid, integer)`, and `authenticated` can. `eb7df5e`
 - [x] 2.7 Setting `minimum_quantity = 1000` on a real row fails with a check violation on `household_inventory_minimum_quantity_range`. `eb7df5e`
-- [ ] 2.8 With the migration applied, `/inventory` shows unchanged counts and a stocking scan still raises a count
+- [x] 2.8 With the migration applied, `/inventory` shows unchanged counts and a stocking scan still raises a count. Verified 2026-10-30
 
 ### Phase 3: Add the item page and the minimum form
 
@@ -462,11 +462,11 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 #### Manual
 
-- [ ] 3.5 Tapping an item name opens `/inventory/{itemId}` with name, count, `Minimum: 3`, state name, and stock color
-- [ ] 3.6 Saving `5` shows `Minimum saved.` and `Minimum: 5`, and saving a blank field shows `Minimum: 3`
-- [ ] 3.7 Saving `1000`, `-1`, `2.5`, or `abc` shows the range message and leaves the minimum unchanged after reload
-- [ ] 3.8 A malformed id, a random UUID, and another household's item id show the not-found page
-- [ ] 3.9 `Back to inventory` appears on the item page and returns to `/inventory`
+- [x] 3.5 Tapping an item name opens `/inventory/{itemId}` with name, count, `Minimum: 3`, state name, and stock color. Verified 2026-10-30
+- [x] 3.6 Saving `5` shows `Minimum saved.` and `Minimum: 5`, and saving a blank field shows `Minimum: 3`. Verified 2026-10-30
+- [x] 3.7 Saving `1000`, `-1`, `2.5`, or `abc` shows the range message and leaves the minimum unchanged after reload. Verified 2026-10-30
+- [x] 3.8 A malformed id, a random UUID, and another household's item id show the not-found page. Verified 2026-10-30
+- [x] 3.9 `Back to inventory` appears on the item page and returns to `/inventory`. Verified 2026-10-30
 
 ### Phase 4: Color the tally rows and the scan result
 
@@ -480,7 +480,7 @@ To roll back, revert the app first, then run `drop function public.set_household
 
 #### Manual
 
-- [ ] 4.6 With a minimum of 3, counts of 3, 4, and 6 show red, yellow/gold, and green rows with no visible label text
-- [ ] 4.7 The screen reader reads each tally row's state name after the count
-- [ ] 4.8 A using scan from 4 to 3 shows a red card, a stocking scan from 5 to 6 shows a green card, and the screen reader announces the state
-- [ ] 4.9 Colored rows and the card stay readable in light and dark OS modes on the phone over HTTPS
+- [x] 4.6 With a minimum of 3, counts of 3, 4, and 6 show red, yellow/gold, and green rows with no visible label text. Verified 2026-10-30
+- [x] 4.7 The screen reader reads each tally row's state name after the count. Verified 2026-10-30
+- [x] 4.8 A using scan from 4 to 3 shows a red card, a stocking scan from 5 to 6 shows a green card, and the screen reader announces the state. Verified 2026-10-30
+- [x] 4.9 Colored rows and the card stay readable in light and dark OS modes on the phone over HTTPS. Verified 2026-10-30

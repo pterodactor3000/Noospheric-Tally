@@ -4,6 +4,7 @@ import { clsx } from 'clsx'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
@@ -28,7 +29,7 @@ const inventoryActions = clsx(
 
 const inventoryActionButton = clsx(actionButton, 'w-full')
 
-const inventoryTitle = clsx('mb-[1rem]', 'text-center', 'text-2xl', 'font-semibold')
+const inventoryTitle = clsx('m-0', 'text-center', 'text-2xl', 'font-semibold')
 
 const InventoryPage = async () => {
   await requireCurrentUser()
@@ -37,15 +38,14 @@ const InventoryPage = async () => {
 
   return (
     <main className={centeredPage}>
-      <h1 className={inventoryTitle}>
-        Your{' '}
-        <span className={STOCK_STATE_TEXT_CLASS_NAMES['in-stock']}>
-          [{habUnit.name}]
-        </span>{' '}
-        tally
-      </h1>
-
       <section className={inventorySection}>
+        <h1 className={inventoryTitle}>
+          <span className={STOCK_STATE_TEXT_CLASS_NAMES['in-stock']}>
+            [{habUnit.name}]
+          </span>{' '}
+          tally
+        </h1>
+        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
         <InventoryTally lines={tallyLines} />
         <div className={inventoryActions}>
           <Button
@@ -63,6 +63,14 @@ const InventoryPage = async () => {
             className={inventoryActionButton}
           >
             Scan item
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/restock" />}
+            className={clsx(inventoryActionButton, 'col-span-2')}
+          >
+            Restock
           </Button>
         </div>
       </section>
