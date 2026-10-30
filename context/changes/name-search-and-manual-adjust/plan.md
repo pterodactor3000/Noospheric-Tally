@@ -349,9 +349,9 @@ Both migrations only add functions. They change no table and no existing functio
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes `src/lib/items/quantity-adjustment.test.ts`: only `1` and `-1` are accepted.
-- [ ] 1.2 `pnpm test` passes `src/lib/items/adjust-hab-unit-quantity.test.ts`: an adjusted result returns the quantity including `0`, code `23514` returns `below-zero`, and another RPC error or a malformed result throws an `Error` that names the item id.
-- [ ] 1.3 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
+- [x] 1.1 `pnpm test` passes `src/lib/items/quantity-adjustment.test.ts`: only `1` and `-1` are accepted.
+- [x] 1.2 `pnpm test` passes `src/lib/items/adjust-hab-unit-quantity.test.ts`: an adjusted result returns the quantity including `0`, code `23514` returns `below-zero`, and another RPC error or a malformed result throws an `Error` that names the item id.
+- [x] 1.3 `pnpm lint`, `pnpm typecheck`, and `pnpm worker:check` exit 0.
 
 #### Manual
 

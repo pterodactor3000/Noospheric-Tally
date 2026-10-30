@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
 import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
+import TallyCountControls from './tally-count-controls'
+
 const TALLY_DOT_LEADER = '.'.repeat(300)
 
 const inventorySection = clsx(
@@ -17,26 +19,13 @@ const inventorySection = clsx(
   'max-w-[900px]',
 )
 const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
-const tallyRow = clsx('flex', 'items-baseline', 'gap-2', 'px-2')
+const tallyRow = clsx('flex', 'flex-wrap', 'items-baseline', 'gap-2', 'px-2')
 const tallyName = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
 const tallyDots = clsx(
   'min-w-0',
   'flex-1',
   'overflow-hidden',
   'whitespace-nowrap',
-)
-const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
-const tallyControl = clsx(
-  'border-0',
-  'bg-transparent',
-  'p-0',
-  'font-[inherit]',
-  'text-[length:inherit]',
-  'leading-[inherit]',
-  'text-inherit',
-  'no-underline',
-  'disabled:text-inherit',
-  'disabled:opacity-100',
 )
 
 const InventoryPage = async () => {
@@ -75,28 +64,12 @@ const InventoryPage = async () => {
                   <span aria-hidden="true" className={tallyDots}>
                     {TALLY_DOT_LEADER}
                   </span>
-                  <span className={tallyCount}>
-                    <button
-                      type="button"
-                      disabled
-                      aria-label={`Decrease ${line.name}`}
-                      className={tallyControl}
-                    >
-                      [-]
-                    </button>{' '}
-                    {line.quantity}{' '}
-                    <button
-                      type="button"
-                      disabled
-                      aria-label={`Increase ${line.name}`}
-                      className={tallyControl}
-                    >
-                      [+]
-                    </button>
-                    <span className="sr-only">
-                      {STOCK_STATE_LABELS[stockState]}
-                    </span>
-                  </span>
+                  <TallyCountControls
+                    itemId={line.itemId}
+                    name={line.name}
+                    quantity={line.quantity}
+                    stockStateLabel={STOCK_STATE_LABELS[stockState]}
+                  />
                 </li>
               )
             })}

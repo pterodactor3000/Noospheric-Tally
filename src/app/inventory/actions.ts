@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
+import { adjustHabUnitQuantity } from '@/lib/items/adjust-hab-unit-quantity'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
 import { createNewItem } from '@/lib/items/create-new-item'
 import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
@@ -14,6 +15,7 @@ import {
   loadScanSessionLines,
   type ScanSessionLine,
 } from '@/lib/items/load-scan-session-lines'
+import { isQuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { reverseQuantityChange } from '@/lib/items/reverse-quantity-change'
 import {
   ITEM_WRITE_FAILURE_MESSAGE,
@@ -60,8 +62,17 @@ interface MinimumQuantitySaved {
 
 type MinimumQuantityResult = MinimumQuantitySaved | ItemActionError
 
+interface QuantityAdjusted {
+  status: 'adjusted'
+  quantity: number
+}
+
+type QuantityAdjustmentResult = QuantityAdjusted | ItemActionError
+
 const REVERSAL_BELOW_ZERO_MESSAGE =
   'This line cannot be reversed because the count would drop below 0.'
+
+const QUANTITY_BELOW_ZERO_MESSAGE = 'The count cannot go below 0.'
 
 const getFormString = (formData: FormData, key: string): string => {
   const value = formData.get(key)
@@ -351,6 +362,40 @@ const saveItemMinimumQuantity = async (
   return { status: 'saved', minimumQuantity }
 }
 
+const adjustItemQuantity = async (
+  itemId: unknown,
+  deltaQuantity: unknown,
+): Promise<QuantityAdjustmentResult> => {
+  if (!isScanSessionId(itemId)) {
+    console.error('adjustItemQuantity rejected item id', { itemId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  if (!isQuantityAdjustment(deltaQuantity)) {
+    console.error('adjustItemQuantity rejected delta', { deltaQuantity })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const result = await adjustHabUnitQuantity(itemId, deltaQuantity, supabase)
+    if (result.status === 'below-zero') {
+      return { status: 'error', message: QUANTITY_BELOW_ZERO_MESSAGE }
+    }
+
+    revalidatePath('/inventory')
+    revalidatePath(`/inventory/${itemId}`)
+    return { status: 'adjusted', quantity: result.quantity }
+  } catch (error: unknown) {
+    console.error('adjustItemQuantity failed', {
+      itemId,
+      deltaQuantity,
+      error,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+}
+
 export {
   createItem,
   attachBarcode,
@@ -360,4 +405,5 @@ export {
   fetchScanSessionLines,
   reverseScanSessionLine,
   saveItemMinimumQuantity,
+  adjustItemQuantity,
 }
