@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitItemById } from '@/lib/items/load-hab-unit-item-by-id'
+import { loadItemBarcode } from '@/lib/items/load-item-barcode'
 import { isScanSessionId } from '@/lib/items/scan-session'
 import { getStockState, STOCK_STATE_LABELS } from '@/lib/items/stock-state'
 import { centeredPage, panel } from '@/app/styles/class-names'
@@ -35,16 +36,23 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
     notFound()
   }
 
+  const barcode = await loadItemBarcode(item.itemId)
   const stockState = getStockState(item.quantity, item.minimumQuantity)
 
   return (
     <main className={centeredPage}>
       <section className={itemSection}>
         <h1>
-          <span className={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}>
+          <span
+            className={clsx(
+              'font-bold',
+              STOCK_STATE_TEXT_CLASS_NAMES[stockState],
+            )}
+          >
             [{STOCK_STATE_LABELS[stockState]}]
           </span>{' '}
           {item.name}
+          {barcode === null ? null : ` ++  ${barcode} ++`}
         </h1>
         <div className={itemCount}>
           <TallyCountControls
@@ -52,7 +60,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
             name={item.name}
             quantity={item.quantity}
             stockStateLabel={STOCK_STATE_LABELS[stockState]}
-            stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
+            stockTextClassName=""
           >
             <span>Count</span>
           </TallyCountControls>
