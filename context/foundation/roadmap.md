@@ -32,7 +32,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-03 | stocking-mode-increase | scan items in stocking mode to raise their counts | S-02 | FR-003, FR-012, US-01 | done |
 | S-04 | using-mode-decrease-and-undo | scan items in using mode to lower counts, and undo a mis-scan | S-03 | FR-004, FR-009, US-02 | ready |
 | S-05 | name-search-and-manual-adjust | find an item by name, sort the tally, adjust a row by one, and save a count and minimum together on the item page, including items with no barcode | S-02 | FR-006, FR-013 | ready |
-| S-06 | minimum-and-restock-flag | set a minimum for an item, 3 by default, and see CRITICAL, WARNING, or IN STOCK from its count | S-02 | FR-007, FR-008, US-02 | ready |
+| S-06 | minimum-and-restock-flag | set a minimum for an item, 3 by default, and see CRITICAL, WARNING, or IN STOCK from its count | S-02 | FR-007, FR-008, US-02 | done |
 | S-07 | restock-list-by-shortfall | see everything needing restocking, largest shortfall first | S-06 | FR-010, FR-014 | ready |
 | S-08 | consumption-rate-view | see how fast each item is consumed | S-04 | FR-015 | proposed |
 | S-09 | shop-barcode-hab-unit-lookup | scan a shop barcode and see if it is in the hab unit | S-02 | FR-017 | ready |
@@ -146,7 +146,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Blockers:** -
 - **Unknowns:** -
 - **Risk:** This is the first slice that answers the user's actual question rather than storing data, so delaying it delays all evidence that the product is worth using.
-- **Status:** ready
+- **Status:** done
 - **Merged:** S-10 (shortage-threshold-labels) merged into this slice on 2026-10-30. The ID S-10 is retired.
 
 ### S-07: See everything needing restocking, worst shortfall first
@@ -277,4 +277,5 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **S-01: sign in and reach an empty household inventory** - Archived 2026-09-29 to `context/archive/2026-08-09-household-sign-in/`. Lesson: -.
 - **S-02: scan an unknown barcode and record it as a named item** - Archived 2026-09-29 to `context/archive/2026-09-13-scan-to-create-item/`. Lesson: -.
 - **S-03: scan items in stocking mode to raise their counts** - Implemented. Record remains at `context/changes/stocking-mode-increase/`. Lesson: -.
+- **S-06: set a minimum for an item, 3 when none is saved, and see CRITICAL, WARNING, or IN STOCK** - Implemented. Record remains at `context/changes/minimum-and-restock-flag/`. Manual checks verified 2026-10-30. Lesson: -.
 - **S-12: see a local miss, a catalog miss, loading, a clear header, and a bold barcode** - Archived 2026-10-29 to `context/archive/2026-09-23-create-flow-lookup-feedback/`. Lesson: -.
