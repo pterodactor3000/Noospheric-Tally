@@ -2,9 +2,12 @@ import { clsx } from 'clsx'
 import { notFound } from 'next/navigation'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { formatConsumptionRate } from '@/lib/items/format-consumption-rate'
 import { loadHabUnitItemById } from '@/lib/items/load-hab-unit-item-by-id'
 import { loadItemBarcodes } from '@/lib/items/load-item-barcodes'
+import { loadItemConsumptionCount } from '@/lib/items/load-item-consumption-count'
 import { isScanSessionId } from '@/lib/items/scan-session'
+import { createClient } from '@/lib/supabase/server'
 import { centeredPage, panel } from '@/app/styles/class-names'
 
 import { ItemLevelEditor } from './item-level-editor'
@@ -33,6 +36,13 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
     notFound()
   }
 
+  const supabase = await createClient()
+  const usingScanCount = await loadItemConsumptionCount(
+    item.itemId,
+    new Date(),
+    supabase,
+  )
+  const consumptionRate = formatConsumptionRate(usingScanCount)
   const barcodes = await loadItemBarcodes(item.itemId)
 
   return (
@@ -43,6 +53,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
           name={item.name}
           quantity={item.quantity}
           minimumQuantity={item.minimumQuantity}
+          consumptionRate={consumptionRate}
           barcodes={barcodes}
         />
       </section>
