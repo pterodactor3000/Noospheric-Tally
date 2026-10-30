@@ -67,9 +67,9 @@ const TallyCountControls = ({
 
   return (
     <div>
-      <div className={clsx(tallyLine, stockTextClassName)}>
+      <div className={tallyLine}>
         {children}
-        <span className={tallyCount}>
+        <span className={clsx(tallyCount, stockTextClassName)}>
           <button
             type="button"
             disabled={isPending || quantity === 0}

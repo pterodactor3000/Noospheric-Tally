@@ -6,9 +6,10 @@ import { loadHabUnitItemById } from '@/lib/items/load-hab-unit-item-by-id'
 import { isScanSessionId } from '@/lib/items/scan-session'
 import { getStockState, STOCK_STATE_LABELS } from '@/lib/items/stock-state'
 import { centeredPage, panel } from '@/app/styles/class-names'
-import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 import ItemMinimumForm from './item-minimum-form'
+import TallyCountControls from '../tally-count-controls'
 
 const itemSection = clsx(
   panel,
@@ -16,7 +17,7 @@ const itemSection = clsx(
   '[width:stretch]',
   'max-w-[900px]',
 )
-const stockBlock = clsx('mt-6', 'p-4', 'font-mono', 'font-semibold')
+const itemCount = clsx('mt-6')
 
 const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
   await requireCurrentUser()
@@ -39,11 +40,23 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
   return (
     <main className={centeredPage}>
       <section className={itemSection}>
-        <h1>{item.name}</h1>
-        <div className={clsx(stockBlock, STOCK_STATE_CLASS_NAMES[stockState])}>
-          <p>Count: {item.quantity}</p>
+        <h1>
+          <span className={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}>
+            [{STOCK_STATE_LABELS[stockState]}]
+          </span>{' '}
+          {item.name}
+        </h1>
+        <div className={itemCount}>
+          <TallyCountControls
+            itemId={item.itemId}
+            name={item.name}
+            quantity={item.quantity}
+            stockStateLabel={STOCK_STATE_LABELS[stockState]}
+            stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
+          >
+            <span>Count</span>
+          </TallyCountControls>
           <p>Minimum: {item.minimumQuantity}</p>
-          <p>{STOCK_STATE_LABELS[stockState]}</p>
         </div>
         <ItemMinimumForm
           itemId={item.itemId}
