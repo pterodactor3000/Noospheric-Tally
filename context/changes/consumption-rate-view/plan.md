@@ -212,11 +212,11 @@ No migration. Removing the Use row and the two modules reverses the change. Exis
 
 #### Automated
 
-- [x] 1.1 `pnpm test -- src/lib/items/format-consumption-rate.test.ts src/lib/items/load-item-consumption-count.test.ts` passes, covering `0`, `1`, a count above 1, a negative count, a non-integer, a returned `0`, a returned positive count, the recorded filters for `now` `2026-10-30T14:00:00.000Z`, a query error, a null count, and a `NaN` time
+- [x] 1.1 `pnpm test -- src/lib/items/format-consumption-rate.test.ts src/lib/items/load-item-consumption-count.test.ts` passes, covering `0`, `1`, a count above 1, a negative count, a non-integer, a returned `0`, a returned positive count, the recorded filters for `now` `2026-10-30T14:00:00.000Z`, a query error, a null count, and a `NaN` time (7fe7a97)
 
 #### Manual
 
-- [x] 1.2 No screen change. The recorded query excludes stocking rows, reversed rows, other items, and scans before the window
+- [x] 1.2 No screen change. The recorded query excludes stocking rows, reversed rows, other items, and scans before the window (7fe7a97)
 
 ### Phase 2: Show the rate on the item page
 
