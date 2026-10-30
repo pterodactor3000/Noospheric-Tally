@@ -3,8 +3,10 @@ import { clsx } from 'clsx'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
+import { STOCK_STATE_LABELS, getStockState } from '@/lib/items/stock-state'
 import { Button } from '@/components/ui/button'
 import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
+import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 const TALLY_DOT_LEADER = '.'.repeat(300)
 
@@ -15,8 +17,8 @@ const inventorySection = clsx(
   'max-w-[900px]',
 )
 const tallyList = clsx('text-[14px]', 'sm:text-[16px]')
-const tallyRow = clsx('flex', 'items-baseline', 'gap-2')
-const tallyName = clsx('min-w-0', 'truncate')
+const tallyRow = clsx('flex', 'items-baseline', 'gap-2', 'px-2')
+const tallyName = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
 const tallyDots = clsx(
   'min-w-0',
   'flex-1',
@@ -53,33 +55,51 @@ const InventoryPage = async () => {
           <p>Nothing is added here yet.</p>
         ) : (
           <ul className={tallyList}>
-            {tallyLines.map((line) => (
-              <li key={line.itemId} className={tallyRow}>
-                <span className={tallyName}>{line.name}</span>
-                <span aria-hidden="true" className={tallyDots}>
-                  {TALLY_DOT_LEADER}
-                </span>
-                <span className={tallyCount}>
-                  <button
-                    type="button"
-                    disabled
-                    aria-label={`Decrease ${line.name}`}
-                    className={tallyControl}
+            {tallyLines.map((line) => {
+              const stockState = getStockState(
+                line.quantity,
+                line.minimumQuantity,
+              )
+
+              return (
+                <li
+                  key={line.itemId}
+                  className={clsx(tallyRow, STOCK_STATE_CLASS_NAMES[stockState])}
+                >
+                  <Link
+                    href={`/inventory/${line.itemId}`}
+                    className={tallyName}
                   >
-                    [-]
-                  </button>{' '}
-                  {line.quantity}{' '}
-                  <button
-                    type="button"
-                    disabled
-                    aria-label={`Increase ${line.name}`}
-                    className={tallyControl}
-                  >
-                    [+]
-                  </button>
-                </span>
-              </li>
-            ))}
+                    {line.name}
+                  </Link>
+                  <span aria-hidden="true" className={tallyDots}>
+                    {TALLY_DOT_LEADER}
+                  </span>
+                  <span className={tallyCount}>
+                    <button
+                      type="button"
+                      disabled
+                      aria-label={`Decrease ${line.name}`}
+                      className={tallyControl}
+                    >
+                      [-]
+                    </button>{' '}
+                    {line.quantity}{' '}
+                    <button
+                      type="button"
+                      disabled
+                      aria-label={`Increase ${line.name}`}
+                      className={tallyControl}
+                    >
+                      [+]
+                    </button>
+                    <span className="sr-only">
+                      {STOCK_STATE_LABELS[stockState]}
+                    </span>
+                  </span>
+                </li>
+              )
+            })}
           </ul>
         )}
         <br />

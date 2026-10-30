@@ -81,6 +81,7 @@ const ScanItemPage = async ({
       scanResult={{
         title: display.name,
         detail: String(display.quantity),
+        stockState: display.stockState,
         confirmation,
         clearParam,
       }}

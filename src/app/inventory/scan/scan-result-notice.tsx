@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 
+import { STOCK_STATE_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { STOCK_STATE_LABELS, type StockState } from '@/lib/items/stock-state'
+
 const SCAN_RESULT_NOTICE_MS = 5000
 const SCAN_RESULT_NOTICE_EXIT_MS = 280
 
@@ -12,6 +15,7 @@ type NoticePhase = 'shown' | 'leaving' | 'hidden'
 interface ScanResultNoticeProps {
   title: string
   detail: string
+  stockState: StockState
   confirmation?: string
   clearParam?: 'added' | 'removed' | 'floor'
 }
@@ -19,6 +23,7 @@ interface ScanResultNoticeProps {
 const ScanResultNotice = ({
   title,
   detail,
+  stockState,
   confirmation,
   clearParam,
 }: ScanResultNoticeProps) => {
@@ -86,11 +91,10 @@ const ScanResultNotice = ({
         'pointer-events-auto',
         'border-2',
         'border-ring',
-        'bg-background',
         'px-4',
         'py-3',
         'font-mono',
-        'text-foreground',
+        STOCK_STATE_CLASS_NAMES[stockState],
         'shadow-lg',
         'shadow-primary/25',
         phase === 'leaving'
@@ -98,6 +102,7 @@ const ScanResultNotice = ({
           : 'motion-safe:animate-scan-notice-in',
       )}
     >
+      <span className="sr-only">{STOCK_STATE_LABELS[stockState]}</span>
       <p
         className={clsx(
           'text-xl',

@@ -5,9 +5,11 @@ import {
 import { dbFindItemByBarcode } from '../db/types'
 import { createClient } from '../supabase/server'
 import { Item } from '../types'
+import { readHabUnitTallyLine } from './load-hab-unit-items'
 
 interface HabUnitStockedItem extends Item {
   readonly quantity: number
+  readonly minimumQuantity: number
 }
 
 // Local row type: the shared dbHabUnitInventory type stays quantity-free
@@ -16,6 +18,7 @@ interface HabUnitItemRow {
   readonly item_id: string
   readonly name: string
   readonly quantity: number
+  readonly minimum_quantity: number
 }
 
 const loadHabUnitItemByBarcode = async (
@@ -38,7 +41,7 @@ const loadHabUnitItemByBarcode = async (
 
   const { data: habUnitItem, error: itemError } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity')
+    .select('item_id, name, quantity, minimum_quantity')
     .eq('item_id', findItem.item_id)
     .maybeSingle<HabUnitItemRow>()
 
@@ -52,11 +55,15 @@ const loadHabUnitItemByBarcode = async (
     return null
   }
 
-  return {
-    itemId: habUnitItem.item_id,
-    name: habUnitItem.name,
-    quantity: habUnitItem.quantity,
+  const line = readHabUnitTallyLine(habUnitItem)
+
+  if (!line) {
+    throw new Error(
+      `select from household_inventory returned an invalid row for item ${findItem.item_id}`,
+    )
   }
+
+  return line
 }
 
 export { loadHabUnitItemByBarcode }

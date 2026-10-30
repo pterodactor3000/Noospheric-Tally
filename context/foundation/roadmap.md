@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-10-29
+updated: 2026-10-30
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -20,7 +20,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ## North star
 
-**S-06: user can see an item's count and whether it has fallen below the minimum**: this is the first point where scanning stops being data entry and starts answering the question that causes the stress. It completes the PRD's primary criterion end to end, and everything before it exists only to make this answer trustworthy.
+**S-06: user can see an item's count and its CRITICAL, WARNING, or IN STOCK label**: this is the first point where scanning stops being data entry and starts answering the question that causes the stress. It completes the PRD's primary criterion end to end, and everything before it exists only to make this answer trustworthy.
 
 ## At a glance
 
@@ -32,12 +32,11 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-03 | stocking-mode-increase | scan items in stocking mode to raise their counts | S-02 | FR-003, FR-012, US-01 | done |
 | S-04 | using-mode-decrease-and-undo | scan items in using mode to lower counts, and undo a mis-scan | S-03 | FR-004, FR-009, US-02 | ready |
 | S-05 | name-search-and-manual-adjust | find an item by name and adjust it by hand, including items with no barcode | S-02 | FR-006, FR-013 | ready |
-| S-06 | minimum-and-restock-flag | set a minimum for an item and see whether it is below it | S-02 | FR-007, FR-008, US-02 | ready |
+| S-06 | minimum-and-restock-flag | set a minimum for an item, 3 by default, and see CRITICAL, WARNING, or IN STOCK from its count | S-02 | FR-007, FR-008, US-02 | ready |
 | S-07 | restock-list-by-shortfall | see everything needing restocking, largest shortfall first | S-06 | FR-010, FR-014 | ready |
 | S-08 | consumption-rate-view | see how fast each item is consumed | S-04 | FR-015 | proposed |
 | S-09 | shop-barcode-hab-unit-lookup | scan a shop barcode and see if it is in the hab unit | S-02 | FR-017 | ready |
-| S-10 | shortage-threshold-labels | set a shortage threshold and see IN STOCK, WARNING, or CRITICAL | S-06 | FR-007, FR-008, US-02 | ready |
-| S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-10 | FR-018 | ready |
+| S-11 | inventory-category-panels | see collapsible categories, edit a category, and see a shortage warning | S-06 | FR-018 | ready |
 | S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | done |
 | S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
 | S-14 | compact-attach-item-picker | choose an existing item for a new barcode from a compact selectable list | S-02 | FR-005 | ready |
@@ -138,7 +137,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ### S-06: Set a minimum and see the restock flag
 
-- **Outcome:** user can set a minimum quantity for an item and see its current count together with whether it has reached or fallen below that minimum
+- **Outcome:** user can set a minimum quantity for an item, 3 when none is saved, and see its current count with a CRITICAL, WARNING, or IN STOCK label from that count and the minimum
 - **Change ID:** minimum-and-restock-flag
 - **PRD refs:** FR-007, FR-008, US-02
 - **Prerequisites:** S-02
@@ -147,6 +146,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Unknowns:** -
 - **Risk:** This is the first slice that answers the user's actual question rather than storing data, so delaying it delays all evidence that the product is worth using.
 - **Status:** ready
+- **Merged:** S-10 (shortage-threshold-labels) merged into this slice on 2026-10-30. The ID S-10 is retired.
 
 ### S-07: See everything needing restocking, worst shortfall first
 
@@ -184,24 +184,12 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Risk:** -
 - **Status:** ready
 
-### S-10: Shortage threshold and stock labels
-
-- **Outcome:** user can set a shortage threshold on an item and see an IN STOCK, WARNING, or CRITICAL label from its quantity
-- **Change ID:** shortage-threshold-labels
-- **PRD refs:** FR-007, FR-008, US-02
-- **Prerequisites:** S-06
-- **Parallel with:** S-07, S-09
-- **Blockers:** -
-- **Unknowns:** -
-- **Risk:** This expands S-06 from a binary below-minimum flag into a default threshold of 3 and IN STOCK, WARNING, and CRITICAL labels.
-- **Status:** ready
-
 ### S-11: Collapsible inventory categories
 
 - **Outcome:** user can see inventory items grouped into collapsible categories, edit an item's category, and see a warning icon on any category that has a shortage
 - **Change ID:** inventory-category-panels
 - **PRD refs:** FR-018
-- **Prerequisites:** S-10
+- **Prerequisites:** S-06
 - **Parallel with:** S-07
 - **Blockers:** -
 - **Unknowns:** -
@@ -254,11 +242,10 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-03 | stocking-mode-increase | Raise counts by scanning in stocking mode | yes | Includes the visible mode indicator and its reset behavior. |
 | S-04 | using-mode-decrease-and-undo | Lower counts by scanning, with session undo | yes | Carries guardrail one: no silent double-count. |
 | S-05 | name-search-and-manual-adjust | Find an item by name and adjust it by hand | yes | Can be planned alongside stream B once items exist. |
-| S-06 | minimum-and-restock-flag | Set a minimum and see the restock flag | yes | North star. Completes the PRD primary criterion. |
+| S-06 | minimum-and-restock-flag | Set a minimum and see the restock flag | yes | North star. Completes the PRD primary criterion. Includes the default minimum of 3 and the three stock labels, merged from S-10. |
 | S-07 | restock-list-by-shortfall | See restocking needs ranked by shortfall | yes | Carries the domain rule's ranking and the secondary criterion. |
 | S-08 | consumption-rate-view | See how fast each item is consumed | no | Nice-to-have. Revisit once real history exists and the must-have path is done. |
 | S-09 | shop-barcode-hab-unit-lookup | Look up a shop barcode in the hab unit | yes | Lookup view blocks a barcode that is not in the hab unit. |
-| S-10 | shortage-threshold-labels | Set a shortage threshold and stock label | yes | Expands S-06. Default threshold 3. Quantity is 0 or greater. |
 | S-11 | inventory-category-panels | Group inventory into collapsible categories | yes | The first returned Open Facts hit sets the category. Default panel is uncategorized. User can edit it. |
 | S-12 | create-flow-lookup-feedback | Show lookup misses, loading, and a clear header | yes | Run `/rites-of-true-aim create-flow-lookup-feedback` |
 | S-13 | softer-green-interface | Restyle the app in muted green | no | Run `/rites-of-true-aim softer-green-interface` |

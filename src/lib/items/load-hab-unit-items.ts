@@ -6,6 +6,7 @@ interface HabUnitTallyLine {
   readonly itemId: string
   readonly name: string
   readonly quantity: number
+  readonly minimumQuantity: number
 }
 
 const loadHabUnitItems = async ({
@@ -44,18 +45,25 @@ const readHabUnitTallyLine = (row: unknown): HabUnitTallyLine | null => {
     return null
   }
 
-  const { item_id: itemId, name, quantity } = row
+  const {
+    item_id: itemId,
+    name,
+    quantity,
+    minimum_quantity: minimumQuantity,
+  } = row
 
   if (
     typeof itemId !== 'string' ||
     typeof name !== 'string' ||
     typeof quantity !== 'number' ||
-    !Number.isInteger(quantity)
+    !Number.isInteger(quantity) ||
+    typeof minimumQuantity !== 'number' ||
+    !Number.isInteger(minimumQuantity)
   ) {
     return null
   }
 
-  return { itemId, name, quantity }
+  return { itemId, name, quantity, minimumQuantity }
 }
 
 const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
@@ -63,7 +71,7 @@ const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
 
   const { data, error } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity')
+    .select('item_id, name, quantity, minimum_quantity')
     .order('name', { ascending: true })
 
   const rows: unknown = data
@@ -85,5 +93,5 @@ const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
   })
 }
 
-export { loadHabUnitItems, loadHabUnitTallyLines }
+export { loadHabUnitItems, loadHabUnitTallyLines, readHabUnitTallyLine }
 export type { HabUnitTallyLine }

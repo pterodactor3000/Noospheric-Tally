@@ -20,14 +20,16 @@ import {
   SCAN_SESSION_LOAD_FAILURE_MESSAGE,
 } from '@/lib/items/scan-failure-messages'
 import { isScanSessionId } from '@/lib/items/scan-session'
+import { setHabUnitMinimumQuantity } from '@/lib/items/set-hab-unit-minimum-quantity'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { validateItemName } from '@/lib/items/validate-item-name'
+import { validateMinimumQuantity } from '@/lib/items/validate-minimum-quantity'
 import { createClient } from '@/lib/supabase/server'
 
 interface ItemActionError {
   status: 'error'
   message: string
-  field?: 'name' | 'barcode'
+  field?: 'name' | 'barcode' | 'minimum'
 }
 
 interface ItemAlreadyExists {
@@ -50,6 +52,13 @@ interface ScanSessionLineReversed {
 }
 
 type ScanSessionLineReversalResult = ScanSessionLineReversed | ItemActionError
+
+interface MinimumQuantitySaved {
+  status: 'saved'
+  minimumQuantity: number
+}
+
+type MinimumQuantityResult = MinimumQuantitySaved | ItemActionError
 
 const REVERSAL_BELOW_ZERO_MESSAGE =
   'This line cannot be reversed because the count would drop below 0.'
@@ -307,6 +316,41 @@ const reverseScanSessionLine = async (
   }
 }
 
+const saveItemMinimumQuantity = async (
+  formData: FormData,
+): Promise<MinimumQuantityResult> => {
+  const itemId = getFormString(formData, 'itemId')
+  const rawMinimumQuantity = getFormString(formData, 'minimumQuantity')
+
+  if (!isScanSessionId(itemId)) {
+    console.error('saveItemMinimumQuantity rejected item id', { itemId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  const minimumResult = validateMinimumQuantity(rawMinimumQuantity)
+  if (minimumResult.status === 'invalid') {
+    return {
+      status: 'error',
+      message: minimumResult.message,
+      field: 'minimum',
+    }
+  }
+
+  const { minimumQuantity } = minimumResult
+
+  try {
+    const supabase = await createClient()
+    await setHabUnitMinimumQuantity(itemId, minimumQuantity, supabase)
+  } catch (error: unknown) {
+    console.error('saveItemMinimumQuantity failed', { itemId, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  revalidatePath('/inventory')
+  revalidatePath(`/inventory/${itemId}`)
+  return { status: 'saved', minimumQuantity }
+}
+
 export {
   createItem,
   attachBarcode,
@@ -315,4 +359,5 @@ export {
   consumeScannedItem,
   fetchScanSessionLines,
   reverseScanSessionLine,
+  saveItemMinimumQuantity,
 }
