@@ -38,6 +38,7 @@ const STOCK_TOKEN_VALUES: Readonly<Record<string, string>> = {
   '--stock-critical-foreground': 'oklch(0.985 0.008 155)',
   '--stock-warning': 'oklch(0.8 0.16 85)',
   '--stock-warning-foreground': 'oklch(0.2 0.015 160)',
+  '--stock-warning-text': 'oklch(0.52 0.14 85)',
   '--stock-in-stock': 'oklch(0.62 0.17 145)',
   '--stock-in-stock-foreground': 'oklch(0.2 0.015 160)',
 }
@@ -139,7 +140,7 @@ describe('theme tokens', () => {
     expect(actualStockValues).toEqual(STOCK_TOKEN_VALUES)
   })
 
-  test('defines stock label tokens only in the light root block', () => {
+  test('keeps stock label colors in the light root, and overrides warning text in the dark root', () => {
     const lightStockNames = Object.keys(lightBlock.declarations)
       .filter((name) => name.startsWith('--stock-'))
       .sort()
@@ -148,8 +149,11 @@ describe('theme tokens', () => {
     )
     expect({ light: lightStockNames, dark: darkStockNames }).toEqual({
       light: Object.keys(STOCK_TOKEN_VALUES).sort(),
-      dark: [],
+      dark: ['--stock-warning-text'],
     })
+    expect(darkBlock.declarations['--stock-warning-text']).toEqual(
+      'oklch(0.8 0.16 85)',
+    )
   })
 
   test('keeps every chrome color token at or below 0.06 chroma except destructive', () => {

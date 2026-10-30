@@ -110,7 +110,7 @@ const ScanDirectionButtons = () => {
             type="button"
             role="radio"
             aria-checked={isSelected}
-            aria-label={direction}
+            aria-label={SCAN_DIRECTION_LABELS[direction]}
             variant={isSelected ? 'default' : 'outline'}
             size="icon"
             onClick={() => handleSelectDirection(direction)}

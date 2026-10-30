@@ -142,7 +142,9 @@ const ScanResultNotice = ({
         >
           [{STOCK_STATE_LABELS[stockState]}]
         </p>
-      ) : null}
+      ) : (
+        <span className="sr-only">{STOCK_STATE_LABELS[stockState]}</span>
+      )}
       <p
         className={clsx(
           showsStatusLabel && 'mt-2',

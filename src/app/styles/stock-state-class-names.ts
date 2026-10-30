@@ -8,7 +8,7 @@ const STOCK_STATE_CLASS_NAMES: Readonly<Record<StockState, string>> = {
 
 const STOCK_STATE_TEXT_CLASS_NAMES: Readonly<Record<StockState, string>> = {
   critical: 'text-stock-critical',
-  warning: 'text-stock-warning',
+  warning: 'text-stock-warning-text',
   'in-stock': 'text-stock-in-stock',
 }
 
