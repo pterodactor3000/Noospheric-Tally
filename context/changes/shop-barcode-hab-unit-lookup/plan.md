@@ -292,9 +292,9 @@ No migration. Revert the branch to remove the route, the button, and the scroll 
 
 #### Automated
 
-- [ ] 2.1 `npm test` passes
-- [ ] 2.2 Typecheck passes
-- [ ] 2.3 `src/app/inventory/lookup` has no create redirect, global item lookup, or catalog import
+- [x] 2.1 `npm test` passes
+- [x] 2.2 Typecheck passes
+- [x] 2.3 `src/app/inventory/lookup` has no create redirect, global item lookup, or catalog import
 
 #### Manual
 
