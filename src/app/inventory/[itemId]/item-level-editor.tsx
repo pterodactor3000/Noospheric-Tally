@@ -277,11 +277,11 @@ const ItemLevelEditor = ({
               id="item-category"
               name="category"
               defaultValue={category}
-              className={itemControl}
+              className={clsx(itemControl, 'appearance-none', 'bg-none')}
             >
               {ITEM_CATEGORIES.map((itemCategory) => (
                 <option key={itemCategory} value={itemCategory}>
-                  {ITEM_CATEGORY_LABELS[itemCategory]}
+                  [{ITEM_CATEGORY_LABELS[itemCategory]}]
                 </option>
               ))}
             </select>
