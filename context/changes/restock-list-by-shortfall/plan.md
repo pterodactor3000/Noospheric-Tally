@@ -28,7 +28,7 @@ On `/inventory`, a full-width `Restock` button sits under Add item and Scan item
 
 `/inventory/restock` shows the heading `Restock` and one row per item with `quantity <= minimumQuantity`. The largest shortfall is first, where shortfall is `minimumQuantity - quantity`. Equal shortfalls sort by name A to Z. An item at 0 with a large minimum ranks above an item at 2 with a small minimum. An item with `quantity > minimumQuantity` is not listed. Each row is two lines: `{name} {dots}`, then `{dots} {count} short {n}`, for example `4 short 2`. The name links to `/inventory/{itemId}`. The row text is the critical color and has no `[-]`, `[+]`, or `[CRITICAL]` chip. With nothing to restock the page shows `Nothing needs restocking.`
 
-On `/inventory/{itemId}`, the heading is two lines at every width. Line 1 is `[STATUS] {name} {dots}`. Line 2 is `{dots} ++  {barcode, barcode} ++` with every barcode oldest first. With no barcode, line 2 reads ` ++  [REDACTED] ++`, and hover, focus, or a tap shows `// NO BARCODE SUPPLIED //`. The heading is 16px, and 18px from `sm`. A separator sits between the heading and Count. Count and Minimum are unchanged.
+On `/inventory/{itemId}`, line 1 is `[STATUS] {name} {dots}`. From the `sm` breakpoint up, line 2 is visible: `{dots} ++  {barcode, barcode} ++` with every barcode oldest first. Below `sm`, line 2 is hidden until the member expands the heading with a `Barcodes` control. With no barcode, line 2 reads ` ++  [REDACTED] ++`, and hover, focus, or a tap shows `// NO BARCODE SUPPLIED //`. The heading is 16px, and 18px from `sm`. A separator sits between the heading and Count. Count and Minimum are unchanged.
 
 Verify with the automated checks and manual steps of each phase.
 
@@ -218,7 +218,7 @@ Add `/inventory/restock` with the two-line rows, and the full-width Restock cont
 
 ### Overview
 
-The item heading becomes two lines at every width, 16px and 18px from `sm`, with a separator under it. It lists every barcode of the item, and shows a redacted line that reveals `// NO BARCODE SUPPLIED //` when there is none. This phase adds no route, so it does not run `pnpm worker:check`.
+The item heading lists every barcode of the item, and shows a redacted line that reveals `// NO BARCODE SUPPLIED //` when there is none. From `sm` up both lines show. Below `sm` the barcode line is hidden until the heading is expanded. The heading is 16px, and 18px from `sm`, with a separator under it. This phase adds no route, so it does not run `pnpm worker:check`.
 
 ### Changes Required
 
@@ -304,13 +304,13 @@ const getBarcodeLineText = (
 - When `barcodes.length > 0`, renders a plain `<span>` with `getBarcodeLineText(barcodes, false)`. It has no button and no state.
 - When `barcodes.length === 0`, renders `<button type="button" aria-label={NO_BARCODE_SUPPLIED_TEXT}>` whose text is `getBarcodeLineText([], isRevealed)`, where `isRevealed` is `isPinned || isPreviewed`. The state rules are under Critical Implementation Details: `onMouseEnter` and `onFocus` set `isPreviewed`, `onMouseLeave` and `onBlur` clear it, and `onClick` toggles `isPinned` and clears `isPreviewed` when it turns `isPinned` off.
 - The button reuses the `itemControl` look (`min-h-11 min-w-11`, no border or background, inherited font and color, `src/app/inventory/[itemId]/item-level-editor.tsx:42-55`), so it is a 44px tap target and reads as text. Move or export that class constant instead of copying it.
-- The barcode value may wrap when several barcodes do not fit on one line. It must not push the heading past its container.
+- From `sm` up, the barcode value may wrap when several barcodes do not fit on one line. Below `sm` the line is hidden until expanded, so a long list does not overflow a narrow heading.
 
 #### 5. Heading layout, size, and separator
 
 **File:** `src/app/inventory/[itemId]/item-level-editor.tsx`
 
-**Intent:** Two lines at every width, a larger heading, a separator, and the full barcode list.
+**Intent:** A larger heading, a separator, and the full barcode list. Below `sm` the barcode line starts hidden behind a `Barcodes` control. From `sm` up both lines show.
 
 **Contract:**
 
@@ -320,8 +320,8 @@ const getBarcodeLineText = (
 - The `<h1>` holds two flex rows, each a `<span>` with `items-baseline` and `gap-2` (`itemLine`, `:24`).
   - Line 1: the label span (`itemLabel`, `:33`) with the status and the name, then the dots span.
   - Line 2: a dots span, then `<BarcodeLine barcodes={barcodes} />`.
-- The status span is unchanged: bold, bracketed `[{STOCK_STATE_LABELS[stockState]}]`, and `STOCK_STATE_TEXT_CLASS_NAMES[stockState]` (`:146-153`).
-- Line 2 always renders, including when `barcodes` is empty. The dots are `aria-hidden`.
+- The status span is unchanged: bold, bracketed `[{STOCK_STATE_LABELS[stockState]}]`, and `STOCK_STATE_TEXT_CLASS_NAMES[stockState]` (`:146-153`). The name keeps its current type. The expand control is not inside the name span.
+- Line 2 is in the document, including when `barcodes` is empty. The dots are `aria-hidden`. Below `sm` it starts hidden. A `<button type="button">` labeled `Barcodes` sits between line 1 and line 2, with `aria-expanded={false}` and `aria-controls` pointing at line 2. Activating it shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2. The button is `sm:hidden`. From `sm` up, line 2 is shown whether or not the narrow control was used, and the button is not shown. The open state starts closed on each visit and is not stored.
 - Add `<Separator />` from `@/components/ui/separator` between the `</h1>` (`:166`) and the Count `LevelStepper` (`:167`), inside the `itemRows` div. It is horizontal, full width, with a small vertical margin (`my-2`).
 - Count and Minimum steppers, the hidden inputs, the form action, Save, and Cancel do not change.
 
@@ -336,7 +336,7 @@ const getBarcodeLineText = (
 
 #### Manual Verification
 
-- On `/inventory/{itemId}` at 360px and at 1024px wide, the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`. The title dots show below `sm`.
+- At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. There is no `Barcodes` control. At 360px line 1 is visible, line 2 is hidden, and a `Barcodes` control is shown with `aria-expanded` false.
 - The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before.
 - The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`.
 - A horizontal rule sits under the heading and above Count.
@@ -345,6 +345,7 @@ const getBarcodeLineText = (
 - Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed.
 - On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on.
 - Pressing the redacted control never submits the form.
+- At 360px, activating `Barcodes` shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2 and sets `aria-expanded` to false. The status and the name keep their styling. The `Barcodes` control does not submit the form.
 
 ---
 
@@ -368,7 +369,7 @@ None. Vitest runs `src/**/*.test.ts` in node (`vitest.config.mts:15-16`) and has
 4. Raise one listed item above its minimum on `/inventory`, return to `/inventory/restock`, and check the row is gone. Raise every item and check `Nothing needs restocking.`
 5. Open an item with no barcode. Check `[REDACTED]`, hover, focus, tap, second tap, and blur.
 6. Attach a second barcode to an item with one through the existing flow. Open it and check both barcodes, oldest first.
-7. Resize between 360px and 1024px on an item page and check the two-line heading, the sizes, and the separator.
+7. At 360px, check that barcodes are hidden, expand `Barcodes`, and check line 2. At 1024px, check that both lines show and the `Barcodes` control is absent. Check the sizes and the separator at both widths.
 
 ## Migration and Rollback
 
@@ -440,7 +441,7 @@ Not applicable. No migration, no table change, and no write path. To roll back, 
 
 #### Manual
 
-- [ ] 3.5 On `/inventory/{itemId}` at 360px and at 1024px wide, the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`. The title dots show below `sm`.
+- [ ] 3.5 At 1024px the heading is two lines. Line 1 is `[STATUS] {name}` then dots. Line 2 is dots then ` ++  … ++`, and it is visible. There is no `Barcodes` control. At 360px line 1 is visible, line 2 is hidden, and a `Barcodes` control is shown with `aria-expanded` false.
 - [ ] 3.6 The status stays bold, bracketed, and in the stock color, and changes with Count and Minimum as before.
 - [ ] 3.7 The heading text is 16px at 360px and 18px at 1024px. Count and Minimum are still 14px and 16px from `sm`.
 - [ ] 3.8 A horizontal rule sits under the heading and above Count.
@@ -449,3 +450,4 @@ Not applicable. No migration, no table change, and no write path. To roll back, 
 - [ ] 3.11 Tabbing to the redacted value shows `// NO BARCODE SUPPLIED //`, and tabbing away restores it. The control's accessible name is `// NO BARCODE SUPPLIED //` in the accessibility tree at rest and while revealed.
 - [ ] 3.12 On a touch screen or in device emulation, a tap shows the phrase, a second tap restores the redacted text, and tapping elsewhere does not clear a tap that toggled it on.
 - [ ] 3.13 Pressing the redacted control never submits the form.
+- [ ] 3.14 At 360px, activating `Barcodes` shows line 2 and sets `aria-expanded` to true. Activating it again hides line 2 and sets `aria-expanded` to false. The status and the name keep their styling. The `Barcodes` control does not submit the form.

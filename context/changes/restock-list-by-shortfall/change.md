@@ -26,7 +26,7 @@ Restock list:
 
 Item page `/inventory/{itemId}` (Phase 3 only):
 
-- The heading is two lines at every width. Line 1 is `[{STATUS}] {name} {dots}` with the status bold and in the stock color. Line 2 is `{dots} ++ {barcodes} ++` and keeps the decoration ` ++  ${value} ++` exactly.
+- From `sm` up the heading is two lines. Line 1 is `[{STATUS}] {name} {dots}` with the status bold and in the stock color. Line 2 is `{dots} ++ {barcodes} ++` and keeps the decoration ` ++  ${value} ++` exactly. Below `sm`, line 2 starts hidden. A `Barcodes` button expands and collapses it. The button is hidden from `sm` up.
 - Barcodes are every barcode of the item, oldest first by `created_at`, joined with `, `. `loadItemBarcode` is replaced by a loader that returns every barcode, and `ItemLevelEditor` takes the full list.
 - With no barcodes, line 2 stays and reads ` ++  [REDACTED] ++`. Hover, keyboard focus, or a tap swaps the whole decorated value for `// NO BARCODE SUPPLIED //`. A second tap returns to resting. Mouse leave or blur returns to resting unless a tap toggled it on. The control's accessible name is `// NO BARCODE SUPPLIED //` throughout.
 - The heading is 16px, and 18px from `sm` (`text-base sm:text-lg`). Count and Minimum stay at 14px and 16px from `sm`. A horizontal `Separator` sits under the heading, above Count.

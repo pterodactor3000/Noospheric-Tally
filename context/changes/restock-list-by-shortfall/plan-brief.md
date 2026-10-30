@@ -17,7 +17,7 @@ The delta is one pure ranking function, one server page with a list component, o
 
 The member taps Restock on `/inventory` and sees every item with `quantity <= minimumQuantity`, largest shortfall first, in two-line rows such as `Wet food` over `4 short 2`. Names link to the item. An item at 0 can rank first. A WARNING or IN STOCK item is absent. With nothing to restock the page says `Nothing needs restocking.`
 
-On an item page the heading is two lines at every width, shows every barcode oldest first, and sits above a separator. An item with no barcode shows ` ++  [REDACTED] ++`, which turns into `// NO BARCODE SUPPLIED //` on hover, focus, or tap.
+On an item page, from `sm` up, the heading is two lines and shows every barcode oldest first. Below `sm` the barcode line is hidden until the member expands `Barcodes`. An item with no barcode shows ` ++  [REDACTED] ++`, which turns into `// NO BARCODE SUPPLIED //` on hover, focus, or tap. A separator sits under the heading.
 
 ## Key Decisions Made
 
@@ -32,7 +32,7 @@ On an item page the heading is two lines at every width, shows every barcode old
 | Restock entry point | Full-width `Restock` button, `col-span-2`, same pattern as Add item and Scan item | Keeps the existing pair intact | Closed decisions |
 | Back link | None added | `BackToInventoryLink` already covers `/inventory/restock` | `back-to-inventory-link.tsx:9-17` |
 | Data | Existing `loadHabUnitTallyLines`, no migration or write | The restock list needs only quantity and minimum | Code |
-| Item heading | Two lines at every width, `text-base sm:text-lg`, separator below | Removes the `sm` collapse | Closed decisions |
+| Item heading | Two lines from `sm` up, `text-base sm:text-lg`, separator below. Below `sm`, barcodes start hidden behind `Barcodes` | A long barcode list must not overflow a narrow heading | User confirmation 2026-10-30 |
 | Barcode loader | `loadItemBarcodes` returns every barcode by `created_at` ascending, replacing `loadItemBarcode` | The old loader has `.limit(1)`, and the file name must match the export | Closed decisions, `load-item-barcode.ts:15-16` |
 | Redacted line | A pure `getBarcodeLineText` owns the strings. A client button owns the reveal state | Tests cover the strings without rendering | Closed decisions |
 | Reveal state | `isPinned` from a tap and `isPreviewed` from hover or focus. A second tap clears both | Touch fires no mouse leave, so a second tap would otherwise stay revealed | Plan |
@@ -44,7 +44,7 @@ On an item page the heading is two lines at every width, shows every barcode old
 - `rankRestockLines` and its tests
 - `/inventory/restock` with the heading, the two-line rows, and the empty copy
 - The `Restock` button on `/inventory`
-- The two-line item heading at 16px and 18px from `sm`, with a separator
+- The item heading at 16px and 18px from `sm`, with a separator, and a `Barcodes` disclosure below `sm`
 - `loadItemBarcodes`, `getBarcodeLineText`, and the redacted reveal control
 
 **Out of scope:**
@@ -65,12 +65,12 @@ Three phases in dependency order. Phase 1 is a pure function with tests. Phase 2
 | --- | --- | --- |
 | 1. Rank the restock lines | `rankRestockLines` and tests, no page | A count of 0 must rank by shortfall, not last |
 | 2. Show the restock page | `/inventory/restock`, two-line rows, Restock button | The two-line row layout and the new route in the worker build |
-| 3. Split the item heading and list every barcode | Two-line heading, separator, every barcode, redacted reveal | Hover, focus, and tap states on a touch screen, and long barcode lists on narrow widths |
+| 3. Split the item heading and list every barcode | Two-line heading from `sm`, collapsed barcodes below `sm`, separator, redacted reveal | Hover, focus, and tap on the redacted value, and the narrow disclosure |
 
 ## Risks and Assumptions
 
 - Shortfall ordering can rank a large spice shortfall above a small pet food one. The roadmap records this as an unknown to settle by real use, not a blocker.
-- Several 14-digit barcodes can exceed a narrow heading, so the value on line 2 is allowed to wrap. One barcode fits at 360px.
+- Below `sm`, the barcode line starts hidden. A long list is shown only after `Barcodes` is expanded. From `sm` up, the value may wrap.
 - The reveal behavior has no component test, because Vitest runs node-only `.ts` tests. Manual steps cover hover, focus, and tap.
 - The separator margin (`my-2`) is a plan choice, because the closed decisions do not give a spacing.
 
@@ -79,5 +79,5 @@ Three phases in dependency order. Phase 1 is a pure function with tests. Phase 2
 - `/inventory/restock` lists every item at or below its minimum, largest shortfall first, with a count of 0 able to rank first.
 - A WARNING or IN STOCK item never appears there, and an empty list says `Nothing needs restocking.`
 - Restock is a full-width control under Add item and Scan item.
-- The item heading is two lines at every width, lists every barcode oldest first, and shows `[REDACTED]` that reveals `// NO BARCODE SUPPLIED //` when there is none.
+- From `sm` up the item heading is two lines and lists every barcode oldest first. Below `sm` the barcode line stays hidden until `Barcodes` is expanded. With no barcode, `[REDACTED]` reveals `// NO BARCODE SUPPLIED //`.
 - `pnpm test`, `pnpm lint`, and `pnpm typecheck` pass on every phase, and `pnpm worker:check` passes on Phase 2.
