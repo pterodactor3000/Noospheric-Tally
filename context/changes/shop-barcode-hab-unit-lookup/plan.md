@@ -281,12 +281,12 @@ No migration. Revert the branch to remove the route, the button, and the scroll 
 
 #### Automated
 
-- [x] 1.1 `npm test -- src/lib/items/resolve-lookup-display.test.ts` passes
-- [x] 1.2 Typecheck passes
+- [x] 1.1 `npm test -- src/lib/items/resolve-lookup-display.test.ts` passes (e8e9154)
+- [x] 1.2 Typecheck passes (e8e9154)
 
 #### Manual
 
-- [x] 1.3 No page calls `resolveLookupDisplay` yet
+- [x] 1.3 No page calls `resolveLookupDisplay` yet (e8e9154)
 
 ### Phase 2: Add the lookup route and capture
 
