@@ -15,6 +15,14 @@ const inventorySection = clsx(
   '[width:-webkit-fill-available]',
   '[width:stretch]',
   'max-w-[900px]',
+  'flex',
+  'min-h-0',
+  'flex-col',
+  'overflow-y-auto',
+  // Signed-in header is py-4, the Sign out control at h-8, and a 2px border.
+  // The page adds py-6. The list still scrolls on its own. The section scrolls
+  // only when that chrome is taller than a short viewport, so the buttons stay reachable.
+  'max-h-[calc(100svh-7rem-2px)]',
 )
 
 const inventoryActions = clsx(
@@ -68,9 +76,17 @@ const InventoryPage = async () => {
             variant="outline"
             nativeButton={false}
             render={<Link href="/inventory/restock" />}
-            className={clsx(inventoryActionButton, 'col-span-2')}
+            className={inventoryActionButton}
           >
             Restock
+          </Button>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={<Link href="/inventory/lookup" />}
+            className={inventoryActionButton}
+          >
+            Lookup
           </Button>
         </div>
       </section>
