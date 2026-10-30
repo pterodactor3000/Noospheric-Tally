@@ -1,7 +1,7 @@
 ---
 change_id: shop-barcode-hab-unit-lookup
 title: Shop barcode lookup in the hab unit
-status: planned
+status: implementing
 created: 2026-10-30
 updated: 2026-10-30
 archived_at: null
