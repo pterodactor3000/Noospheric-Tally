@@ -29,10 +29,10 @@ import TallyCountControls from './tally-count-controls'
 
 const TALLY_DOT_LEADER = '.'.repeat(300)
 
-const tallyRoot = clsx('flex', 'min-h-0', 'flex-1', 'flex-col')
+const tallyRoot = clsx('contents')
 const tallyList = clsx(
   'mt-[1rem]',
-  'min-h-0',
+  'min-h-[36px]',
   'flex-1',
   'overflow-y-auto',
   'text-[14px]',
@@ -85,7 +85,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
 
   return (
     <div className={tallyRoot}>
-      <div className={fieldStack}>
+      <div className={clsx(fieldStack, 'shrink-0')}>
         <Label htmlFor="inventory-name-search" className={fieldLabel}>
           Search by name
         </Label>

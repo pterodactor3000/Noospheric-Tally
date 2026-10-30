@@ -59,7 +59,7 @@ Split pure logic from rendering, as S-05 and S-07 did.
 
 **Scanner stays live.** Keep `BarcodeScanner` mounted after a found or blocked result. Pass the last submitted barcode as `holdBarcode` so that same code does not submit again. A different code still calls `onSubmitBarcode`. Do not add a control that unmounts the scanner or requires a separate "scan again" step.
 
-**Tally scroll.** The section is a column with a viewport max height and `overflow-y-auto`. `InventoryTally` is a column with `min-h-0` and `flex-1`. Only the `ul` gets `overflow-y-auto`. The search row, the empty copy, and the no-match status stay outside that scroller. The action buttons stay outside `InventoryTally`, as they do now. On a short viewport the section itself scrolls so the buttons stay reachable when the title, search, and buttons are taller than the cap.
+**Tally scroll.** The section is a column with a viewport max height and `overflow-y-auto`. The search row is its own flex item at its intrinsic height. `min-h-0` does not wrap that row. Only the `ul` is `flex-1`, `min-h-[36px]`, and `overflow-y-auto`, so one tally row stays reserved and the buttons are pushed down. The empty copy and the no-match status stay outside that scroller. On a short viewport the section itself scrolls so the buttons stay reachable.
 
 ---
 
@@ -205,8 +205,8 @@ const resolveLookupDisplay = (
 - Remove `col-span-2` from Restock.
 - Add a Lookup button in the same grid, `variant="outline"`, `nativeButton={false}`, `render={<Link href="/inventory/lookup" />}`, label `Lookup`.
 - Add item and Scan item stay on the first row, unchanged.
-- The tally `section` is a flex column with `min-h-0`, `overflow-hidden`, and a max height that fits in the viewport under the page padding, so the title and the action row cannot be pushed off screen.
-- `InventoryTally` sits in a `min-h-0 flex-1` region between the title and the buttons.
+- The tally `section` is a flex column with `min-h-0`, `overflow-y-auto`, and a max height that fits in the viewport under the page padding. On a short viewport the section scrolls so the buttons stay reachable.
+- The search row is a flex item at its intrinsic height, between the title and the list. It is not inside a `min-h-0` wrapper.
 
 #### 2. Scrolling list
 
@@ -216,9 +216,9 @@ const resolveLookupDisplay = (
 
 **Contract:**
 
-- The component root is a flex column with `min-h-0` and `flex-1` when it renders the search and list.
+- The component root is `contents`, so the search row stays a flex item of the tally section at its intrinsic height.
 - The search row, including the sort buttons, does not scroll.
-- The `ul` has `min-h-0`, `flex-1`, and `overflow-y-auto`.
+- The `ul` has `min-h-[36px]`, `flex-1`, and `overflow-y-auto`.
 - `Nothing is added here yet.` and the no-match status stay outside the `ul`.
 - Sort, filter, row markup, and the count steppers are otherwise unchanged.
 

@@ -25,13 +25,6 @@ const inventorySection = clsx(
   'max-h-[calc(100svh-7rem-2px)]',
 )
 
-const inventoryTallyRegion = clsx(
-  'flex',
-  'min-h-0',
-  'flex-1',
-  'flex-col',
-)
-
 const inventoryActions = clsx(
   'mx-auto',
   'mt-4',
@@ -61,9 +54,7 @@ const InventoryPage = async () => {
           tally
         </h1>
         <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
-        <div className={inventoryTallyRegion}>
-          <InventoryTally lines={tallyLines} />
-        </div>
+        <InventoryTally lines={tallyLines} />
         <div className={inventoryActions}>
           <Button
             variant="outline"
