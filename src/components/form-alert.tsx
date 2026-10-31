@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { formError } from '@/app/styles/class-names'
 
 interface FormAlertProps {
+  readonly id?: string
   readonly message: string | null
   readonly alertClassName?: string
   readonly children: ReactNode
@@ -17,7 +18,12 @@ const alertSlot = clsx(
   'motion-reduce:transition-none',
 )
 
-const FormAlert = ({ message, alertClassName, children }: FormAlertProps) => {
+const FormAlert = ({
+  id,
+  message,
+  alertClassName,
+  children,
+}: FormAlertProps) => {
   const isVisible = message !== null && message.length > 0
 
   return (
@@ -31,6 +37,7 @@ const FormAlert = ({ message, alertClassName, children }: FormAlertProps) => {
         <div className="min-h-0 overflow-hidden">
           {isVisible ? (
             <div
+              id={id}
               role="alert"
               aria-live="polite"
               className={clsx(formError, alertClassName ?? 'pb-4')}

@@ -29,6 +29,10 @@ const JoinHabUnitForm = ({ defaultCode }: JoinHabUnitFormProps) => {
       joinHabUnit(formData),
     null,
   )
+  const isCodeError =
+    state?.status === 'error' &&
+    state.kind === 'field' &&
+    state.field === 'code'
 
   return (
     <>
@@ -45,11 +49,15 @@ const JoinHabUnitForm = ({ defaultCode }: JoinHabUnitFormProps) => {
             id="invite-code"
             autoComplete="off"
             defaultValue={defaultCode}
-            aria-invalid={state?.field === 'code'}
+            aria-invalid={isCodeError}
+            aria-errormessage={isCodeError ? 'invite-code-error' : undefined}
             className={fieldControl}
           />
         </div>
-        <FormAlert message={state?.status === 'error' ? state.message : null}>
+        <FormAlert
+          id="invite-code-error"
+          message={state?.status === 'error' ? state.message : null}
+        >
           <Button
             variant="outline"
             type="submit"

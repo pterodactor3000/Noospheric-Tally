@@ -25,7 +25,18 @@ type ShareHabUnitFormState = Awaited<
 
 const ShareHabUnitForm = () => {
   const [state, formAction, isPending] = useActionState(
-    async (): Promise<ShareHabUnitFormState> => createHabUnitInvite(),
+    async (): Promise<ShareHabUnitFormState> => {
+      try {
+        return await createHabUnitInvite()
+      } catch (error: unknown) {
+        console.error('Create hab-unit invite failed.', { error })
+        return {
+          status: 'error',
+          kind: 'failure',
+          message: 'Invite code creation failed. Try again.',
+        }
+      }
+    },
     null,
   )
 

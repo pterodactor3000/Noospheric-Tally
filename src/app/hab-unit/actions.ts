@@ -18,11 +18,20 @@ import {
 } from '@/lib/hab-unit/validate-hab-unit-name'
 import { createClient } from '@/lib/supabase/server'
 
-interface HabUnitActionError {
+interface HabUnitFieldError {
   status: 'error'
+  kind: 'field'
   message: string
-  field?: 'name' | 'code'
+  field: 'name' | 'code'
 }
+
+interface HabUnitFailureError {
+  status: 'error'
+  kind: 'failure'
+  message: string
+}
+
+type HabUnitActionError = HabUnitFieldError | HabUnitFailureError
 
 interface CreatedHabUnitInviteAction {
   status: 'created'
@@ -53,6 +62,7 @@ const createHabUnit = async (
   if (validationResult.status === 'invalid') {
     return {
       status: 'error',
+      kind: 'field',
       message: validationResult.message,
       field: 'name',
     }
@@ -67,6 +77,7 @@ const createHabUnit = async (
     })
     return {
       status: 'error',
+      kind: 'failure',
       message: CREATE_HAB_UNIT_FAILURE_MESSAGE,
     }
   }
@@ -105,6 +116,7 @@ const createHabUnitInvite =
       console.error('Create hab-unit invite failed.', { error })
       return {
         status: 'error',
+        kind: 'failure',
         message: CREATE_HAB_UNIT_INVITE_FAILURE_MESSAGE,
       }
     }
@@ -120,6 +132,7 @@ const joinHabUnit = async (formData: FormData): Promise<HabUnitActionError> => {
   if (validationResult.status === 'invalid') {
     return {
       status: 'error',
+      kind: 'field',
       message: validationResult.message,
       field: 'code',
     }
@@ -132,6 +145,7 @@ const joinHabUnit = async (formData: FormData): Promise<HabUnitActionError> => {
     if (result.status === 'refused') {
       return {
         status: 'error',
+        kind: 'field',
         message: getJoinHabUnitRefusalMessage(result.reason),
         field: 'code',
       }
@@ -140,6 +154,7 @@ const joinHabUnit = async (formData: FormData): Promise<HabUnitActionError> => {
     console.error('Join hab-unit failed.', { error })
     return {
       status: 'error',
+      kind: 'failure',
       message: JOIN_HAB_UNIT_FAILURE_MESSAGE,
     }
   }
