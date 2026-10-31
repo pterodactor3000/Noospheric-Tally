@@ -329,10 +329,10 @@ The migration only adds a function, so it is safe to run before the app code shi
 
 #### Automated
 
-- [ ] 2.1 `pnpm test src/lib/items/create-bulk-items.test.ts` passes
-- [ ] 2.2 `pnpm typecheck` passes
-- [ ] 2.3 `pnpm lint` passes
-- [ ] 2.4 `ls supabase/migrations | tail -n 1` prints `20261031190000_create_items_bulk.sql`
+- [x] 2.1 `pnpm test src/lib/items/create-bulk-items.test.ts` passes (6b1314e)
+- [x] 2.2 `pnpm typecheck` passes (6b1314e)
+- [x] 2.3 `pnpm lint` passes (6b1314e)
+- [x] 2.4 `ls supabase/migrations | tail -n 1` prints `20261031190000_create_items_bulk.sql` (6b1314e)
 
 #### Manual
 
