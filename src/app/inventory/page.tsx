@@ -89,6 +89,15 @@ const InventoryPage = async () => {
             Lookup
           </Button>
         </div>
+        <div className={clsx('mt-2', 'flex', 'justify-center')}>
+          <Button
+            variant="link"
+            nativeButton={false}
+            render={<Link href="/hab-unit/share" />}
+          >
+            Share hab unit
+          </Button>
+        </div>
       </section>
     </main>
   )
