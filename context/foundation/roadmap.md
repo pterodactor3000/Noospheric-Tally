@@ -255,13 +255,11 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ## Open Roadmap Questions
 
-1. **When the household invite is delivered, given it is the deferred original secondary criterion**: Owner: user. Block: roadmap-wide, currently parked.
-2. **When offline use becomes real work, given it was withdrawn to protect the four weeks**: Owner: user. Block: roadmap-wide, currently parked.
-3. **At what point the medium user-scale ambition turns into work, while separate households remain out of scope**: Owner: user. Block: roadmap-wide, currently parked.
+1. **When offline use becomes real work, given it was withdrawn to protect the four weeks**: Owner: user. Block: roadmap-wide, currently parked.
+2. **At what point the medium user-scale ambition turns into work, while separate households remain out of scope**: Owner: user. Block: roadmap-wide, currently parked.
 
 ## Parked
 
-- **Inviting another person to the household (FR-011)**: Why parked: PRD non-goal, deferred until the first version proves useful. The account and household model keeps it possible.
 - **Offline use, including scanning without a connection**: Why parked: PRD non-functional non-goal, withdrawn to protect the four-week budget, recorded as a later goal.
 - **Separate unrelated households on one deployment**: Why parked: PRD non-goal for the first version.
 - **Expiry date tracking and spoilage warnings**: Why parked: PRD non-goal, needs per-unit dates that multiply the scanning effort.
@@ -273,6 +271,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 
 ## Done
 
+- **FR-011: invite another person to the household** - Delivered outside the roadmap by change `share-hab-unit` (Linear TEC-53). No slice.
 - **F-01: (foundation) reach the running app from a phone over HTTPS, redeployed on merge** - Archived 2026-09-13 to `context/archive/2026-08-06-deployed-https-app-shell/`. Lesson: -.
 - **S-01: sign in and reach an empty household inventory** - Archived 2026-09-29 to `context/archive/2026-08-09-household-sign-in/`. Lesson: -.
 - **S-02: scan an unknown barcode and record it as a named item** - Archived 2026-09-29 to `context/archive/2026-09-13-scan-to-create-item/`. Lesson: -.

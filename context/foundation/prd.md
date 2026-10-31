@@ -47,7 +47,7 @@ Secondary users, not required for the first version: his wife, as a second membe
 
 ## Access Control
 
-Account-based access. The primary user signs in to an account that owns one household inventory. The wife can be invited to the same household later, and sees the same inventory.
+Account-based access. The primary user signs in to an account that owns one household inventory. The wife can be invited to the same household with a single-use invite code, and sees the same inventory.
 
 Roles: all household members are equal. Every member can scan, add, subtract, and edit items. No owner-only restrictions in the first version.
 
@@ -143,7 +143,7 @@ Weak-connectivity usability was raised as a fourth guardrail, then withdrawn to 
 
 - FR-011: User can invite another person to the household inventory. Priority: nice-to-have
 
-> Challenge: multi-user work costs more than its first-version value. Resolution: deferred until the first version works. The account and household model still assumes it later.
+> Delivered by change `share-hab-unit`. The invite code is hashed, single use, and valid for 7 days. A person who already has a hab unit is refused.
 
 - FR-012: User can select a scan direction, stocking or using, that applies to every scan until it is switched. Priority: must-have
 
@@ -209,7 +209,6 @@ Functional non-goals:
 - Recipe or meal planning integration. Reason: unrelated to knowing current stock.
 - Tracking where in the house each item is stored. Reason: the user handles the items himself and knows their location.
 - Separate unrelated households sharing one deployment. Reason: the first version serves one household, even though the product is expected to reach more households later.
-- Inviting other people to the household (FR-011). Reason: deferred until the first version proves useful, though the account and household model keeps it possible.
 
 Non-functional non-goals:
 
@@ -218,10 +217,9 @@ Non-functional non-goals:
 
 ## Open Questions
 
-1. When FR-011 (inviting the wife to the household) should be delivered is unresolved. It sits immediately after the first version, with no date. Owner: user. Resolution date: unknown.
-2. Offline support is a stated later goal with no target date. Owner: user. Resolution date: unknown.
-3. Target scale is recorded as medium, meaning many households eventually, while separate households are a first-version non-goal. The point at which that ambition becomes work is unresolved. Owner: user. Resolution date: unknown.
-4. What the product does when the Open Facts catalogs cover a barcode's name poorly is unresolved. The catalogs are Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts. The first returned response sets the category under FR-018. Owner: user. Resolution date: unknown.
+1. Offline support is a stated later goal with no target date. Owner: user. Resolution date: unknown.
+2. Target scale is recorded as medium, meaning many households eventually, while separate households are a first-version non-goal. The point at which that ambition becomes work is unresolved. Owner: user. Resolution date: unknown.
+3. What the product does when the Open Facts catalogs cover a barcode's name poorly is unresolved. The catalogs are Open Beauty Facts, Open Food Facts, Open Pet Food Facts, and Open Products Facts. The first returned response sets the category under FR-018. Owner: user. Resolution date: unknown.
 
 Resolved during discovery cross-check, kept for traceability:
 
@@ -230,6 +228,7 @@ Resolved during discovery cross-check, kept for traceability:
 - Consumption history accepted as nice-to-have FR-015 rather than a non-goal.
 - Unknown barcodes resolved against an external catalog with manual naming as fallback, recorded as FR-016.
 - The secondary success criterion replaced, because the original one depended on deferred FR-011.
+- FR-011 is delivered by change `share-hab-unit`: a hashed, single-use invite code valid for 7 days, and a person who already has a hab unit is refused.
 - Shop lookup reads only the household inventory, and a barcode outside it is blocked, recorded as FR-017.
 - The default minimum is 3, quantity is never below 0, and the stock labels are CRITICAL, WARNING, and IN STOCK, recorded on FR-007 and FR-008.
 - Category comes from the first Open Facts response, with uncategorized as the default and a user edit, recorded as FR-018.
