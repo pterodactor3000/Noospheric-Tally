@@ -336,9 +336,9 @@ The migration only adds a function, so it is safe to run before the app code shi
 
 #### Manual
 
-- [x] 2.5 After `pnpm exec supabase db push`, a valid two-entry call in a rolled-back transaction returns 2 and adds two rows with `quantity` 1 and `category` `uncategorized`
-- [x] 2.6 A call with one existing barcode raises and leaves the row counts in `items`, `item_barcodes`, and `household_inventory` unchanged
-- [x] 2.7 A call as `anon` is refused with a permission error
+- [x] 2.5 After `pnpm exec supabase db push`, a valid two-entry call in a rolled-back transaction returns 2 and adds two rows with `quantity` 1 and `category` `uncategorized` (1761b36)
+- [x] 2.6 A call with one existing barcode raises and leaves the row counts in `items`, `item_barcodes`, and `household_inventory` unchanged (1761b36)
+- [x] 2.7 A call as `anon` is refused with a permission error (1761b36)
 
 ### Phase 3: Server action and add item view form
 
