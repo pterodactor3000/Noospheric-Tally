@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { addItemToHabUnit } from '@/lib/items/add-item-to-hab-unit'
 import { adjustHabUnitQuantity } from '@/lib/items/adjust-hab-unit-quantity'
 import { attachBarcodeToItem } from '@/lib/items/attach-barcode'
+import { createBulkItems } from '@/lib/items/create-bulk-items'
 import { createNewItem } from '@/lib/items/create-new-item'
 import { createNewItemWithoutBarcode } from '@/lib/items/create-new-item-without-barcode'
 import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
@@ -21,6 +22,7 @@ import {
   loadScanSessionLines,
   type ScanSessionLine,
 } from '@/lib/items/load-scan-session-lines'
+import { parseBulkItemsFile } from '@/lib/items/parse-bulk-items-file'
 import { isQuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { reverseQuantityChange } from '@/lib/items/reverse-quantity-change'
 import {
@@ -78,6 +80,17 @@ const QUANTITY_ABOVE_MAXIMUM_MESSAGE = 'The count cannot go above 999999.'
 
 const STALE_ITEM_LEVELS_MESSAGE =
   'The count changed. Reload the page before saving.'
+
+const BULK_ITEMS_FILE_MAX_BYTES = 262144
+
+const CHOOSE_JSON_FILE_MESSAGE = 'Choose a JSON file.'
+
+const FILE_LARGER_THAN_256KB_MESSAGE = 'The file is larger than 256KB.'
+
+const FILE_NOT_VALID_JSON_MESSAGE = 'The file is not valid JSON.'
+
+const EXISTING_BARCODE_CONFLICT_PATTERN =
+  /^create_items_bulk conflict at index (\d+) barcode (\d+)$/
 
 const parseExpectedQuantity = (rawValue: string): number | null => {
   if (!/^\d+$/.test(rawValue)) {
@@ -188,6 +201,79 @@ const createItemWithoutBarcode = async (
       name: nameResult.name,
       error,
     })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  return redirectToInventory()
+}
+
+const getExistingBarcodeMessage = (error: unknown): string | null => {
+  if (!(error instanceof Error)) {
+    return null
+  }
+
+  const { cause } = error
+  if (typeof cause !== 'object' || cause === null || !('message' in cause)) {
+    return null
+  }
+
+  const { message } = cause
+  if (typeof message !== 'string') {
+    return null
+  }
+
+  const match = EXISTING_BARCODE_CONFLICT_PATTERN.exec(message)
+  if (!match) {
+    return null
+  }
+
+  return `entries[${match[1]}] uses barcode ${match[2]}, which already exists.`
+}
+
+const createItemsFromJsonFile = async (
+  formData: FormData,
+): Promise<ItemActionError> => {
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) {
+    return { status: 'error', message: CHOOSE_JSON_FILE_MESSAGE }
+  }
+
+  if (file.size > BULK_ITEMS_FILE_MAX_BYTES) {
+    return { status: 'error', message: FILE_LARGER_THAN_256KB_MESSAGE }
+  }
+
+  let parsedFile: unknown
+  try {
+    const fileText = await file.text()
+    parsedFile = JSON.parse(fileText)
+  } catch (error: unknown) {
+    console.error('createItemsFromJsonFile failed to read the file', {
+      fileSize: file.size,
+      error,
+    })
+    return { status: 'error', message: FILE_NOT_VALID_JSON_MESSAGE }
+  }
+
+  const bulkItems = parseBulkItemsFile(parsedFile)
+  if (bulkItems.status === 'invalid') {
+    return { status: 'error', message: bulkItems.message }
+  }
+
+  const { entries } = bulkItems
+
+  try {
+    await createBulkItems(entries, await createClient())
+  } catch (error: unknown) {
+    console.error('createItemsFromJsonFile failed', {
+      entryCount: entries.length,
+      error,
+    })
+
+    const conflictMessage = getExistingBarcodeMessage(error)
+    if (conflictMessage) {
+      return { status: 'error', message: conflictMessage }
+    }
+
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
@@ -496,6 +582,7 @@ const adjustItemQuantity = async (
 export {
   createItem,
   createItemWithoutBarcode,
+  createItemsFromJsonFile,
   attachBarcode,
   addItemToHousehold,
   stockScannedItem,
