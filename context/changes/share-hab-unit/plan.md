@@ -382,13 +382,13 @@ Roll back with a new migration that drops `public.accept_household_invite(text)`
 
 #### Automated
 
-- [ ] 2.1 `pnpm test` passes and includes the new validator, create wrapper, and accept wrapper tests
-- [ ] 2.2 `pnpm typecheck` passes
-- [ ] 2.3 `pnpm lint` passes
+- [x] 2.1 `pnpm test` passes and includes the new validator, create wrapper, and accept wrapper tests. daeb5ea
+- [x] 2.2 `pnpm typecheck` passes. daeb5ea
+- [x] 2.3 `pnpm lint` passes. daeb5ea
 
 #### Manual
 
-- [ ] 2.4 The diff shows no error message, thrown `cause`, `console.error` payload, or redirect URL that contains the invite code, and only the `createHabUnitInvite` action result returns the plaintext code
+- [x] 2.4 The diff shows no error message, thrown `cause`, `console.error` payload, or redirect URL that contains the invite code, and only the `createHabUnitInvite` action result returns the plaintext code. daeb5ea
 
 ### Phase 3: Share page and join entry
 
