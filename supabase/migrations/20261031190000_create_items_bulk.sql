@@ -40,12 +40,12 @@ begin
     entry := items -> entry_index;
 
     if jsonb_typeof(entry) is distinct from 'object' then
-      raise exception 'create_items_bulk rejects index %s because the entry is not an object', entry_index;
+      raise exception 'create_items_bulk rejects index % because the entry is not an object', entry_index;
     end if;
 
     if jsonb_typeof(entry -> 'name') is distinct from 'string'
       or jsonb_typeof(entry -> 'barcode') is distinct from 'string' then
-      raise exception 'create_items_bulk rejects index %s because name and barcode must be strings', entry_index;
+      raise exception 'create_items_bulk rejects index % because name and barcode must be strings', entry_index;
     end if;
 
     trimmed_name := trim(entry ->> 'name');
@@ -54,12 +54,12 @@ begin
     if trimmed_name is null
       or char_length(trimmed_name) < 1
       or char_length(trimmed_name) > 120 then
-      raise exception 'create_items_bulk rejects index %s because the name length must be 1 to 120', entry_index;
+      raise exception 'create_items_bulk rejects index % because the name length must be 1 to 120', entry_index;
     end if;
 
     if trimmed_barcode is null
       or trimmed_barcode !~ '^[0-9]{8,14}$' then
-      raise exception 'create_items_bulk rejects index %s because the barcode must be 8 to 14 digits', entry_index;
+      raise exception 'create_items_bulk rejects index % because the barcode must be 8 to 14 digits', entry_index;
     end if;
 
     if exists (
@@ -67,7 +67,7 @@ begin
       from public.item_barcodes
       where barcode = trimmed_barcode
     ) then
-      raise exception 'create_items_bulk conflict at index %s barcode %s', entry_index, trimmed_barcode;
+      raise exception 'create_items_bulk conflict at index % barcode %', entry_index, trimmed_barcode;
     end if;
 
     insert into public.items (name)
