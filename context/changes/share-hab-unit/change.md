@@ -1,7 +1,7 @@
 ---
 change_id: share-hab-unit
 title: Share a hab unit and its tally
-status: planned
+status: implementing
 created: 2026-10-31
 updated: 2026-10-31
 archived_at: null
