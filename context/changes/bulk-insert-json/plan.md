@@ -323,7 +323,7 @@ The migration only adds a function, so it is safe to run before the app code shi
 #### Manual
 
 - [x] 1.4 Every entry-level message in the tests names `entries[<index>]` and, when the barcode is a string, the barcode (db7adf5)
-- [x] 1.5 The parser returns 11 entries for the example file attached to TEC-46, and the throwaway script is deleted
+- [x] 1.5 The parser returns 11 entries for the example file attached to TEC-46, and the throwaway script is deleted (d87041f)
 
 ### Phase 2: Atomic bulk create RPC and its wrapper
 
