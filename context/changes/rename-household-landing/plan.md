@@ -94,11 +94,11 @@ Replace the word `household` with `hab-unit` in the Inventory section sentence o
 
 #### Automated
 
-- [ ] 1.1 `pnpm typecheck` exits 0.
-- [ ] 1.2 `pnpm lint` exits 0.
-- [ ] 1.3 `pnpm test` exits 0.
-- [ ] 1.4 A case-insensitive search of `src/app/page.tsx` for `household` returns no match.
+- [x] 1.1 `pnpm typecheck` exits 0. bf95f40
+- [x] 1.2 `pnpm lint` exits 0. bf95f40
+- [x] 1.3 `pnpm test` exits 0. bf95f40
+- [x] 1.4 A case-insensitive search of `src/app/page.tsx` for `household` returns no match. bf95f40
 
 #### Manual
 
-- [ ] 1.5 A visitor reading `/` sees hab-unit in the Inventory sentence and does not see household on the landing page.
+- [x] 1.5 A visitor reading `/` sees hab-unit in the Inventory sentence and does not see household on the landing page. bf95f40

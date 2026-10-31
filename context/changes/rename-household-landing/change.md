@@ -1,7 +1,7 @@
 ---
 change_id: rename-household-landing
 title: Rename household on the landing page
-status: implementing
+status: implemented
 created: 2026-10-31
 updated: 2026-10-31
 archived_at: null
