@@ -375,8 +375,8 @@ Roll back with a new migration that drops `public.accept_household_invite(text)`
 
 #### Manual
 
-- [ ] 1.3 After the user approves the push, `pnpm exec supabase db push` applies the migration, and the Supabase dashboard shows `household_invites` with row level security enabled and zero policies
-- [ ] 1.4 `has_function_privilege` returns `false` for `anon` and `true` for `authenticated` on both `public.create_household_invite()` and `public.accept_household_invite(text)`
+- [x] 1.3 After the user approves the push, `pnpm exec supabase db push` applies the migration, and the Supabase dashboard shows `household_invites` with row level security enabled and zero policies. e9e5b44
+- [x] 1.4 `has_function_privilege` returns `false` for `anon` and `true` for `authenticated` on both `public.create_household_invite()` and `public.accept_household_invite(text)`. e9e5b44
 
 ### Phase 2: App wrappers, validation, and server actions
 
