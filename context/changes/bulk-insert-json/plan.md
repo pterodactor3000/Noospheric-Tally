@@ -316,13 +316,13 @@ The migration only adds a function, so it is safe to run before the app code shi
 
 #### Automated
 
-- [ ] 1.1 `pnpm test src/lib/items/parse-bulk-items-file.test.ts` passes and includes every listed case
-- [ ] 1.2 `pnpm typecheck` passes
-- [ ] 1.3 `pnpm lint` passes
+- [x] 1.1 `pnpm test src/lib/items/parse-bulk-items-file.test.ts` passes and includes every listed case (db7adf5)
+- [x] 1.2 `pnpm typecheck` passes (db7adf5)
+- [x] 1.3 `pnpm lint` passes (db7adf5)
 
 #### Manual
 
-- [ ] 1.4 Every entry-level message in the tests names `entries[<index>]` and, when the barcode is a string, the barcode
+- [x] 1.4 Every entry-level message in the tests names `entries[<index>]` and, when the barcode is a string, the barcode (db7adf5)
 - [ ] 1.5 The parser returns 11 entries for the example file attached to TEC-46, and the throwaway script is deleted
 
 ### Phase 2: Atomic bulk create RPC and its wrapper
