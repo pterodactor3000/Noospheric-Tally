@@ -394,9 +394,9 @@ Roll back with a new migration that drops `public.accept_household_invite(text)`
 
 #### Automated
 
-- [ ] 3.1 `pnpm test` passes and includes the `buildHabUnitInviteUrl` tests
-- [ ] 3.2 `pnpm typecheck` passes
-- [ ] 3.3 `pnpm lint` passes
+- [x] 3.1 `pnpm test` passes and includes the `buildHabUnitInviteUrl` tests. 070c87e
+- [x] 3.2 `pnpm typecheck` passes. 070c87e
+- [x] 3.3 `pnpm lint` passes. 070c87e
 
 #### Manual
 
@@ -412,11 +412,11 @@ Roll back with a new migration that drops `public.accept_household_invite(text)`
 
 #### Automated
 
-- [ ] 4.1 `rg -n "FR-011" context/foundation/prd.md context/foundation/roadmap.md` returns only lines that say FR-011 is delivered, plus the two PRD lines that explain why the secondary criterion was replaced
-- [ ] 4.2 `rg -n "Inviting (another person|other people) to the household" context/foundation/prd.md context/foundation/roadmap.md` returns no match under a non-goal or Parked heading
-- [ ] 4.3 `git diff --name-only` for this phase lists only `context/foundation/prd.md` and `context/foundation/roadmap.md`
+- [x] 4.1 `rg -n "FR-011" context/foundation/prd.md context/foundation/roadmap.md` returns only lines that say FR-011 is delivered, plus the two PRD lines that explain why the secondary criterion was replaced. a2859c0. The kept requirement at prd.md:144 also matches, as the phase contract requires.
+- [x] 4.2 `rg -n "Inviting (another person|other people) to the household" context/foundation/prd.md context/foundation/roadmap.md` returns no match under a non-goal or Parked heading. a2859c0
+- [x] 4.3 `git diff --name-only` for this phase lists only `context/foundation/prd.md` and `context/foundation/roadmap.md`. a2859c0
 
 #### Manual
 
-- [ ] 4.4 Neither the PRD Open Questions nor the roadmap Open Roadmap Questions lists the household invite, and the remaining questions are numbered from 1 with no gap
-- [ ] 4.5 Neither the roadmap Parked section nor the PRD Non-Goals lists the household invite
+- [x] 4.4 Neither the PRD Open Questions nor the roadmap Open Roadmap Questions lists the household invite, and the remaining questions are numbered from 1 with no gap. a2859c0
+- [x] 4.5 Neither the roadmap Parked section nor the PRD Non-Goals lists the household invite. a2859c0
