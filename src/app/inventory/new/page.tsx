@@ -12,6 +12,7 @@ import { AlreadyStocked } from './already-stocked'
 import { AddToHabUnitForm } from './add-to-hab-unit-form'
 import { BarcodeLookupForm } from './barcode-lookup-form'
 import { BarcodelessItemForm } from './barcodeless-item-form'
+import { BulkInsertForm } from './bulk-insert-form'
 import { ItemCreateForm } from './item-create-form'
 import { lookupCatalogName } from '@/lib/catalog/lookup-catalog-name'
 import { getCreateLookupNotices } from '@/lib/catalog/get-create-lookup-notices'
@@ -44,6 +45,7 @@ const NewItemPage = async ({
           }
         />
         <BarcodelessItemForm />
+        <BulkInsertForm />
       </>
     )
   } else {
