@@ -25,7 +25,7 @@ interface HabUnitNameFormProps {
 type HabUnitFormState = {
   status: 'error' | 'success' | 'pending'
   message: string
-  field?: 'name'
+  field?: 'name' | 'code'
 } | null
 
 const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
