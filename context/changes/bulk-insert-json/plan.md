@@ -344,9 +344,9 @@ The migration only adds a function, so it is safe to run before the app code shi
 
 #### Automated
 
-- [ ] 3.1 `pnpm lint` passes
-- [ ] 3.2 `pnpm typecheck` passes
-- [ ] 3.3 `pnpm test` passes with the Phase 1 and Phase 2 tests included
+- [x] 3.1 `pnpm lint` passes (675575a)
+- [x] 3.2 `pnpm typecheck` passes (675575a)
+- [x] 3.3 `pnpm test` passes with the Phase 1 and Phase 2 tests included (675575a)
 
 #### Manual
 
