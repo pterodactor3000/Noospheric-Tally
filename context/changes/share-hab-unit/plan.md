@@ -370,8 +370,8 @@ Roll back with a new migration that drops `public.accept_household_invite(text)`
 
 #### Automated
 
-- [ ] 1.1 `pnpm exec supabase db push --dry-run` lists `20261031200000_create_household_invites.sql` as the only pending migration and reports no error
-- [ ] 1.2 `pnpm test` passes unchanged
+- [x] 1.1 `pnpm exec supabase db push --dry-run` lists `20261031200000_create_household_invites.sql` as the only pending migration and reports no error. e9e5b44
+- [x] 1.2 `pnpm test` passes unchanged. e9e5b44
 
 #### Manual
 
