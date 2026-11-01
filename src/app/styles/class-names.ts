@@ -98,12 +98,23 @@ const formError = clsx(
 
 const actionButton = clsx('font-mono', 'min-h-11')
 
+const countControlGroup = clsx(
+  'flex',
+  'shrink-0',
+  'items-baseline',
+  'whitespace-nowrap',
+)
+
+const countControlPart = clsx('w-11', 'shrink-0')
+
 const fullWidthButton = clsx(actionButton, 'w-full')
 
 export {
   actionButton,
   centeredPage,
   contentWidth,
+  countControlGroup,
+  countControlPart,
   fieldControl,
   fieldLabel,
   fieldStack,
