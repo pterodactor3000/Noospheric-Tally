@@ -11,6 +11,7 @@ import { createNewItem } from '@/lib/items/create-new-item'
 import { createNewItemWithoutBarcode } from '@/lib/items/create-new-item-without-barcode'
 import { decrementHabUnitQuantity } from '@/lib/items/decrement-hab-unit-quantity'
 import { findGlobalItemByBarcode } from '@/lib/items/find-global-item-by-barcode'
+import { hideHabUnitItem } from '@/lib/items/hide-hab-unit-item'
 import { incrementHabUnitQuantity } from '@/lib/items/increment-hab-unit-quantity'
 import {
   DEFAULT_ITEM_CATEGORY,
@@ -555,6 +556,37 @@ const saveItemLevels = async (
   redirect('/inventory')
 }
 
+const hideItem = async (formData: FormData): Promise<ItemActionError> => {
+  const itemId = getFormString(formData, 'itemId')
+  if (!isScanSessionId(itemId)) {
+    console.error('hideItem rejected item id', { itemId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  try {
+    await hideHabUnitItem(itemId, await createClient())
+  } catch (error: unknown) {
+    console.error('hideItem failed', { itemId, error })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  revalidatePath('/inventory')
+  revalidatePath('/inventory/restock')
+  revalidatePath(`/inventory/${itemId}`)
+  redirect('/inventory')
+}
+
+const submitItemForm = async (
+  formData: FormData,
+): Promise<ItemActionError> => {
+  const intent = getFormString(formData, 'intent')
+  if (intent === 'hide') {
+    return hideItem(formData)
+  }
+
+  return saveItemLevels(formData)
+}
+
 const adjustItemQuantity = async (
   itemId: unknown,
   deltaQuantity: unknown,
@@ -604,5 +636,7 @@ export {
   fetchScanSessionLines,
   reverseScanSessionLine,
   saveItemLevels,
+  hideItem,
+  submitItemForm,
   adjustItemQuantity,
 }

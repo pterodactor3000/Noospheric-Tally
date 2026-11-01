@@ -205,7 +205,7 @@ Add the server action and the Hide button on the item details page. The phase is
 - `pnpm typecheck` passes.
 - `pnpm lint` passes with no new warnings in `src/app/inventory/actions.ts` and `src/app/inventory/[itemId]/item-level-editor.tsx`.
 - `pnpm test` passes. No existing test changes.
-- `rg "hideItem" src` matches only `src/app/inventory/actions.ts` and `src/app/inventory/[itemId]/item-level-editor.tsx`.
+- `rg "hideItem" src` matches only `src/app/inventory/actions.ts`. The editor calls `submitItemForm` and does not name `hideItem`.
 - `rg "hide_household_item|DB_FUNCTION_HIDE_HOUSEHOLD_ITEM" src` matches only `src/lib/db/entities.ts`, `src/lib/items/hide-hab-unit-item.ts`, and `src/lib/items/hide-hab-unit-item.test.ts`.
 - `rg "loadHabUnitTallyLines|loadHabUnitItemById|loadHabUnitItemByBarcode" src` shows no loader file changed (`git diff --stat` lists none of `load-hab-unit-items.ts`, `load-hab-unit-item-by-id.ts`, `load-hab-unit-item-by-barcode.ts`).
 
@@ -304,12 +304,12 @@ Rollback of the code is reverting the commits. Rollback of the function is a new
 
 #### Automated
 
-- [ ] 2.1 `pnpm typecheck` passes.
-- [ ] 2.2 `pnpm lint` passes with no new warnings in `src/app/inventory/actions.ts` and `src/app/inventory/[itemId]/item-level-editor.tsx`.
-- [ ] 2.3 `pnpm test` passes. No existing test changes.
-- [ ] 2.4 `rg "hideItem" src` matches only `src/app/inventory/actions.ts` and `src/app/inventory/[itemId]/item-level-editor.tsx`.
-- [ ] 2.5 `rg "hide_household_item|DB_FUNCTION_HIDE_HOUSEHOLD_ITEM" src` matches only `src/lib/db/entities.ts`, `src/lib/items/hide-hab-unit-item.ts`, and `src/lib/items/hide-hab-unit-item.test.ts`.
-- [ ] 2.6 `git diff --stat` lists none of `load-hab-unit-items.ts`, `load-hab-unit-item-by-id.ts`, `load-hab-unit-item-by-barcode.ts`.
+- [x] 2.1 `pnpm typecheck` passes.
+- [x] 2.2 `pnpm lint` passes with no new warnings in `src/app/inventory/actions.ts` and `src/app/inventory/[itemId]/item-level-editor.tsx`.
+- [x] 2.3 `pnpm test` passes. No existing test changes.
+- [x] 2.4 `rg "hideItem" src` matches only `src/app/inventory/actions.ts`. The editor calls `submitItemForm` and does not name `hideItem`.
+- [x] 2.5 `rg "hide_household_item|DB_FUNCTION_HIDE_HOUSEHOLD_ITEM" src` matches only `src/lib/db/entities.ts`, `src/lib/items/hide-hab-unit-item.ts`, and `src/lib/items/hide-hab-unit-item.test.ts`.
+- [x] 2.6 `git diff --stat` lists none of `load-hab-unit-items.ts`, `load-hab-unit-item-by-id.ts`, `load-hab-unit-item-by-barcode.ts`.
 
 #### Manual
 

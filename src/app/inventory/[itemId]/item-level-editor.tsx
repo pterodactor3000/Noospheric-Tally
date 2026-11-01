@@ -24,7 +24,7 @@ import {
   STOCK_STATE_LABELS,
 } from '@/lib/items/stock-state'
 
-import { saveItemLevels } from '../actions'
+import { submitItemForm } from '../actions'
 import { BarcodeLine, itemControl } from './barcode-line'
 
 const ITEM_DOT_LEADER = '.'.repeat(300)
@@ -181,11 +181,14 @@ const ItemLevelEditor = ({
   const [minimum, setMinimum] = useState(minimumQuantity)
   const [selectedCategory, setSelectedCategory] = useState<ItemCategory>(category)
   const [isBarcodeLineOpen, setIsBarcodeLineOpen] = useState(false)
+  const [isHideArmed, setIsHideArmed] = useState(false)
   const isWideItemHeading = useIsWideItemHeading()
   const isBarcodeLineShown = isWideItemHeading || isBarcodeLineOpen
   const [state, formAction, isPending] = useActionState(
-    async (_previous: Awaited<ReturnType<typeof saveItemLevels>> | null, formData: FormData) =>
-      saveItemLevels(formData),
+    async (
+      _previous: Awaited<ReturnType<typeof submitItemForm>> | null,
+      formData: FormData,
+    ) => submitItemForm(formData),
     null,
   )
   const stockState = getStockState(count, minimum)
@@ -311,9 +314,12 @@ const ItemLevelEditor = ({
         <div className={itemActions}>
           <Button
             type="submit"
+            name="intent"
+            value="save"
             variant="outline"
             disabled={isPending}
             className={itemActionButton}
+            onClick={() => setIsHideArmed(false)}
           >
             Save
           </Button>
@@ -325,6 +331,26 @@ const ItemLevelEditor = ({
             className={itemActionButton}
           >
             Cancel
+          </Button>
+          <Button
+            type="submit"
+            name="intent"
+            value="hide"
+            variant="outline"
+            disabled={isPending}
+            className={clsx(itemActionButton, 'col-span-2')}
+            onClick={(event) => {
+              if (isHideArmed) {
+                return
+              }
+
+              event.preventDefault()
+              setIsHideArmed(true)
+            }}
+          >
+            {isHideArmed
+              ? 'Confirm hide. This deletes the count and history'
+              : 'Hide from tally'}
           </Button>
         </div>
       </FormAlert>
