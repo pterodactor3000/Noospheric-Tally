@@ -326,11 +326,11 @@ Apply both migrations before deploying the app. The default change is reversible
 
 #### Automated
 
-- [x] 3.1 `pnpm test src/lib/items/validate-household-quantity.test.ts src/lib/items/increment-hab-unit-quantity.test.ts src/lib/items/reverse-quantity-change.test.ts src/lib/items/adjust-hab-unit-quantity.test.ts` passes and includes every case above.
-- [x] 3.2 `pnpm test` passes in full.
-- [x] 3.3 `pnpm typecheck` passes.
-- [x] 3.4 `pnpm lint` passes.
-- [x] 3.5 `rg 999999 src` finds no match outside test files.
+- [x] 3.1 `pnpm test src/lib/items/validate-household-quantity.test.ts src/lib/items/increment-hab-unit-quantity.test.ts src/lib/items/reverse-quantity-change.test.ts src/lib/items/adjust-hab-unit-quantity.test.ts` passes and includes every case above. 8fc4d17
+- [x] 3.2 `pnpm test` passes in full. 8fc4d17
+- [x] 3.3 `pnpm typecheck` passes. 8fc4d17
+- [x] 3.4 `pnpm lint` passes. 8fc4d17
+- [x] 3.5 `rg 999999 src` finds no match outside test files. 8fc4d17
 
 #### Manual
 
