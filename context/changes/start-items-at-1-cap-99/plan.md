@@ -312,7 +312,7 @@ Apply both migrations before deploying the app. The default change is reversible
 #### Automated
 
 - [ ] 2.1 `pnpm exec supabase db push --dry-run` lists `20261101091000_cap_household_quantity_at_99.sql` as the only pending migration once Phase 1's migration is applied.
-- [ ] 2.2 `pnpm test`, `pnpm typecheck`, and `pnpm lint` pass with no code change.
+- [x] 2.2 `pnpm test`, `pnpm typecheck`, and `pnpm lint` pass with no code change.
 
 #### Manual
 
