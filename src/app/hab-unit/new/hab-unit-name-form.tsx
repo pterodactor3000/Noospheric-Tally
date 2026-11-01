@@ -22,11 +22,7 @@ interface HabUnitNameFormProps {
   defaultName: string
 }
 
-type HabUnitFormState = {
-  status: 'error' | 'success' | 'pending'
-  message: string
-  field?: 'name'
-} | null
+type HabUnitFormState = Awaited<ReturnType<typeof createHabUnit>> | null
 
 const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
   const [state, formAction, isPending] = useActionState(
@@ -34,6 +30,10 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
       createHabUnit(formData),
     null,
   )
+  const isNameError =
+    state?.status === 'error' &&
+    state.kind === 'field' &&
+    state.field === 'name'
 
   return (
     <>
@@ -61,7 +61,7 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
             id="name"
             autoComplete="name"
             defaultValue={defaultName}
-            aria-invalid={state?.field === 'name'}
+            aria-invalid={isNameError}
             className={fieldControl}
           />
         </div>

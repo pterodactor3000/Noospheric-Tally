@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 
 import { type NextRequest, NextResponse } from 'next/server'
 
+import { buildLoginRedirectUrl } from '@/lib/auth/buildLoginRedirectUrl'
 import { isProtectedPath } from '@/lib/auth/isProtectedPath'
 import { getSupabaseEnv } from '@/lib/env'
 
@@ -60,8 +61,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (!user && isProtectedPath(request.nextUrl.pathname)) {
-    const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/login'
+    const loginUrl = buildLoginRedirectUrl(request.nextUrl)
     return copyCookiesToResponse(
       supabaseResponse,
       NextResponse.redirect(loginUrl),

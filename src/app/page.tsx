@@ -78,7 +78,7 @@ export default async function Home() {
               <h2 className={sectionHeading}>Inventory</h2>
               <p className={sectionCopy}>
                 A signed-in member can scan an unknown barcode and save a
-                household name.
+                hab-unit name.
               </p>
             </section>
             <section>
