@@ -46,9 +46,9 @@ Verified against `origin/main` (commit `fdc589a`).
 
 ## Desired End State
 
-- On `/inventory/<itemId>`, at any viewport width, the selected category text sits at the right edge of its row, level with the right edge of the count and minimum controls.
+- On `/inventory/<itemId>`, at any viewport width, the selected category text ends on the same vertical line as the `[+]` glyphs and the Use value.
 - On a tally row, and on the Count and Minimum rows of item details, `[-]`, the number, and `[+]` sit on one line. The group is right-aligned. The three parts each measure 44px wide, for a one-digit, two-digit, and three-digit number.
-- `/inventory` has no bordered box around the tally. The title, search row, list, and action buttons span the full width of `main` (its `px-6` padding stays). The list still scrolls on its own and the action buttons stay reachable on a short screen.
+- `/inventory` has no bordered box around the tally. The title, search row, list, and action buttons use the width of `main` minus 4px on each side (`px-1`). The list still scrolls on its own and the action buttons stay reachable on a short screen. Tabbing to the search field and the group button shows the full focus ring.
 - `/inventory/scan` and `/inventory/lookup` render the same as before. The category list that opens from the select looks the same as before.
 
 ## What We're NOT Doing
@@ -67,7 +67,7 @@ Both count controls already share one structure, so put the layout in two shared
 
 For the dropdown, add `text-align-last: right` to the select. It right-aligns the closed display without touching the open list.
 
-For the tally, remove `panel` and `max-w-[900px]` from `inventorySection` and keep the rest. The flex column, the `max-h` calc, and the scroll behavior stay, so short screens behave as before.
+For the tally, remove `panel` and `max-w-[900px]` from `inventorySection` and keep the scroll behavior. Add `px-1` so the 3px focus ring is not clipped by `overflow-y-auto`. The content is 4px inside `main` on each side. That is the accepted tolerance for "as wide as the main container."
 
 ## Phase 1: Equal-width, right-aligned count controls
 
@@ -85,8 +85,8 @@ Tally rows and the Count and Minimum rows on item details show `[-]`, the number
 
 **Contract:** Add and export two constants, named `countControlGroup` and `countControlPart`, sorted into the existing export list.
 
-- `countControlGroup`: a flex row that does not wrap or shrink and keeps its content at the right of its slot (`flex`, `shrink-0`, `items-baseline`, `justify-end`, `whitespace-nowrap`).
-- `countControlPart`: a fixed 44px, non-shrinking, centered cell (`w-11`, `shrink-0`, `text-center`).
+- `countControlGroup`: a flex row that does not wrap or shrink (`flex`, `shrink-0`, `items-baseline`, `whitespace-nowrap`). Right alignment comes from this group being the last flex item after the `flex-1` dot leader. Do not add `justify-end`. The group has no spare room, so that class changes nothing.
+- `countControlPart`: a fixed 44px, non-shrinking cell with no text alignment (`w-11`, `shrink-0`). The decrease button and the number add `text-center`. The increase button adds `text-right` instead, so the `[+]` glyph ends at the right edge of its cell. Do not put `text-center` and `text-right` on the same element. Tailwind does not resolve that conflict by class order.
 
 44px equals today's `min-w-11` tap width, so touch targets do not shrink. Three digits of the row font fit in 44px.
 
@@ -99,8 +99,8 @@ Tally rows and the Count and Minimum rows on item details show `[-]`, the number
 **Contract:**
 
 - The `span.tallyCount` (`:22`, `:88`) uses `countControlGroup` instead of `shrink-0 whitespace-nowrap`.
-- Both buttons add `countControlPart` to `tallyControl` (`:23-36`, `:93`, `:105`). The local `min-h-[36px]` stays.
-- The bare number (`:100`) becomes a `span` with `countControlPart`, with the same `min-h-[36px]` and `leading-[36px]` the name uses (`inventory-tally.tsx:52-58`), so its baseline matches the buttons.
+- The decrease button adds `countControlPart` and `text-center` to `tallyControl` (`:23-36`, `:93`). The increase button adds `countControlPart` and `text-right` (`:105`). The local `min-h-[36px]` stays.
+- The bare number (`:100`) becomes a `span` with `countControlPart` and `text-center`, with the same `min-h-[36px]` and `leading-[36px]` the name uses (`inventory-tally.tsx:52-58`), so its baseline matches the buttons.
 - Remove the `{' '}` spacers at `:99` and `:100`. With flex they add nothing, and the `gap` is not wanted between parts. The three parts touch, and the 44px cells carry the spacing.
 - The sr-only stock label (`:112`) stays inside the group and the disabled, `aria-label`, `onClick`, and error-alert behavior stay as is.
 
@@ -113,8 +113,8 @@ Tally rows and the Count and Minimum rows on item details show `[-]`, the number
 **Contract:**
 
 - `itemValue` (`:82`) stays for the Use and Category rows. In `LevelStepper` (`:147`) the span wrapping the controls uses `countControlGroup` instead.
-- Both buttons add `countControlPart` to `itemControl` (`:152`, `:162`). `itemControl` itself is not changed, because the no-barcode button and the select share it.
-- The bare number (`:157`) becomes a `span` with `countControlPart` and `min-h-11 leading-11`, matching `itemLabel` (`:75`).
+- The decrease button adds `countControlPart` and `text-center` to `itemControl` (`:152`). The increase button adds `countControlPart` and `text-right` (`:162`). `itemControl` itself is not changed, because the no-barcode button and the select share it.
+- The bare number (`:157`) becomes a `span` with `countControlPart`, `text-center`, and `min-h-11 leading-11`, matching `itemLabel` (`:75`).
 - Remove the `{' '}` spacers at `:156` and `:157`.
 - Count and Minimum both get this. The Minimum number reaches three digits (999) and must stay inside its 44px cell with no wrap.
 
@@ -131,7 +131,7 @@ Tally rows and the Count and Minimum rows on item details show `[-]`, the number
 #### Manual Verification
 
 - On `/inventory`, a row with count 1, a row with count 10, and a row with count 99 each show `[-]`, the number, and `[+]` on one line. Measure the three parts in the browser inspector: each is 44px wide.
-- The `[-]` and `[+]` of rows with different digit counts line up in two vertical columns at the right edge.
+- The `[+]` glyphs of rows with different digit counts end on one vertical line, flush with the right edge of the 44px cell. The `[-]` glyphs stay centered in their cells.
 - Decrease is disabled at 0 and increase at 99, as before. Pressing `[+]` and `[-]` still changes the count, and the error alert still shows below the row on a failure.
 - On `/inventory/<itemId>`, Count and Minimum show the same three parts at 44px each. Set Minimum to 100 and 999 and check the number stays on the line, inside its cell.
 - At 320px, 390px, and 1280px wide, no control line wraps.
@@ -161,11 +161,11 @@ The category dropdown on item details reads from the right edge at every width.
 - `pnpm typecheck` passes.
 - `pnpm lint` passes.
 - `rg -n "text-align-last" src` shows one match, in `item-level-editor.tsx`.
-- `rg -n "text-right|dir=" src/app/inventory/[itemId]/item-level-editor.tsx` finds nothing.
+- `rg -n "text-right" src/app/inventory/[itemId]/item-level-editor.tsx` matches the increase button only, not the select. `rg -n "dir=" src/app/inventory/[itemId]/item-level-editor.tsx` finds nothing.
 
 #### Manual Verification
 
-- On `/inventory/<itemId>` at 320px, 640px, and 1280px wide, the selected `[Category]` text ends at the same right edge as the Count, Minimum, and Use values. Try the shortest and the longest category label.
+- On `/inventory/<itemId>` at 320px, 640px, and 1280px wide, the selected `[Category]` text ends on the same vertical line as the `[+]` glyphs and the Use value. Try the shortest and the longest category label.
 - Choose a different category: the closed select shows the new label at the right, and Save stores it.
 - Open the select: the option list looks the same as on `main` (same alignment, same labels). Check in Chrome and Firefox.
 
@@ -188,7 +188,7 @@ The tally page loses its bordered box and fills the main container.
 **Contract:**
 
 - `inventorySection` (`:13-26`) no longer includes `panel` or `'max-w-[900px]'`. It keeps the width classes, `flex`, `min-h-0`, `flex-col`, `overflow-y-auto`, and the `max-h-[calc(100svh-7rem-2px)]` with its comment. The `-2px` is the header's border, not the panel's, so it stays.
-- Add `min-w-0` so a long item name cannot push the section wider than `main`. The section is then the full content width of `main` (the `px-6` stays).
+- Add `px-1`. `overflow-y` other than `visible` also computes `overflow-x` to `auto`, and the removed panel padding used to cover the 3px focus ring and the separator glow. `px-1` gives the ring room. The glow (`shadow-[0_0_8px]`) may still be trimmed by 4px. That trim is accepted. Do not add `min-w-0`. A long name already truncates through `tallyName`, and `min-width: auto` does not apply across this column-flex cross axis.
 - Remove the now-unused `panel` import (`:8`). `clsx`, `actionButton`, and `centeredPage` stay.
 - Nothing else on the page changes: title, `Separator`, `InventoryTally`, the four action buttons (`max-w-lg`, centered), and the share link.
 
@@ -205,7 +205,7 @@ The tally page loses its bordered box and fills the main container.
 
 #### Manual Verification
 
-- `/inventory` has no border, no card tint, and no inner padding box around the tally. The title, search row, and list reach the same left and right edges as `main`'s content, at 390px, 1280px, and 1920px wide. At 1920px the tally is wider than 900px.
+- `/inventory` has no border, no card tint, and no panel padding box around the tally. The title, search row, and list sit 4px inside `main`'s content edges, at 390px, 1280px, and 1920px wide. At 1920px the tally is wider than 900px. Tab to the search field and to the group button. The full focus ring is visible on both.
 - With many items, the list scrolls inside the page and the four action buttons stay visible on a short viewport (for example 700px tall). With few items the page does not scroll.
 - A long item name truncates and does not widen the page or push the controls off screen.
 - `/inventory/scan` and `/inventory/lookup` look the same as on `main`. `/inventory/restock` and `/inventory/<itemId>` keep their panels.
@@ -267,7 +267,7 @@ Not applicable. No data or API changes. Revert the three phases' files to roll b
 #### Manual
 
 - [ ] 1.6 On `/inventory`, rows with counts 1, 10, and 99 each show `[-]`, the number, and `[+]` on one line, and each part is 44px wide.
-- [ ] 1.7 `[-]` and `[+]` of rows with different digit counts line up in two columns at the right edge.
+- [ ] 1.7 The `[+]` glyphs of rows with different digit counts end on one vertical line, flush with the right edge of the 44px cell. The `[-]` glyphs stay centered in their cells.
 - [ ] 1.8 Decrease is disabled at 0, increase at 99, both buttons still change the count, and the error alert still shows on a failure.
 - [ ] 1.9 On `/inventory/<itemId>`, Count and Minimum show three 44px parts, and a Minimum of 100 and 999 stays on the line.
 - [ ] 1.10 At 320px, 390px, and 1280px wide, no control line wraps.
@@ -279,11 +279,11 @@ Not applicable. No data or API changes. Revert the three phases' files to roll b
 - [ ] 2.1 `pnpm typecheck` passes.
 - [ ] 2.2 `pnpm lint` passes.
 - [ ] 2.3 `rg -n "text-align-last" src` shows one match, in `item-level-editor.tsx`.
-- [ ] 2.4 `rg -n "text-right|dir="` on `item-level-editor.tsx` finds nothing.
+- [ ] 2.4 `rg -n "text-right"` on `item-level-editor.tsx` matches the increase button only, not the select. `rg -n "dir="` on that file finds nothing.
 
 #### Manual
 
-- [ ] 2.5 At 320px, 640px, and 1280px wide, the selected category text ends at the same right edge as the Count, Minimum, and Use values, for the shortest and longest label.
+- [ ] 2.5 At 320px, 640px, and 1280px wide, the selected category text ends on the same vertical line as the `[+]` glyphs and the Use value, for the shortest and longest label.
 - [ ] 2.6 Choosing a different category shows the new label at the right, and Save stores it.
 - [ ] 2.7 The open option list looks the same as on `main` in Chrome and Firefox.
 
@@ -300,7 +300,7 @@ Not applicable. No data or API changes. Revert the three phases' files to roll b
 
 #### Manual
 
-- [ ] 3.7 `/inventory` has no border, card tint, or inner padding box, and the content reaches `main`'s edges at 390px, 1280px, and 1920px, wider than 900px at 1920px.
+- [ ] 3.7 `/inventory` has no border, card tint, or panel padding box. Content sits 4px inside `main` at 390px, 1280px, and 1920px, and is wider than 900px at 1920px. Tabbing to the search field and the group button shows the full focus ring.
 - [ ] 3.8 With many items the list scrolls inside the page and the action buttons stay visible on a 700px-tall viewport. With few items the page does not scroll.
 - [ ] 3.9 A long item name truncates and does not widen the page or push the controls off screen.
 - [ ] 3.10 `/inventory/scan` and `/inventory/lookup` look the same as on `main`, and `/inventory/restock` and `/inventory/<itemId>` keep their panels.
