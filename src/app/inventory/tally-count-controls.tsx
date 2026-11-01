@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, type ReactNode } from 'react'
+import { useEffect, useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
@@ -15,6 +15,7 @@ interface TallyCountControlsProps {
   readonly quantity: number
   readonly stockStateLabel: string
   readonly stockTextClassName: string
+  readonly onPendingChange?: (itemId: string, isPending: boolean) => void
   readonly children: ReactNode
 }
 
@@ -48,10 +49,18 @@ const TallyCountControls = ({
   quantity,
   stockStateLabel,
   stockTextClassName,
+  onPendingChange,
   children,
 }: TallyCountControlsProps) => {
   const [isPending, startTransition] = useTransition()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    onPendingChange?.(itemId, isPending)
+    return () => {
+      onPendingChange?.(itemId, false)
+    }
+  }, [isPending, itemId, onPendingChange])
 
   const adjustCount = (deltaQuantity: QuantityAdjustment) => {
     setErrorMessage(null)

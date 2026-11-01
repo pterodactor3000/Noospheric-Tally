@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
 import { ArrowDown01, ArrowDown10, ArrowDownAZ, ArrowDownZA, Layers } from 'lucide-react'
 import { clsx } from 'clsx'
@@ -69,6 +69,7 @@ interface InventoryTallyProps {
 
 interface TallyLineListProps {
   readonly lines: readonly HabUnitTallyLine[]
+  readonly onPendingChange: (itemId: string, isPending: boolean) => void
 }
 
 const INITIAL_TALLY_SORT: TallySort = { field: 'name', direction: 'asc' }
@@ -80,7 +81,7 @@ const sortButtonLabel = (sort: TallySort, field: TallySortField): string => {
   return `Sort by ${fieldLabel} ${nextDirection}`
 }
 
-const TallyLineList = ({ lines }: TallyLineListProps) => (
+const TallyLineList = ({ lines, onPendingChange }: TallyLineListProps) => (
   <ul>
     {lines.map((line) => {
       const stockState = getStockState(line.quantity, line.minimumQuantity)
@@ -93,6 +94,7 @@ const TallyLineList = ({ lines }: TallyLineListProps) => (
             quantity={line.quantity}
             stockStateLabel={STOCK_STATE_LABELS[stockState]}
             stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
+            onPendingChange={onPendingChange}
           >
             <ItemListMarker />
             <Link href={`/inventory/${line.itemId}`} className={tallyName}>
@@ -112,6 +114,25 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<TallySort>(INITIAL_TALLY_SORT)
   const [isCategorized, setIsCategorized] = useState(true)
+  const [pendingItemIds, setPendingItemIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  )
+  const handlePendingChange = useCallback((itemId: string, isPending: boolean) => {
+    setPendingItemIds((current) => {
+      const hasItem = current.has(itemId)
+      if (isPending === hasItem) {
+        return current
+      }
+      const next = new Set(current)
+      if (isPending) {
+        next.add(itemId)
+      } else {
+        next.delete(itemId)
+      }
+      return next
+    })
+  }, [])
+  const isCountWritePending = pendingItemIds.size > 0
   const [toggled, setToggled] = useState<
     Partial<Record<ItemCategory, boolean>>
   >({})
@@ -186,6 +207,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
               variant={isCategorized ? 'default' : 'outline'}
               size="icon"
               className="size-11!"
+              disabled={isCountWritePending}
               onClick={() => setIsCategorized((current) => !current)}
             >
               <Layers aria-hidden="true" />
@@ -222,13 +244,19 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                   itemCount={countByCategory.get(group.category) ?? 0}
                   shortage={shortage}
                 >
-                  <TallyLineList lines={group.lines} />
+                  <TallyLineList
+                    lines={group.lines}
+                    onPendingChange={handlePendingChange}
+                  />
                 </InventoryCategoryPanel>
               )
             })
           : null}
         {!isCategorized && visibleLines.length > 0 ? (
-          <TallyLineList lines={visibleLines} />
+          <TallyLineList
+            lines={visibleLines}
+            onPendingChange={handlePendingChange}
+          />
         ) : null}
       </div>
     </div>
