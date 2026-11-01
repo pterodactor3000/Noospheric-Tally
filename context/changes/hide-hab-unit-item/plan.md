@@ -41,7 +41,7 @@ Other facts:
 
 ## Desired End State
 
-On `/inventory/<itemId>` the member sees a Hide control. Pressing it removes the item from this hab unit and returns the member to `/inventory`. The tally no longer lists the item, and neither does the restock list. The catalog item still exists: another hab unit that stocks it is unaffected, and scanning its barcode from this hab unit now offers to add it again. Opening the old item URL shows not found.
+On `/inventory/<itemId>` the member sees a Hide control. Pressing it removes the item from this hab unit and returns the member to `/inventory`. The tally no longer lists the item, and neither does the restock list. The catalog item still exists. Another hab unit that stocks it is unaffected. Scanning its barcode, or adding that barcode again, puts it back on this hab unit's tally as a fresh row. Opening the old item URL shows not found.
 
 Verify with the checks in each phase and in Testing Strategy.
 
@@ -66,7 +66,7 @@ Why delete the row and not add a `hidden` flag:
 - A flag would leave a stocked-but-invisible row. `loadHabUnitTallyLines`, `loadHabUnitItemById`, `loadHabUnitItemByBarcode`, the restock page, and `increment_household_quantity` and `decrement_household_quantity` would each need to know about it. Scan would silently change the count of an item the member cannot see. `add_item_to_household` would refuse the item as already stocked, so the existing add flow could not bring it back. That is a wider change and creates the "unreachable" state this plan must avoid.
 - Deleting the row reuses the existing return path for barcoded items (scan, then `/inventory/new`, then `AddToHabUnitForm`). Nothing else changes.
 
-Decision on unhide: none is added. The contract has no unhide criterion. A hidden item with a barcode returns through existing flows. An item without a barcode cannot return as the same catalog row: scan and lookup key on a barcode, and `attach_barcode` refuses an item the hab unit does not stock. The member can create a new item with the same name through the existing barcodeless form. That is a new `items` row. The old row stays in the catalog with no barcode and no stocking hab unit, so nothing can open it. That orphan is accepted because the contract requires the catalog row to survive.
+Decision on unhide: none is added. The user confirmed on 2026-11-01 that a hidden item comes back when the member scans its barcode or adds that barcode again. Both paths use the existing add form. `add_item_to_household` inserts a fresh `household_inventory` row for the same `items` row. The old count and history stay deleted. Lookup of a barcode this hab unit does not stock stays blocked. An item without a barcode cannot be scanned. Creating one with the same name makes a new `items` row. The old row stays in the catalog with no barcode and no stocking hab unit, so nothing can open it. That orphan is accepted because the contract requires the catalog row to survive.
 
 This follows the existing pattern: a migration with a `security definer` function, a wrapper in `src/lib/items/` with a stubbed unit test, an action beside `saveItemLevels`, and a button in `item-level-editor.tsx`.
 
@@ -286,12 +286,12 @@ Rollback of the code is reverting the commits. Rollback of the function is a new
 
 #### Automated
 
-- [ ] 1.1 `pnpm exec vitest run src/lib/items/hide-hab-unit-item.test.ts` passes.
-- [ ] 1.2 `pnpm test` passes.
-- [ ] 1.3 `pnpm typecheck` passes.
-- [ ] 1.4 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [ ] 1.5 `rg "hide_household_item" supabase/migrations` matches only `20261101100000_hide_household_item.sql`, and that file contains `security definer`, `set search_path = ''`, `auth.uid()`, and `revoke all on function public.hide_household_item(uuid) from public, anon`.
-- [ ] 1.6 `rg "delete from" supabase/migrations/20261101100000_hide_household_item.sql` matches only `public.household_inventory`.
+- [x] 1.1 `pnpm exec vitest run src/lib/items/hide-hab-unit-item.test.ts` passes.
+- [x] 1.2 `pnpm test` passes.
+- [x] 1.3 `pnpm typecheck` passes.
+- [x] 1.4 `pnpm lint` passes with no new warnings in the files this phase touches.
+- [x] 1.5 `rg "hide_household_item" supabase/migrations` matches only `20261101100000_hide_household_item.sql`, and that file contains `security definer`, `set search_path = ''`, `auth.uid()`, and `revoke all on function public.hide_household_item(uuid) from public, anon`.
+- [x] 1.6 `rg "delete from" supabase/migrations/20261101100000_hide_household_item.sql` matches only `public.household_inventory`.
 
 #### Manual
 

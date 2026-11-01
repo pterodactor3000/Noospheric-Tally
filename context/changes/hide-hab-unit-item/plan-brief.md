@@ -56,8 +56,8 @@ Add the function, wrap it, call it from a server action that validates the id an
 
 ## Risks and Assumptions
 
-- Hiding discards this hab unit's count, minimum, category, and quantity change history for the item. It cannot be undone from the app.
-- An item without a barcode cannot return as the same catalog row. The member can create a new item with the same name. The old row stays and is unreachable. Accepted.
+- Hiding discards this hab unit's count, minimum, category, and quantity change history for the item. Scanning that barcode, or adding it again, puts the same catalog item back on the tally as a fresh row.
+- An item without a barcode cannot be scanned. Creating one with the same name makes a new catalog item. The old row stays and is unreachable. Accepted.
 - The first press arms the button. The second press deletes the row. There is no dialog.
 - Assumption: "hide" removes the hab unit's row. Keeping the data would need the flag approach, which is a larger change.
 - `pnpm exec supabase db push` writes to the currently linked project. Snapshot that project first. There is no SQL test harness, so the function is checked by hand. A SQL call must set `request.jwt.claims` and `role` to `authenticated`.

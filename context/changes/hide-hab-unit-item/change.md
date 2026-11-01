@@ -1,7 +1,7 @@
 ---
 change_id: hide-hab-unit-item
 title: Hide an item from the hab unit tally
-status: plan_reviewed
+status: implementing
 created: 2026-11-01
 updated: 2026-11-01
 archived_at: null
@@ -26,8 +26,9 @@ Closed decisions from 2026-11-01. The user told the parent to take the issue and
 - The write goes through one new `security definer` function, `hide_household_item`, because `household_inventory` has only a select policy for members.
 - Hiding an item that is already off the tally is a no-op, not an error.
 - No confirmation dialog. The first press arms the button with the label `Confirm hide. This deletes the count and history`. The second press deletes the row. Plan review F1.
-- No unhide control. The contract does not require one, and the code does not make the criteria unsatisfiable. A hidden item that has a barcode returns through the existing scan, lookup, or add flow, which finds the catalog item and adds it back. See `plan.md`, Critical Implementation Details.
+- No unhide control. The return path is the existing scan and add flow. See `plan.md`, Implementation Approach.
+- 2026-11-01, from the user: a hidden item comes back when the member scans its barcode or adds that barcode again. Scan opens the existing add form for the same catalog item. Submitting the form inserts a fresh tally row. The previous count, minimum, category, and history are not restored. Lookup stays blocked and does not add the item back.
 
-Known consequence, recorded and accepted: hiding discards that hab unit's count, minimum, category, and quantity change history for the item. An item without a barcode has no scan or lookup path back, so it stays in the catalog and cannot be re-added by the existing flows.
+Known consequence, recorded and accepted: hiding discards that hab unit's count, minimum, category, and quantity change history for the item. An item without a barcode cannot be scanned. Creating one with the same name makes a new catalog item. The hidden catalog row stays.
 
 Out of scope: tally layout, dropdown alignment, count width, dropping the panel, scan, popups, landing copy, categories, sharing, bulk insert, count default, the count cap, an unhide control.
