@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
+import { countControlGroup, countControlPart } from '@/app/styles/class-names'
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import type { QuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
@@ -19,7 +20,6 @@ interface TallyCountControlsProps {
   readonly children: ReactNode
 }
 
-const tallyCount = clsx('shrink-0', 'whitespace-nowrap')
 const tallyControl = clsx(
   'min-h-[36px]',
   'min-w-11',
@@ -85,24 +85,33 @@ const TallyCountControls = ({
     <div>
       <div className={clsx(tallyLine, stockTextClassName)}>
         {children}
-        <span className={tallyCount}>
+        <span className={countControlGroup}>
           <button
             type="button"
             disabled={isPending || quantity === 0}
             aria-label={`Decrease ${name}`}
-            className={tallyControl}
+            className={clsx(tallyControl, countControlPart, 'text-center')}
             onClick={() => {
               adjustCount(-1)
             }}
           >
             [-]
-          </button>{' '}
-          {quantity}{' '}
+          </button>
+          <span
+            className={clsx(
+              countControlPart,
+              'min-h-[36px]',
+              'leading-[36px]',
+              'text-center',
+            )}
+          >
+            {quantity}
+          </span>
           <button
             type="button"
             disabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
             aria-label={`Increase ${name}`}
-            className={tallyControl}
+            className={clsx(tallyControl, countControlPart, 'text-right')}
             onClick={() => {
               adjustCount(1)
             }}

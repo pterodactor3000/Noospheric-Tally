@@ -1,7 +1,7 @@
 ---
 change_id: align-tally-controls
 title: Align tally controls and widen the tally
-status: plan_reviewed
+status: implementing
 created: 2026-11-01
 updated: 2026-11-01
 archived_at: null

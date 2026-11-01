@@ -7,7 +7,11 @@ import { clsx } from 'clsx'
 import { FormAlert } from '@/components/form-alert'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { actionButton } from '@/app/styles/class-names'
+import {
+  actionButton,
+  countControlGroup,
+  countControlPart,
+} from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 import {
   ITEM_CATEGORIES,
@@ -144,22 +148,31 @@ const LevelStepper = ({
     <span aria-hidden="true" className={itemDots}>
       {ITEM_DOT_LEADER}
     </span>
-    <span className={itemValue}>
+    <span className={countControlGroup}>
       <button
         type="button"
         disabled={value <= minimum}
         aria-label={`Decrease ${label}`}
-        className={itemControl}
+        className={clsx(itemControl, countControlPart, 'text-center')}
         onClick={onDecrease}
       >
         [-]
-      </button>{' '}
-      {value}{' '}
+      </button>
+      <span
+        className={clsx(
+          countControlPart,
+          'min-h-11',
+          'leading-11',
+          'text-center',
+        )}
+      >
+        {value}
+      </span>
       <button
         type="button"
         disabled={value >= maximum}
         aria-label={`Increase ${label}`}
-        className={itemControl}
+        className={clsx(itemControl, countControlPart, 'text-right')}
         onClick={onIncrease}
       >
         [+]
