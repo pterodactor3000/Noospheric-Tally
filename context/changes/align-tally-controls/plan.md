@@ -291,12 +291,12 @@ Not applicable. No data or API changes. Revert the three phases' files to roll b
 
 #### Automated
 
-- [x] 3.1 `pnpm typecheck` passes.
-- [x] 3.2 `pnpm lint` passes with no unused `panel` import in `page.tsx`.
-- [x] 3.3 `rg -n "panel|max-w-\[900px\]" src/app/inventory/page.tsx` finds nothing.
-- [x] 3.4 `rg -n "max-w-\[900px\]" src` matches only `restock/page.tsx` and `[itemId]/page.tsx`.
-- [x] 3.5 `pnpm test` passes.
-- [x] 3.6 `git diff --stat origin/main` lists no file under `src/app/inventory/scan` or `src/app/inventory/lookup`.
+- [x] 3.1 `pnpm typecheck` passes. ef00def
+- [x] 3.2 `pnpm lint` passes with no unused `panel` import in `page.tsx`. ef00def
+- [x] 3.3 `rg -n "panel|max-w-\[900px\]" src/app/inventory/page.tsx` finds nothing. ef00def
+- [x] 3.4 `rg -n "max-w-\[900px\]" src` matches only `restock/page.tsx` and `[itemId]/page.tsx`. ef00def
+- [x] 3.5 `pnpm test` passes. ef00def
+- [x] 3.6 `git diff --stat origin/main` lists no file under `src/app/inventory/scan` or `src/app/inventory/lookup`. ef00def
 
 #### Manual
 
