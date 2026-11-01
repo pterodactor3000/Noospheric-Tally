@@ -5,20 +5,19 @@ import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { actionButton, centeredPage, panel } from '@/app/styles/class-names'
+import { actionButton, centeredPage } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 import InventoryTally from './inventory-tally'
 
 const inventorySection = clsx(
-  panel,
   '[width:-webkit-fill-available]',
   '[width:stretch]',
-  'max-w-[900px]',
   'flex',
   'min-h-0',
   'flex-col',
   'overflow-y-auto',
+  'px-1',
   // Signed-in header is py-4, the Sign out control at h-8, and a 2px border.
   // The page adds py-6. The list still scrolls on its own. The section scrolls
   // only when that chrome is taller than a short viewport, so the buttons stay reachable.
