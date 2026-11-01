@@ -286,12 +286,12 @@ Rollback of the code is reverting the commits. Rollback of the function is a new
 
 #### Automated
 
-- [x] 1.1 `pnpm exec vitest run src/lib/items/hide-hab-unit-item.test.ts` passes.
-- [x] 1.2 `pnpm test` passes.
-- [x] 1.3 `pnpm typecheck` passes.
-- [x] 1.4 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [x] 1.5 `rg "hide_household_item" supabase/migrations` matches only `20261101100000_hide_household_item.sql`, and that file contains `security definer`, `set search_path = ''`, `auth.uid()`, and `revoke all on function public.hide_household_item(uuid) from public, anon`.
-- [x] 1.6 `rg "delete from" supabase/migrations/20261101100000_hide_household_item.sql` matches only `public.household_inventory`.
+- [x] 1.1 `pnpm exec vitest run src/lib/items/hide-hab-unit-item.test.ts` passes. ae8d414
+- [x] 1.2 `pnpm test` passes. ae8d414
+- [x] 1.3 `pnpm typecheck` passes. ae8d414
+- [x] 1.4 `pnpm lint` passes with no new warnings in the files this phase touches. ae8d414
+- [x] 1.5 `rg "hide_household_item" supabase/migrations` matches only `20261101100000_hide_household_item.sql`, and that file contains `security definer`, `set search_path = ''`, `auth.uid()`, and `revoke all on function public.hide_household_item(uuid) from public, anon`. ae8d414
+- [x] 1.6 `rg "delete from" supabase/migrations/20261101100000_hide_household_item.sql` matches only `public.household_inventory`. ae8d414
 
 #### Manual
 
