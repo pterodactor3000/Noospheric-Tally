@@ -299,7 +299,12 @@ const ItemLevelEditor = ({
                   setSelectedCategory(nextCategory)
                 }
               }}
-              className={clsx(itemControl, 'appearance-none', 'bg-none')}
+              className={clsx(
+                itemControl,
+                'appearance-none',
+                'bg-none',
+                '[text-align-last:right]',
+              )}
             >
               {ITEM_CATEGORIES.map((itemCategory) => (
                 <option key={itemCategory} value={itemCategory}>
