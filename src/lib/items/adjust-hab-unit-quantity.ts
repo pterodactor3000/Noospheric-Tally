@@ -1,5 +1,8 @@
 import { DB_FUNCTION_ADJUST_HOUSEHOLD_QUANTITY } from '../db/entities'
-import { CHECK_VIOLATION_ERROR_CODE } from './reverse-quantity-change'
+import {
+  CHECK_VIOLATION_ERROR_CODE,
+  NUMERIC_VALUE_OUT_OF_RANGE_ERROR_CODE,
+} from './reverse-quantity-change'
 import type { QuantityAdjustment } from './quantity-adjustment'
 
 interface AdjustHouseholdQuantityClient {
@@ -11,9 +14,6 @@ interface AdjustHouseholdQuantityClient {
     error: { message: string; code?: string } | null
   }>
 }
-
-// SQLSTATE numeric_value_out_of_range. adjust_household_quantity raises it above 999999.
-const NUMERIC_VALUE_OUT_OF_RANGE_ERROR_CODE = '22003'
 
 interface AdjustedHabUnitQuantity {
   readonly status: 'adjusted'

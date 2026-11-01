@@ -53,7 +53,7 @@ describe('adjustHabUnitQuantity', () => {
       Promise.resolve({
         data: null,
         error: {
-          message: 'adjust_household_quantity refuses a quantity above 999999',
+          message: 'adjust_household_quantity refuses a quantity above 99',
           code: '22003',
         },
       }),

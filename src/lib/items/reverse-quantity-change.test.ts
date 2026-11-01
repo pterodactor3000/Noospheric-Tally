@@ -60,6 +60,22 @@ describe('reverseQuantityChange', () => {
     })
   })
 
+  test('returns above-maximum when the rpc error code is 22003', async () => {
+    const client = createReverseClientStub(
+      Promise.resolve({
+        data: null,
+        error: {
+          message: 'reverse_quantity_change refuses a quantity above 99',
+          code: '22003',
+        },
+      }),
+    )
+
+    await expect(reverseQuantityChange(CHANGE_ID, client)).resolves.toEqual({
+      status: 'above-maximum',
+    })
+  })
+
   test('throws with the change id and cause when the rpc error code is not 23514', async () => {
     const rpcError = {
       message: 'reverse_quantity_change refuses a change that is already reversed',

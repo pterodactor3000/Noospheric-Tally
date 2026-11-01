@@ -4,7 +4,7 @@ import { validateHouseholdQuantity } from './validate-household-quantity'
 
 const invalidResponse = {
   status: 'invalid',
-  message: 'Count must be a whole number from 0 to 999999.',
+  message: 'Count must be a whole number from 0 to 99.',
 }
 
 describe('validateHouseholdQuantity', () => {
@@ -39,10 +39,18 @@ describe('validateHouseholdQuantity', () => {
   })
 
   test('accepts the upper bound', () => {
-    expect(validateHouseholdQuantity('999999')).toEqual({
+    expect(validateHouseholdQuantity('99')).toEqual({
       status: 'valid',
-      quantity: 999999,
+      quantity: 99,
     })
+  })
+
+  test('rejects 100', () => {
+    expect(validateHouseholdQuantity('100')).toEqual(invalidResponse)
+  })
+
+  test('rejects 999999', () => {
+    expect(validateHouseholdQuantity('999999')).toEqual(invalidResponse)
   })
 
   test('rejects a count above the upper bound', () => {
