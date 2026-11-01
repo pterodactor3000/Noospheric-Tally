@@ -243,7 +243,7 @@ Add the server action and the Hide button on the item details page. The phase is
 1. Run `pnpm exec supabase db push` and confirm `20261101100000_hide_household_item.sql` applies.
 2. Sign in with a hab unit that has a barcoded item with a count of 5 and a minimum of 3, and a barcodeless item.
 3. Open `/inventory`, then the barcoded item. Confirm the `Hide from tally` button.
-4. Press it. Confirm the redirect to `/inventory` and that the item is gone from the tally and from `/inventory/restock`.
+4. Press it once. Confirm the label becomes `Confirm hide. This deletes the count and history` and the page stays. Press it again. Confirm the redirect to `/inventory` and that the item is gone from the tally and from `/inventory/restock`.
 5. Open the old item URL. Confirm not found.
 6. Check the database: the `items` and `item_barcodes` rows remain, and the `household_inventory` row and its `household_quantity_changes` rows are gone for this hab unit only.
 7. Scan the barcode. Confirm the add form opens with the catalog name. Add it and confirm a fresh count of 1.
