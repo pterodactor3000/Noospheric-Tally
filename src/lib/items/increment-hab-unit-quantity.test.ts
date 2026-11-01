@@ -13,7 +13,7 @@ const CHANGE_ID = '7d4e1a90-3b2c-4f58-9a6d-8e0c5b1f2a37'
 const createQuantityClientStub = (
   result: PromiseLike<{
     data: unknown
-    error: { message: string } | null
+    error: { message: string; code?: string } | null
   }>,
 ): IncrementHouseholdQuantityClient => ({
   rpc(functionName, args) {
@@ -37,7 +37,11 @@ describe('incrementHabUnitQuantity', () => {
 
     await expect(
       incrementHabUnitQuantity(BARCODE, SCAN_SESSION_ID, client),
-    ).resolves.toEqual({ changeId: CHANGE_ID, quantity: 2 })
+    ).resolves.toEqual({
+      status: 'incremented',
+      changeId: CHANGE_ID,
+      quantity: 2,
+    })
   })
 
   test('returns 0 when the rpc quantity is 0', async () => {
@@ -50,7 +54,45 @@ describe('incrementHabUnitQuantity', () => {
 
     await expect(
       incrementHabUnitQuantity(BARCODE, SCAN_SESSION_ID, client),
-    ).resolves.toEqual({ changeId: CHANGE_ID, quantity: 0 })
+    ).resolves.toEqual({
+      status: 'incremented',
+      changeId: CHANGE_ID,
+      quantity: 0,
+    })
+  })
+
+  test('returns above-maximum when the rpc error code is 22003', async () => {
+    const client = createQuantityClientStub(
+      Promise.resolve({
+        data: null,
+        error: {
+          message: 'increment_household_quantity refuses a quantity above 99',
+          code: '22003',
+        },
+      }),
+    )
+
+    await expect(
+      incrementHabUnitQuantity(BARCODE, SCAN_SESSION_ID, client),
+    ).resolves.toEqual({ status: 'above-maximum' })
+  })
+
+  test('throws with the barcode and cause when the rpc error code is not 22003', async () => {
+    const rpcError = {
+      message:
+        'increment_household_quantity refuses an item this household does not stock',
+      code: 'P0001',
+    }
+    const client = createQuantityClientStub(
+      Promise.resolve({ data: null, error: rpcError }),
+    )
+
+    await expect(
+      incrementHabUnitQuantity(BARCODE, SCAN_SESSION_ID, client),
+    ).rejects.toMatchObject({
+      message: `increment_household_quantity failed for barcode ${BARCODE}`,
+      cause: rpcError,
+    })
   })
 
   test('throws an error that names the barcode when the rpc returns an error', async () => {

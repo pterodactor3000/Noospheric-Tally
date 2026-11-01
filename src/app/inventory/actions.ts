@@ -32,7 +32,10 @@ import {
 import { isScanSessionId } from '@/lib/items/scan-session'
 import { setHabUnitItemLevels } from '@/lib/items/set-hab-unit-item-levels'
 import { validateBarcode } from '@/lib/items/validate-barcode'
-import { validateHouseholdQuantity } from '@/lib/items/validate-household-quantity'
+import {
+  HOUSEHOLD_QUANTITY_MAX,
+  validateHouseholdQuantity,
+} from '@/lib/items/validate-household-quantity'
 import { validateItemName } from '@/lib/items/validate-item-name'
 import { validateMinimumQuantity } from '@/lib/items/validate-minimum-quantity'
 import { createClient } from '@/lib/supabase/server'
@@ -76,7 +79,7 @@ const REVERSAL_BELOW_ZERO_MESSAGE =
 
 const QUANTITY_BELOW_ZERO_MESSAGE = 'The count cannot go below 0.'
 
-const QUANTITY_ABOVE_MAXIMUM_MESSAGE = 'The count cannot go above 999999.'
+const QUANTITY_ABOVE_MAXIMUM_MESSAGE = `The count cannot go above ${HOUSEHOLD_QUANTITY_MAX}.`
 
 const STALE_ITEM_LEVELS_MESSAGE =
   'The count changed. Reload the page before saving.'
@@ -362,7 +365,14 @@ const stockScannedItem = async (
 
   try {
     const supabase = await createClient()
-    await incrementHabUnitQuantity(validBarcode, scanSessionId, supabase)
+    const result = await incrementHabUnitQuantity(
+      validBarcode,
+      scanSessionId,
+      supabase,
+    )
+    if (result.status === 'above-maximum') {
+      return { status: 'error', message: QUANTITY_ABOVE_MAXIMUM_MESSAGE }
+    }
   } catch (error: unknown) {
     console.error('stockScannedItem failed', { barcode: validBarcode, error })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
@@ -456,6 +466,10 @@ const reverseScanSessionLine = async (
     const result = await reverseQuantityChange(changeId, supabase)
     if (result.status === 'below-zero') {
       return { status: 'error', message: REVERSAL_BELOW_ZERO_MESSAGE }
+    }
+
+    if (result.status === 'above-maximum') {
+      return { status: 'error', message: QUANTITY_ABOVE_MAXIMUM_MESSAGE }
     }
 
     revalidatePath('/inventory')

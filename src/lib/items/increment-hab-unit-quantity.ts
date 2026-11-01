@@ -1,9 +1,24 @@
 import { DB_FUNCTION_INCREMENT_HOUSEHOLD_QUANTITY } from '../db/entities'
+import { NUMERIC_VALUE_OUT_OF_RANGE_ERROR_CODE } from './reverse-quantity-change'
 
 interface ScanQuantityChange {
   readonly changeId: string
   readonly quantity: number
 }
+
+interface IncrementedHabUnitQuantity {
+  readonly status: 'incremented'
+  readonly changeId: string
+  readonly quantity: number
+}
+
+interface AboveMaximumHabUnitQuantity {
+  readonly status: 'above-maximum'
+}
+
+type IncrementHabUnitQuantityResult =
+  | IncrementedHabUnitQuantity
+  | AboveMaximumHabUnitQuantity
 
 interface IncrementHouseholdQuantityClient {
   rpc(
@@ -11,7 +26,7 @@ interface IncrementHouseholdQuantityClient {
     args: { item_barcode: string; scan_session_id: string },
   ): PromiseLike<{
     data: unknown
-    error: { message: string } | null
+    error: { message: string; code?: string } | null
   }>
 }
 
@@ -40,11 +55,15 @@ const incrementHabUnitQuantity = async (
   itemBarcode: string,
   scanSessionId: string,
   client: IncrementHouseholdQuantityClient,
-): Promise<ScanQuantityChange> => {
+): Promise<IncrementHabUnitQuantityResult> => {
   const { data, error } = await client.rpc(
     DB_FUNCTION_INCREMENT_HOUSEHOLD_QUANTITY,
     { item_barcode: itemBarcode, scan_session_id: scanSessionId },
   )
+
+  if (error?.code === NUMERIC_VALUE_OUT_OF_RANGE_ERROR_CODE) {
+    return { status: 'above-maximum' }
+  }
 
   const change = error ? null : readScanQuantityChange(data)
   if (!change) {
@@ -54,7 +73,11 @@ const incrementHabUnitQuantity = async (
     )
   }
 
-  return change
+  return {
+    status: 'incremented',
+    changeId: change.changeId,
+    quantity: change.quantity,
+  }
 }
 
 export { incrementHabUnitQuantity, readScanQuantityChange }
