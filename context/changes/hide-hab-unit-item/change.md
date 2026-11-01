@@ -1,7 +1,7 @@
 ---
 change_id: hide-hab-unit-item
 title: Hide an item from the hab unit tally
-status: planned
+status: plan_reviewed
 created: 2026-11-01
 updated: 2026-11-01
 archived_at: null
@@ -25,7 +25,7 @@ Closed decisions from 2026-11-01. The user told the parent to take the issue and
 - "Hide" removes the hab unit's `household_inventory` row for that item. The rows in `items` and `item_barcodes` stay. No `is_hidden` column is added. See `plan.md`, Implementation Approach, for why.
 - The write goes through one new `security definer` function, `hide_household_item`, because `household_inventory` has only a select policy for members.
 - Hiding an item that is already off the tally is a no-op, not an error.
-- No confirmation dialog. The control acts on one press.
+- No confirmation dialog. The first press arms the button with the label `Confirm hide. This deletes the count and history`. The second press deletes the row. Plan review F1.
 - No unhide control. The contract does not require one, and the code does not make the criteria unsatisfiable. A hidden item that has a barcode returns through the existing scan, lookup, or add flow, which finds the catalog item and adds it back. See `plan.md`, Critical Implementation Details.
 
 Known consequence, recorded and accepted: hiding discards that hab unit's count, minimum, category, and quantity change history for the item. An item without a barcode has no scan or lookup path back, so it stays in the catalog and cannot be re-added by the existing flows.

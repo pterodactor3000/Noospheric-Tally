@@ -41,7 +41,7 @@ On the item page the member presses `Hide from tally` and returns to `/inventory
 **Out of scope:**
 
 - Tally layout, dropdown alignment, count width, dropping the panel, scan, popups, landing copy, categories, sharing, bulk insert, count default, and the count cap
-- An unhide control, a `hidden` column, loader changes, a confirmation dialog
+- An unhide control, a `hidden` column, loader changes, a confirmation dialog. The guard is a second press of the Hide button.
 
 ## Approach
 
@@ -52,15 +52,15 @@ Add the function, wrap it, call it from a server action that validates the id an
 | Phase | Deliverable | Key risk |
 | --- | --- | --- |
 | 1. Hide function and wrapper | Migration, name constant, wrapper, unit test | The function must scope to the caller's hab unit only |
-| 2. Hide action and control on the item page | `hideItem` action and the `Hide from tally` button | Two submit actions in one form, and redirect must stay outside the `try` |
+| 2. Hide action and control on the item page | One form action and a two-press `Hide from tally` button | Redirect must stay outside the `try`, and one action state must show the latest error |
 
 ## Risks and Assumptions
 
 - Hiding discards this hab unit's count, minimum, category, and quantity change history for the item. It cannot be undone from the app.
-- An item without a barcode has no scan, lookup, or add path back. It stays in the catalog but cannot be re-added by existing flows. Accepted, since the contract has no unhide.
-- No confirmation dialog, so a mistaken press loses the item's data. Accepted to match the contract.
-- Assumption: "hide" may be implemented as removing the hab unit's row. A reviewer who wants the data kept would need the flag approach, which is a larger change.
-- The migration needs a manual `pnpm exec supabase db push`. There is no SQL test harness, so the function is checked by hand.
+- An item without a barcode cannot return as the same catalog row. The member can create a new item with the same name. The old row stays and is unreachable. Accepted.
+- The first press arms the button. The second press deletes the row. There is no dialog.
+- Assumption: "hide" removes the hab unit's row. Keeping the data would need the flag approach, which is a larger change.
+- `pnpm exec supabase db push` writes to the currently linked project. Snapshot that project first. There is no SQL test harness, so the function is checked by hand. A SQL call must set `request.jwt.claims` and `role` to `authenticated`.
 
 ## Success Criteria
 
