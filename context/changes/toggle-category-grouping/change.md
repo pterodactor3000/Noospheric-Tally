@@ -1,7 +1,7 @@
 ---
 change_id: toggle-category-grouping
 title: Toggle category grouping on the tally
-status: implementing
+status: implemented
 created: 2026-11-01
 updated: 2026-11-01
 archived_at: null

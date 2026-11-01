@@ -170,13 +170,13 @@ Not applicable. There is no data or schema change. Rollback is reverting the com
 
 #### Manual
 
-- [ ] 1.6 On first load of `/inventory` with items in several categories, the tally shows the category panels, shortage panels open, and the toggle is pressed (filled style). It looks like today.
-- [ ] 1.7 Pressing the toggle turns the panels off. The same items show as one flat list with no panel headers, and the toggle shows the outline style with `aria-pressed="false"`.
-- [ ] 1.8 In the flat view, the name sort and count sort buttons reorder the list, and each press of the same button flips direction.
-- [ ] 1.9 In the flat view, typing in the search box filters the flat list. A query with no match shows `No item matches "<query>".` and no empty list.
-- [ ] 1.10 Open one panel that starts closed and close one that starts open. Turn grouping off, then on. Each panel is in the state you left it in.
-- [ ] 1.11 With grouping on, search and sort still work and open the panels with matches as before.
-- [ ] 1.12 Reloading the page returns to grouping on, with sort, search, and panel state reset.
-- [ ] 1.13 The toggle sits in the search row beside the sort buttons, at the same size, and does not wrap or squeeze the search box on a narrow phone width.
-- [ ] 1.14 The toggle is reachable by keyboard and a screen reader announces it as `Group by category`, a toggle button, pressed or not pressed.
-- [ ] 1.15 The `+` and `-` count controls on a row work in the flat view.
+- [x] 1.6 On first load of `/inventory` with items in several categories, the tally shows the category panels, shortage panels open, and the toggle is pressed (filled style). It looks like today. f22c1a5
+- [x] 1.7 Pressing the toggle turns the panels off. The same items show as one flat list with no panel headers, and the toggle shows the outline style with `aria-pressed="false"`. f22c1a5
+- [x] 1.8 In the flat view, the name sort and count sort buttons reorder the list, and each press of the same button flips direction. f22c1a5
+- [x] 1.9 In the flat view, typing in the search box filters the flat list. A query with no match shows `No item matches "<query>".` and no empty list. f22c1a5
+- [x] 1.10 Open one panel that starts closed and close one that starts open. Turn grouping off, then on. Each panel is in the state you left it in. f22c1a5
+- [x] 1.11 With grouping on, search and sort still work and open the panels with matches as before. f22c1a5
+- [x] 1.12 Reloading the page returns to grouping on, with sort, search, and panel state reset. f22c1a5
+- [x] 1.13 The toggle sits in the search row beside the sort buttons, at the same size, and does not wrap or squeeze the search box on a narrow phone width. f22c1a5
+- [x] 1.14 The toggle is reachable by keyboard and a screen reader announces it as `Group by category`, a toggle button, pressed or not pressed. f22c1a5
+- [x] 1.15 The `+` and `-` count controls on a row work in the flat view. f22c1a5
