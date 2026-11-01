@@ -258,11 +258,11 @@ Not applicable. No data or API changes. Revert the three phases' files to roll b
 
 #### Automated
 
-- [x] 1.1 `pnpm typecheck` passes.
-- [x] 1.2 `pnpm lint` passes.
-- [x] 1.3 `pnpm test` passes with no test added or removed.
-- [x] 1.4 `rg -n "countControlGroup|countControlPart" src` lists `class-names.ts`, `tally-count-controls.tsx`, and `item-level-editor.tsx`, and no file under `src/app/inventory/scan`.
-- [x] 1.5 `rg -n "\{' '\}"` on `tally-count-controls.tsx` and `item-level-editor.tsx` finds no spacer between the buttons and the number.
+- [x] 1.1 `pnpm typecheck` passes. 276cc65
+- [x] 1.2 `pnpm lint` passes. 276cc65
+- [x] 1.3 `pnpm test` passes with no test added or removed. 276cc65
+- [x] 1.4 `rg -n "countControlGroup|countControlPart" src` lists `class-names.ts`, `tally-count-controls.tsx`, and `item-level-editor.tsx`, and no file under `src/app/inventory/scan`. 276cc65
+- [x] 1.5 `rg -n "\{' '\}"` on `tally-count-controls.tsx` and `item-level-editor.tsx` finds no spacer between the buttons and the number. 276cc65
 
 #### Manual
 
