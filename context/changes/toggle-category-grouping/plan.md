@@ -162,11 +162,11 @@ Not applicable. There is no data or schema change. Rollback is reverting the com
 
 #### Automated
 
-- [ ] 1.1 `pnpm typecheck` passes.
-- [ ] 1.2 `pnpm lint` passes with no new warnings in `src/app/inventory/inventory-tally.tsx`.
-- [ ] 1.3 `pnpm test` passes. No existing test changes.
-- [ ] 1.4 `rg "sessionStorage|localStorage" src/app/inventory/inventory-tally.tsx` returns no matches.
-- [ ] 1.5 `rg "setToggled" src/app/inventory/inventory-tally.tsx` shows `setToggled` called only in the search `onChange` and the panel `onToggle`, and not in the toggle button handler.
+- [x] 1.1 `pnpm typecheck` passes. f22c1a5
+- [x] 1.2 `pnpm lint` passes with no new warnings in `src/app/inventory/inventory-tally.tsx`. f22c1a5
+- [x] 1.3 `pnpm test` passes. No existing test changes. f22c1a5
+- [x] 1.4 `rg "sessionStorage|localStorage" src/app/inventory/inventory-tally.tsx` returns no matches. f22c1a5
+- [x] 1.5 `rg "setToggled" src/app/inventory/inventory-tally.tsx` shows `setToggled` called only in the search `onChange` and the panel `onToggle`, and not in the toggle button handler. f22c1a5
 
 #### Manual
 
