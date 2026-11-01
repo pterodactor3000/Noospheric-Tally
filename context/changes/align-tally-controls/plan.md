@@ -276,10 +276,10 @@ Not applicable. No data or API changes. Revert the three phases' files to roll b
 
 #### Automated
 
-- [x] 2.1 `pnpm typecheck` passes.
-- [x] 2.2 `pnpm lint` passes.
-- [x] 2.3 `rg -n "text-align-last" src` shows one match, in `item-level-editor.tsx`.
-- [x] 2.4 `rg -n "text-right"` on `item-level-editor.tsx` matches the increase button only, not the select. `rg -n "dir="` on that file finds nothing.
+- [x] 2.1 `pnpm typecheck` passes. 26a103b
+- [x] 2.2 `pnpm lint` passes. 26a103b
+- [x] 2.3 `rg -n "text-align-last" src` shows one match, in `item-level-editor.tsx`. 26a103b
+- [x] 2.4 `rg -n "text-right"` on `item-level-editor.tsx` matches the increase button only, not the select. `rg -n "dir="` on that file finds nothing. 26a103b
 
 #### Manual
 
