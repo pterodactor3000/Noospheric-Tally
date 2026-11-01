@@ -317,10 +317,10 @@ Apply both migrations before deploying the app. The default change is reversible
 #### Manual
 
 - [ ] 2.3 A row at 500 reads 99 after the migration, rows at or below 99 and the row count are unchanged, and a direct update or insert with `quantity = 100` fails on `household_inventory_quantity_range`.
-- [x] 2.4 `adjust_household_quantity` takes 98 to 99 with `+1`, raises `22003` with `+1` at 99 and leaves the count at 99, and returns 98 with `-1` at 99.
-- [x] 2.5 `set_household_item_levels` saves a count of 99, rejects a count of 100 with `rejects a quantity outside 0 through 99`, and still saves a minimum of 999.
-- [x] 2.6 `increment_household_quantity` at 98 returns 99 and writes one change row, and at 99 it raises `22003`, keeps the count at 99, and adds no change row.
-- [x] 2.7 `reverse_quantity_change` on a decrement change refuses with `22003` at 99 and leaves `reversed_at` null, succeeds at 98, still reverses an increment change, and still raises `check_violation` below 0.
+- [x] 2.4 `adjust_household_quantity` takes 98 to 99 with `+1`, raises `22003` with `+1` at 99 and leaves the count at 99, and returns 98 with `-1` at 99. 84f1be2
+- [x] 2.5 `set_household_item_levels` saves a count of 99, rejects a count of 100 with `rejects a quantity outside 0 through 99`, and still saves a minimum of 999. 84f1be2
+- [x] 2.6 `increment_household_quantity` at 98 returns 99 and writes one change row, and at 99 it raises `22003`, keeps the count at 99, and adds no change row. 84f1be2
+- [x] 2.7 `reverse_quantity_change` on a decrement change refuses with `22003` at 99 and leaves `reversed_at` null, succeeds at 98, still reverses an increment change, and still raises `check_violation` below 0. 84f1be2
 
 ### Phase 3: Apply the cap of 99 in the app
 
