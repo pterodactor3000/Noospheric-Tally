@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
-import { ArrowDown01, ArrowDown10, ArrowDownAZ, ArrowDownZA } from 'lucide-react'
+import { ArrowDown01, ArrowDown10, ArrowDownAZ, ArrowDownZA, Layers } from 'lucide-react'
 import { clsx } from 'clsx'
 
 import type { HabUnitTallyLine } from '@/lib/items/load-hab-unit-items'
@@ -67,6 +67,11 @@ interface InventoryTallyProps {
   readonly lines: readonly HabUnitTallyLine[]
 }
 
+interface TallyLineListProps {
+  readonly lines: readonly HabUnitTallyLine[]
+  readonly onPendingChange: (itemId: string, isPending: boolean) => void
+}
+
 const INITIAL_TALLY_SORT: TallySort = { field: 'name', direction: 'asc' }
 
 const sortButtonLabel = (sort: TallySort, field: TallySortField): string => {
@@ -76,9 +81,58 @@ const sortButtonLabel = (sort: TallySort, field: TallySortField): string => {
   return `Sort by ${fieldLabel} ${nextDirection}`
 }
 
+const TallyLineList = ({ lines, onPendingChange }: TallyLineListProps) => (
+  <ul>
+    {lines.map((line) => {
+      const stockState = getStockState(line.quantity, line.minimumQuantity)
+
+      return (
+        <li key={line.itemId} className="px-2">
+          <TallyCountControls
+            itemId={line.itemId}
+            name={line.name}
+            quantity={line.quantity}
+            stockStateLabel={STOCK_STATE_LABELS[stockState]}
+            stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
+            onPendingChange={onPendingChange}
+          >
+            <ItemListMarker />
+            <Link href={`/inventory/${line.itemId}`} className={tallyName}>
+              {line.name}
+            </Link>
+            <span aria-hidden="true" className={tallyDots}>
+              {TALLY_DOT_LEADER}
+            </span>
+          </TallyCountControls>
+        </li>
+      )
+    })}
+  </ul>
+)
+
 const InventoryTally = ({ lines }: InventoryTallyProps) => {
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<TallySort>(INITIAL_TALLY_SORT)
+  const [isCategorized, setIsCategorized] = useState(true)
+  const [pendingItemIds, setPendingItemIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  )
+  const handlePendingChange = useCallback((itemId: string, isPending: boolean) => {
+    setPendingItemIds((current) => {
+      const hasItem = current.has(itemId)
+      if (isPending === hasItem) {
+        return current
+      }
+      const next = new Set(current)
+      if (isPending) {
+        next.add(itemId)
+      } else {
+        next.delete(itemId)
+      }
+      return next
+    })
+  }, [])
+  const isCountWritePending = pendingItemIds.size > 0
   const [toggled, setToggled] = useState<
     Partial<Record<ItemCategory, boolean>>
   >({})
@@ -146,6 +200,18 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                 <CountSortIcon aria-hidden="true" />
               </Button>
             </div>
+            <Button
+              type="button"
+              aria-pressed={isCategorized}
+              aria-label="Group by category"
+              variant={isCategorized ? 'default' : 'outline'}
+              size="icon"
+              className="size-11!"
+              disabled={isCountWritePending}
+              onClick={() => setIsCategorized((current) => !current)}
+            >
+              <Layers aria-hidden="true" />
+            </Button>
           </div>
         </div>
       )}
@@ -153,64 +219,45 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
         <p role="status" className={tallyMiss}>{`No item matches "${trimmedQuery}".`}</p>
       ) : null}
       <div className={tallyPanelStack}>
-        {visibleGroups.map((group) => {
-          const shortage = shortageByCategory.get(group.category) ?? null
-          const isOpen = resolveCategoryPanelOpen({
-            toggledOpen: toggled[group.category],
-            isSearching,
-            matchCount: group.lines.length,
-            hasShortage: shortage !== null,
-          })
+        {isCategorized
+          ? visibleGroups.map((group) => {
+              const shortage = shortageByCategory.get(group.category) ?? null
+              const isOpen = resolveCategoryPanelOpen({
+                toggledOpen: toggled[group.category],
+                isSearching,
+                matchCount: group.lines.length,
+                hasShortage: shortage !== null,
+              })
 
-          return (
-            <InventoryCategoryPanel
-              key={group.category}
-              label={ITEM_CATEGORY_LABELS[group.category]}
-              panelId={`inventory-category-${group.category}`}
-              isOpen={isOpen}
-              onToggle={() => {
-                setToggled((current) => ({
-                  ...current,
-                  [group.category]: !isOpen,
-                }))
-              }}
-              itemCount={countByCategory.get(group.category) ?? 0}
-              shortage={shortage}
-            >
-              <ul>
-                {group.lines.map((line) => {
-                  const stockState = getStockState(
-                    line.quantity,
-                    line.minimumQuantity,
-                  )
-
-                  return (
-                    <li key={line.itemId} className="px-2">
-                      <TallyCountControls
-                        itemId={line.itemId}
-                        name={line.name}
-                        quantity={line.quantity}
-                        stockStateLabel={STOCK_STATE_LABELS[stockState]}
-                        stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
-                      >
-                        <ItemListMarker />
-                        <Link
-                          href={`/inventory/${line.itemId}`}
-                          className={tallyName}
-                        >
-                          {line.name}
-                        </Link>
-                        <span aria-hidden="true" className={tallyDots}>
-                          {TALLY_DOT_LEADER}
-                        </span>
-                      </TallyCountControls>
-                    </li>
-                  )
-                })}
-              </ul>
-            </InventoryCategoryPanel>
-          )
-        })}
+              return (
+                <InventoryCategoryPanel
+                  key={group.category}
+                  label={ITEM_CATEGORY_LABELS[group.category]}
+                  panelId={`inventory-category-${group.category}`}
+                  isOpen={isOpen}
+                  onToggle={() => {
+                    setToggled((current) => ({
+                      ...current,
+                      [group.category]: !isOpen,
+                    }))
+                  }}
+                  itemCount={countByCategory.get(group.category) ?? 0}
+                  shortage={shortage}
+                >
+                  <TallyLineList
+                    lines={group.lines}
+                    onPendingChange={handlePendingChange}
+                  />
+                </InventoryCategoryPanel>
+              )
+            })
+          : null}
+        {!isCategorized && visibleLines.length > 0 ? (
+          <TallyLineList
+            lines={visibleLines}
+            onPendingChange={handlePendingChange}
+          />
+        ) : null}
       </div>
     </div>
   )
