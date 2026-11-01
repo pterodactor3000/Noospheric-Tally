@@ -299,8 +299,8 @@ Apply both migrations before deploying the app. The default change is reversible
 
 #### Automated
 
-- [ ] 1.1 `pnpm exec supabase db push --dry-run` lists `20261101090000_household_inventory_quantity_default_one.sql` as the only pending migration.
-- [ ] 1.2 `pnpm test`, `pnpm typecheck`, and `pnpm lint` pass with no code change.
+- [x] 1.1 `pnpm exec supabase db push --dry-run` lists `20261101090000_household_inventory_quantity_default_one.sql` as the only pending migration.
+- [x] 1.2 `pnpm test`, `pnpm typecheck`, and `pnpm lint` pass with no code change.
 
 #### Manual
 

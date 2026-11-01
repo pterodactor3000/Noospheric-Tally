@@ -1,7 +1,7 @@
 ---
 change_id: start-items-at-1-cap-99
 title: Start new items at 1 and cap counts at 99
-status: planned
+status: implementing
 created: 2026-11-01
 updated: 2026-11-01
 archived_at: null
