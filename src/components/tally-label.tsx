@@ -9,6 +9,7 @@ const TallyLabel = () => {
           'font-mono',
           'font-semibold',
           'tracking-[0.24em]',
+          'max-sm:tracking-[0.08em]',
           'text-foreground/70',
           'uppercase',
           'terminal-type',

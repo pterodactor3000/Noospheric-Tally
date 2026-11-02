@@ -1,6 +1,7 @@
 import { clsx } from 'clsx'
 import { TallyLabel } from './tally-label'
 import { SignOutButton } from './sign-out-button'
+import { HelpLink } from './help-link'
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
 
 const Header = async () => {
@@ -24,7 +25,10 @@ const Header = async () => {
       )}
     >
       <TallyLabel />
-      {user !== null ? <SignOutButton /> : null}
+      <div className={clsx('flex', 'items-center', 'gap-2', 'shrink-0')}>
+        {user !== null ? <SignOutButton /> : null}
+        <HelpLink />
+      </div>
     </header>
   )
 }

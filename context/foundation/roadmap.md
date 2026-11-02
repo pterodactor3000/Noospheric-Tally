@@ -3,7 +3,7 @@ project: Noospheric Tally
 version: 1
 status: draft
 created: 2026-08-04
-updated: 2026-10-30
+updated: 2026-11-02
 prd_version: 1
 main_goal: learn
 top_blocker: none
@@ -40,6 +40,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-12 | create-flow-lookup-feedback | see a local miss, a catalog miss, loading, a clear header, and a bold barcode | S-02 | FR-005, FR-016 | done |
 | S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
 | S-14 | compact-attach-item-picker | choose an existing item from a 36px Item designation list, with the selection in yellow gold and no radio styling | S-02 | FR-005 | ready |
+| S-15 | landing-and-help | read what the app does on the signed-out landing page, and open a ten-step help page from `[ ? ]` in the header | - | none (?) | proposed |
 
 ## Streams
 
@@ -234,6 +235,18 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Risk:** Touch targets that are too small make the attach list hard to use on a phone during unpack.
 - **Status:** ready
 
+### S-15: Landing page and help
+
+- **Outcome:** user can read, on the signed-out landing page, that the app records stock when an item is handled and shows what needs restocking, and can open a help page from a `[ ? ]` control. Signed out, that control sits on the right of the header. Signed in, it sits immediately right of Sign out. The help page explains the tally, search and categories, adding items, the scanner, restock, lookup, item details, and sharing a hab unit. The deployment-foundation lead, the Inventory section, and the Platform section are gone.
+- **Change ID:** landing-and-help
+- **PRD refs:** none (?)
+- **Prerequisites:** -
+- **Parallel with:** -
+- **Blockers:** -
+- **Unknowns:** -
+- **Risk:** The signed-out page is the only explanation a new visitor gets, and the help control is easy to miss if it does not sit on the right of the header.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for planning | Notes |
@@ -252,6 +265,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-12 | create-flow-lookup-feedback | Show lookup misses, loading, and a clear header | yes | Run `/rites-of-true-aim create-flow-lookup-feedback` |
 | S-13 | softer-green-interface | Restyle the app in muted green | no | Run `/rites-of-true-aim softer-green-interface` |
 | S-14 | compact-attach-item-picker | Replace attach radios with a compact selectable item list | yes | Built on the S-05 branch as Item designation. Mark done when that pull request merges. |
+| S-15 | landing-and-help | Explain the product and add a help page | no | Run `/rites-of-true-aim landing-and-help` |
 
 ## Open Roadmap Questions
 
