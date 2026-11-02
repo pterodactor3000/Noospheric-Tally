@@ -290,7 +290,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 - Unfocused empty inputs (`/login` email, `/inventory/new` barcode) show a left bracket, a right bracket, and periods on the text baseline across the full width. No block caret shows.
 - Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character. Backspace brings one dot back each time. Total cells (dots plus characters) stay constant.
-- Password (`/login`) masks every character as a still block the shape of the title caret, one dot-cell wide.
+- Password (`/login`) masks every character as a still block the shape of the title caret, 2px thinner than that caret, with no blink.
 - After a form submit that resets or repopulates a field, and after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - The controlled search on `/inventory` follows typing and clearing. A value longer than the field pushes all dots out and scrolls without any text or dot leaving the frame.
 - `aria-invalid` shows destructive brackets and a destructive ring. A disabled input dims the frame and dots. The read-only invite code and link inputs on `/hab-unit/share` show their value followed by dots.
@@ -416,31 +416,31 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes the new `button.test.ts` (6 variants times 8 sizes, bracket class present, six border-color classes absent, one font-size class, default size `text-base`).
-- [ ] 1.2 `pnpm test` passes the new `bracket-frame.test.ts` (utility, both pseudo-elements, `top: 0`, `bottom: 0`, color fallback).
-- [ ] 1.3 `pnpm lint` and `pnpm typecheck` pass.
+- [x] 1.1 `pnpm test` passes the new `button.test.ts` (6 variants times 8 sizes, bracket class present, six border-color classes absent, one font-size class, default size `text-base`). `8cb28f2`
+- [x] 1.2 `pnpm test` passes the new `bracket-frame.test.ts` (utility, both pseudo-elements, `top: 0`, `bottom: 0`, color fallback). `8cb28f2`
+- [x] 1.3 `pnpm lint` and `pnpm typecheck` pass. `8cb28f2`
 
 #### Manual
 
-- [ ] 1.4 On `/login` and `/inventory`, each Button shows a left bracket and a right bracket with short arms, like the mock, and no full rectangle at idle, hover, focus, pressed, and disabled.
-- [ ] 1.5 Computed styles: a default-size button has a 16px label. The pseudo-elements run from the top edge of the button to the bottom edge. They are not 24px glyphs centered in the button.
-- [ ] 1.6 Bracket color matches the old border color per state in light and dark: outline `--border` (`--input` in dark), focus `--ring`, invalid destructive, and default, secondary, destructive, ghost, and link follow the text color.
-- [ ] 1.7 Button boxes did not move (default 32px, `actionButton` 44px, `size-11!` 44px, `size-17!` 68px), and no arm touches a label or icon at `xs`, `icon-xs`, and the 68px scan buttons.
+- [x] 1.4 On `/login` and `/inventory`, each Button shows a left bracket and a right bracket with short arms, like the mock, and no full rectangle at idle, hover, focus, pressed, and disabled. `8cb28f2`
+- [x] 1.5 Computed styles: a default-size button has a 16px label. The pseudo-elements run from the top edge of the button to the bottom edge. They are not 24px glyphs centered in the button. `8cb28f2`
+- [x] 1.6 Bracket color matches the old border color per state in light and dark: outline `--border` (`--input` in dark), focus `--ring`, invalid destructive, and default, secondary, destructive, ghost, and link follow the text color. `8cb28f2`
+- [x] 1.7 Button boxes did not move (default 32px, `actionButton` 44px, `size-11!` 44px, `size-17!` 68px), and no arm touches a label or icon at `xs`, `icon-xs`, and the 68px scan buttons. `8cb28f2`
 
 ### Phase 2: Labels, raw count buttons, and help copy
 
 #### Automated
 
-- [ ] 2.1 `rg -n "\[ \? \]|\[-\]|\[\+\]" src` returns no matches.
-- [ ] 2.2 `pnpm test` passes the new help copy tests (tally topic, item details topic, heading text kept, no `[-]` or `[+]`).
-- [ ] 2.3 `pnpm lint` and `pnpm typecheck` pass.
+- [x] 2.1 `rg -n "\[ \? \]|\[-\]|\[\+\]" src` returns no matches. `8cb28f2`
+- [x] 2.2 `pnpm test` passes the new help copy tests (tally topic, item details topic, heading text kept, no `[-]` or `[+]`). `8cb28f2`
+- [x] 2.3 `pnpm lint` and `pnpm typecheck` pass. `8cb28f2`
 
 #### Manual
 
-- [ ] 2.4 The header Help control reads `?` inside a bracket frame, signed out on `/` and signed in on `/inventory`, opens `/help`, and still announces as Help.
+- [x] 2.4 The header Help control reads `?` inside a bracket frame, signed out on `/` and signed in on `/inventory`, opens `/help`, and still announces as Help. `8cb28f2`
 - [ ] 2.5 A tally row shows framed `-`, the count, and framed `+` in the row's stock color. Both disable at 0 and 99 and keep the frame, and a click still changes the count.
-- [ ] 2.6 On an item page, Count and Minimum show framed `-` and `+`, unsaved rows turn yellow gold with their brackets, and the category value and barcode line show no frame.
-- [ ] 2.7 `/help` reads `the - button` and `the + button` in the tally and item details topics, and the `/inventory` heading still reads `[<hab unit name>] tally`.
+- [x] 2.6 On an item page, Count and Minimum show framed `-` and `+`, unsaved rows turn yellow gold with their brackets, and the category value and barcode line show no frame. `8cb28f2`
+- [x] 2.7 `/help` reads `the - button` and `the + button` in the tally and item details topics, and the `/inventory` heading still reads `[<hab unit name>] tally`. `8cb28f2`
 
 ### Phase 3: Input frame, dot track, and value tracking
 
@@ -455,27 +455,27 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 #### Manual
 
 - [x] 3.6 Unfocused empty inputs show both brackets and periods on the text baseline across the full width, with no block caret. `400f170`
-- [ ] 3.7 Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character, backspace brings one back each time, and total cells stay constant.
-- [ ] 3.8 Password masks every character as a still block the shape of the title caret, and each block is as wide as a dot cell.
+- [x] 3.7 Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character, backspace brings one back each time, and total cells stay constant. `8cb28f2`
+- [x] 3.8 Password masks every character as a still block the shape of the title caret, 2px thinner than that caret, with no blink. `8cb28f2`
 - [ ] 3.9 After a form submit that resets or repopulates a field, after back and forward navigation, and after browser autofill, the dot count matches the visible text.
-- [ ] 3.10 The controlled search on `/inventory` follows typing and clearing, and a value longer than the field scrolls without any text or dot leaving the frame.
+- [x] 3.10 The controlled search on `/inventory` follows typing and clearing, and a value longer than the field scrolls without any text or dot leaving the frame. `8cb28f2`
 - [ ] 3.11 `aria-invalid` shows destructive brackets and ring, a disabled input dims the frame and dots, and the read-only invite fields on `/hab-unit/share` show their value followed by dots.
-- [ ] 3.12 The JSON file picker on `/inventory/new` looks exactly as before.
+- [x] 3.12 The JSON file picker on `/inventory/new` looks exactly as before. `8cb28f2`
 
 ### Phase 4: Focus caret and input sweep
 
 #### Automated
 
-- [ ] 4.1 `pnpm test` passes the `terminalCaret` string test and the caret markup tests.
+- [x] 4.1 `pnpm test` passes the `terminalCaret` string test and the caret markup tests. `8cb28f2`
 - [ ] 4.2 `rg -n "border-r-\[1ch\]" src` returns only `src/app/styles/class-names.ts`.
-- [ ] 4.3 `rg -n "Textarea" src --glob '!src/components/ui/*'` returns no matches, and `git diff --name-only main` lists neither `textarea.tsx` nor `input-group.tsx`.
-- [ ] 4.4 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass.
+- [x] 4.3 `rg -n "Textarea" src --glob '!src/components/ui/*'` returns no matches, and `git diff --name-only main` lists neither `textarea.tsx` nor `input-group.tsx`. `8cb28f2`
+- [x] 4.4 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass. `8cb28f2`
 
 #### Manual
 
-- [ ] 4.5 The app title caret looks and blinks as before.
-- [ ] 4.6 A focused empty input shows the block caret blinking at the start, dots fill the rest, the native caret is not visible, and the cadence matches the app title (1s, step-end).
-- [ ] 4.7 Typing one character puts the caret after it and removes one dot, deleting brings it back, and blurring removes the caret and restores the full dot width.
-- [ ] 4.8 A long value keeps the caret visible at the right edge.
+- [x] 4.5 The app title caret looks and blinks as before. `8cb28f2`
+- [x] 4.6 A focused empty input shows the block caret blinking at the start, dots fill the rest, the native caret is not visible, and the cadence matches the app title (1s, step-end). `8cb28f2`
+- [x] 4.7 Typing one character puts the caret after it and removes one dot, deleting brings it back, and blurring removes the caret and restores the full dot width. `8cb28f2`
+- [x] 4.8 A long value keeps the caret visible at the right edge. `8cb28f2`
 - [ ] 4.9 Every input screen passes in light and dark: `/login`, `/signup`, `/hab-unit/new`, `/hab-unit/share`, `/inventory`, `/inventory/new`, `/inventory/scan`, `/inventory/lookup`, with no form submission changed.
-- [ ] 4.10 The `/inventory` search row keeps its sort and group buttons aligned with the framed search field, and no control is clipped on a 390px viewport.
+- [x] 4.10 The `/inventory` search row keeps its sort and group buttons aligned with the framed search field, and no control is clipped on a 390px viewport. `8cb28f2`
