@@ -284,6 +284,33 @@
   }
 }
 
+@utility bracket-frame {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    height: 1.5em;
+    transform: translateY(-50%);
+    box-sizing: border-box;
+    pointer-events: none;
+    border: 2px solid var(--bracket-color, currentColor);
+    width: var(--bracket-arm, 0.4em);
+  }
+
+  &::before {
+    left: 0;
+    border-right-width: 0;
+  }
+
+  &::after {
+    right: 0;
+    border-left-width: 0;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
