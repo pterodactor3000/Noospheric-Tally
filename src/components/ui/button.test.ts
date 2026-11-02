@@ -85,7 +85,7 @@ describe('buttonVariants', () => {
       expect({
         hasBracketFrame: classes.includes('bracket-frame'),
         hasLongerArms: classes.includes('[--bracket-arm:calc(0.4em+2px)]'),
-        hasBorderColor: classes.includes('text-input'),
+        hasBorderColor: classes.includes('text-button'),
         tintClasses: TINT_CLASSES.filter((token) => classes.includes(token)),
         removedBorderColorClasses,
         backgroundClasses,

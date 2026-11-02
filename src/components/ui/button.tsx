@@ -20,7 +20,7 @@ const buttonVariants = cva(
     '[--bracket-color:currentColor]',
     'bg-transparent',
     buttonStateBackground,
-    'text-input',
+    'text-button',
     'font-medium',
     'whitespace-nowrap',
     'transition-all',
