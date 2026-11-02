@@ -5,7 +5,7 @@
 
 ## What and Why
 
-Frame every shared Button, the tally and item-page count buttons, and every text, search, email, and password input in a bracket border: a left and a right bracket with short arms, 50% taller than the text, as in the TEC-65 mock. Inputs also get a middle-dot track and the app-title block caret while focused. This covers FR-019 chrome for S-16 and adds no behavior.
+Frame every shared Button, the tally and item-page count buttons, and every text, search, email, and password input in a bracket border: a left and a right bracket with short arms, running from the control's top edge to its bottom edge, as in the TEC-65 mock. The brackets are the border, not the `[` `]` characters. Inputs also get a middle-dot track and the app-title block caret while focused. This covers FR-019 chrome for S-16 and adds no behavior.
 
 ## Starting Point
 
@@ -22,9 +22,9 @@ Every shared Button and count control shows both brackets in every state, with t
 | Decision | Choice | Why | Source |
 | --- | --- | --- | --- |
 | Border is | Drawn brackets, not typed characters | Mock and TEC-65 | Roadmap, TEC-65 |
-| Frame size | `1.5em` of the control's own font size | The 50% ratio holds at every size with no per-size code | Plan |
-| Frame vs hit area | Frame centered, hit area unchanged | `min-h-11` and `size-11!` call sites keep their 44px tap targets | Plan |
-| Default label | 1rem, with a 1.5rem frame | Closed decision. Live code is 0.875rem, so the default label grows by 2px | Plan (repository conflict) |
+| Frame size | The control's own top and bottom edges, arm `0.4em` | A centered `1.5em` glyph reads as the `[` `]` characters. The border has to be the bracket. | User, 2026-11-02 |
+| Frame vs hit area | Brackets span the control. Hit area unchanged | `min-h-11` and `size-11!` call sites keep their 44px tap targets | User, 2026-11-02 |
+| Default label | 1rem | Closed decision. Live code is 0.875rem, so the default label grows by 2px | Plan (repository conflict) |
 | Colors | `--bracket-color` replaces border-color classes, per state | Keeps focus, invalid, outline, and destructive treatments | Plan |
 | Help, tally, item page | Labels `?`, `-`, `+`. Raw buttons get the same frame | Closed decision | Roadmap, TEC-65 |
 | Help copy | `the - button`, `the + button`. Heading `[<hab unit name>] tally` stays | Closed decision | Roadmap, TEC-65 |
@@ -65,7 +65,7 @@ Add one `@utility bracket-frame` in `globals.css` that draws both brackets with 
 
 ## Risks and Assumptions
 
-- **Default label conflict.** The closed decision says the default label stays 1rem. `button.tsx:16` makes it 0.875rem. The plan follows the stated 1rem and 1.5rem numbers, a 2px change on the default size only. If the parent wants the label untouched, change `default` to keep `text-sm` and accept a 1.3125rem default frame. Either way the 1.5 ratio holds.
+- **Default label conflict.** The closed decision says the default label stays 1rem. `button.tsx:16` makes it 0.875rem. The plan follows 1rem, a 2px change on the default size only.
 - The dot track can be misread as a password mask. Password uses `•` and the empty cells use `·`. Phase 3 checks both side by side.
 - No component test harness. Dot counts, blink, form reset, and overflow are checked in a browser. Chromium is not installed for the Playwright MCP on this machine (`/opt/google/chrome/chrome` is missing), so the parent needs another browser path for manual checks.
 - `input.test.ts` imports `@base-ui/react/input` and `react-dom/server` in the `node` environment. If that import fails, fall back to asserting class strings from an exported constant. Do not add jsdom.

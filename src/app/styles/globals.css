@@ -291,9 +291,8 @@
   &::after {
     content: '';
     position: absolute;
-    top: 50%;
-    height: 1.5em;
-    transform: translateY(-50%);
+    top: 0;
+    bottom: 0;
     box-sizing: border-box;
     pointer-events: none;
     border: 2px solid var(--bracket-color, currentColor);

@@ -48,19 +48,25 @@ const globalsCss = readFileSync(GLOBALS_CSS_PATH, 'utf8')
 const bracketFrameBlock = extractUtilityBlock(globalsCss, 'bracket-frame')
 
 describe('bracket-frame utility', () => {
-  test('draws both brackets at 1.5em with a currentColor fallback', () => {
+  test('draws both brackets on the button edges with a currentColor fallback', () => {
     expect({
       utility: globalsCss.includes('@utility bracket-frame'),
       before: /::before\s*[,{]/.test(bracketFrameBlock),
       after: /::after\s*[,{]/.test(bracketFrameBlock),
+      top: readDeclaration(bracketFrameBlock, 'top'),
+      bottom: readDeclaration(bracketFrameBlock, 'bottom'),
       height: readDeclaration(bracketFrameBlock, 'height'),
       border: readDeclaration(bracketFrameBlock, 'border'),
+      width: readDeclaration(bracketFrameBlock, 'width'),
     }).toEqual({
       utility: true,
       before: true,
       after: true,
-      height: '1.5em',
+      top: '0',
+      bottom: '0',
+      height: null,
       border: '2px solid var(--bracket-color, currentColor)',
+      width: 'var(--bracket-arm, 0.4em)',
     })
   })
 })

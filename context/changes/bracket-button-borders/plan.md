@@ -20,7 +20,7 @@ Verified against branch `feature/s-16-bracket-button-borders` (one commit, `969b
 - `outline` sets `border-border` (`:46`) and `dark:border-input` (`:52`). `destructive` sets `focus-visible:border-destructive/40` (`:74`). `default`, `secondary`, `ghost`, and `link` have no visible border (`:40-44`, `:56-62`, `:63-69`, `:80`).
 - Sizes: `default` h-8 (`:83`), `xs` h-6 plus `text-xs` (`:90`, `:95`), `sm` h-7 plus `text-[0.8rem]` (`:101`, `:106`), `lg` h-9 (`:112`), `icon` size-8 (`:119`), `icon-xs` size-6 (`:120`), `icon-sm` size-7 (`:126`), `icon-lg` size-9 (`:131`).
 - The base `text-sm` and the size-level `text-xs` or `text-[0.8rem]` sit on the same element and set the same property. No `tailwind-merge` is in use (`clsx` only, `:3`, `:150`). The winner depends on generated CSS order.
-- **Repository conflict with the closed decision.** The decision says the default label stays 1rem. The live default size inherits `text-sm`, which is 0.875rem, because `globals.css` overrides no `--text-*` token and no caller sets a size on the default size (`actionButton` is `font-mono min-h-11`, `src/app/styles/class-names.ts:92`). The plan follows the stated numbers: default label 1rem, default frame 1.5rem. That moves the default label by 2px. See Phase 1 and `## Critical Implementation Details`.
+- **Repository conflict with the closed decision.** The decision says the default label stays 1rem. The live default size inherits `text-sm`, which is 0.875rem, because `globals.css` overrides no `--text-*` token and no caller sets a size on the default size (`actionButton` is `font-mono min-h-11`, `src/app/styles/class-names.ts:92`). The plan follows the stated label size: default label 1rem. That moves the default label by 2px. The bracket is the control's side border, not a 1.5rem glyph. See Phase 1 and `## Critical Implementation Details`.
 - Callers override geometry: `size-11!` on the three tally icon buttons (`src/app/inventory/inventory-tally.tsx:192`, `:203`, `:214`), `size-17! p-3` on the scan direction buttons (`src/app/inventory/scan/scan-direction-buttons.tsx:117`), `px-2!` on Help (`src/components/help-link.tsx:12`), `min-h-11` through `actionButton` (`class-names.ts:92`), and `-ml-2.5 min-h-11` on the back link, which uses `buttonVariants` on a `Link` (`src/components/back-to-inventory-link.tsx:23-28`).
 
 **Help** (`src/components/help-link.tsx:6-15`) renders `{'[ ? ]'}` at `:14` inside an outline `Button` with `aria-label="Help"`.
@@ -47,9 +47,9 @@ Verified against branch `feature/s-16-bracket-button-borders` (one commit, `969b
 
 ## Desired End State
 
-- Every `Button` (default, outline, secondary, destructive, ghost, link; sizes default, xs, sm, lg, icon, icon-xs, icon-sm, icon-lg) shows a left bracket and a right bracket, each with short arms, in every state: idle, hover, focus, pressed, disabled. The frame height is 1.5 times the label font size. The default label is 1rem and its frame is 1.5rem. Hit areas, fills, rings, and colors are unchanged.
+- Every `Button` (default, outline, secondary, destructive, ghost, link; sizes default, xs, sm, lg, icon, icon-xs, icon-sm, icon-lg) shows a left bracket and a right bracket, each with short arms, in every state: idle, hover, focus, pressed, disabled. The brackets are the side borders of the control: they run from its top edge to its bottom edge. They are not the `[` `]` characters, and they are not a 1.5em glyph centered in the hit area. The default label is 1rem. Hit areas, fills, rings, and colors are unchanged.
 - Help reads `?`. The tally and the item page read `-` and `+`. Each has the same frame. No typed brackets remain on those labels. Help copy says `-` and `+`. The `[<hab unit name>] tally` heading is unchanged.
-- Text, search, email, and password inputs show the same frame at 1.5 times the text size. Unfocused, middle dots fill every untyped cell and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password still masks and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
+- Text, search, email, and password inputs show the same frame, spanning each input from its top edge to its bottom edge. Unfocused, middle dots fill every untyped cell and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password still masks and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
 - The file picker, hidden fields, checkboxes, radios, `Textarea`, and `InputGroup*` are unchanged.
 - Verify: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, plus the per-phase browser checks.
 
@@ -77,8 +77,8 @@ Phases: shared frame and Button first (everything else depends on it), then the 
 
 ## Critical Implementation Details
 
-- **Frame size is `em`-based and independent of the hit area.** The pseudo-elements are `height: 1.5em`, centered with `top: 50%` and a `-50%` translate. Do not size the frame from the element height. `actionButton` is `min-h-11` and the tally icon buttons are `size-11!`. Their boxes stay 44px, and the frame inside them is 1.5 times the label.
-- **Label size conflict.** Closed decision: default label 1rem, frame 1.5rem. Live: `text-sm` at `button.tsx:16`. The base and the size variants both set a font size on one element with no merge, so the cascade order decides. Before editing, record the computed `font-size` of every size variant in a browser. Then move font size out of the base and into each size variant. Keep each recorded value except `default`, which becomes `text-base` (1rem). Each size then sets exactly one font-size class. A unit test enforces that.
+- **The bracket is the control border.** The pseudo-elements stretch from `top: 0` to `bottom: 0`. The vertical bar is the side of the control and the arms sit on the top and bottom corners. Do not center a `1.5em` glyph in the hit area. That glyph reads as the `[` `]` characters. `actionButton` stays `min-h-11` and the tally icon buttons stay `size-11!`. The arm length stays `0.4em`.
+- **Label size conflict.** Closed decision: default label 1rem. Live: `text-sm` at `button.tsx:16`. The base and the size variants both set a font size on one element with no merge, so the cascade order decides. Before editing, record the computed `font-size` of every size variant in a browser. Then move font size out of the base and into each size variant. Keep each recorded value except `default`, which becomes `text-base` (1rem). Each size then sets exactly one font-size class. A unit test enforces that.
 - **Border classes that must go.** Removing the visible rectangle means removing every class that colors the real border: `border-border` (`:46`), `dark:border-input` (`:52`), `focus-visible:border-ring` (`:22`), `aria-invalid:border-destructive` (`:28`), `dark:aria-invalid:border-destructive/50` (`:31`), and `focus-visible:border-destructive/40` (`:74`). `border-2 border-transparent` stays for box geometry. Each removed color moves to `--bracket-color` under the same state.
 - **`--bracket-color` is read with a fallback, not declared by the utility.** The pseudo-elements use `var(--bracket-color, currentColor)`. The utility never declares the property, so variant classes cannot lose a same-element cascade fight.
 - **One class on `itemControl` is forbidden.** `itemControl` is shared with the category `<select>` and the no-barcode button. Add `bracket-frame` only on the two stepper buttons.
@@ -105,7 +105,7 @@ Add the shared frame primitive and apply it to every shared `Button`. After this
 **Contract:** `@utility bracket-frame` with these properties.
 
 - The element is `position: relative`.
-- `::before` is the left bracket and `::after` is the right bracket. Each has `content: ''`, `position: absolute`, `top: 50%`, `height: 1.5em`, a `-50%` vertical translate, `box-sizing: border-box`, `pointer-events: none`, `border: 2px solid var(--bracket-color, currentColor)`, and `width: var(--bracket-arm, 0.4em)`.
+- `::before` is the left bracket and `::after` is the right bracket. Each has `content: ''`, `position: absolute`, `top: 0`, `bottom: 0`, `box-sizing: border-box`, `pointer-events: none`, `border: 2px solid var(--bracket-color, currentColor)`, and `width: var(--bracket-arm, 0.4em)`. No `height` and no translate.
 - `::before` sits at `left: 0` with `border-right-width: 0`. `::after` sits at `right: 0` with `border-left-width: 0`. Together each bracket is a 2px vertical bar with top and bottom arms of `--bracket-arm` length, pointing inward.
 - The utility declares no `--bracket-color` and no `--bracket-arm` value.
 - If an arm reaches the label or icon at a size, shorten `--bracket-arm` for that size. Do not change the label.
@@ -133,20 +133,20 @@ Add the shared frame primitive and apply it to every shared `Button`. After this
 **Contract:**
 
 - `button.test.ts` calls `buttonVariants` for all six variants times all eight sizes. Each result includes `bracket-frame`, includes none of the six removed border-color classes, and includes exactly one class from `text-xs`, `text-sm`, `text-base`, and `text-[0.8rem]`. The `default` size result includes `text-base`.
-- `bracket-frame.test.ts` reads `globals.css` as `theme-tokens.test.ts` does (`path.join(__dirname, 'globals.css')`) and asserts `@utility bracket-frame`, a `::before` and an `::after` rule, `height: 1.5em`, and `var(--bracket-color, currentColor)`.
+- `bracket-frame.test.ts` reads `globals.css` as `theme-tokens.test.ts` does (`path.join(__dirname, 'globals.css')`) and asserts `@utility bracket-frame`, a `::before` and an `::after` rule, `top: 0`, `bottom: 0`, no `height`, and `var(--bracket-color, currentColor)`.
 
 ### Success Criteria
 
 #### Automated Verification
 
 - `pnpm test` passes, including the new `button.test.ts` (6 variants times 8 sizes, bracket class present, six border-color classes absent, one font-size class, default size `text-base`).
-- `pnpm test` passes the new `bracket-frame.test.ts` (utility, both pseudo-elements, `1.5em`, color fallback).
+- `pnpm test` passes the new `bracket-frame.test.ts` (utility, both pseudo-elements, `top: 0`, `bottom: 0`, color fallback).
 - `pnpm lint` and `pnpm typecheck` pass.
 
 #### Manual Verification
 
 - On `/login` and `/inventory`, each Button shows a left bracket and a right bracket with short arms, like the mock, and no full rectangle at idle, hover, focus, pressed, and disabled.
-- Computed styles: a default-size button has a 16px label and 24px pseudo-element height. An `sm` button (`Undo`, `/inventory/scan`) and an `xs` button show a frame of 1.5 times their own label size.
+- Computed styles: a default-size button has a 16px label. The pseudo-elements run from the top edge of the button to the bottom edge, including an `sm` button (`Undo`, `/inventory/scan`) and an `xs` button.
 - Bracket color matches the old border color per state in light and dark: outline uses `--border` (`--input` in dark), focus uses `--ring`, invalid uses destructive, and default, secondary, destructive, ghost, and link follow the text color.
 - Button boxes did not move: default 32px, `actionButton` 44px, `size-11!` 44px, and `size-17!` 68px. No arm touches a label or icon at `xs`, `icon-xs`, and the 68px scan buttons.
 
@@ -368,7 +368,7 @@ A focused input shows the app-title block caret, the native caret goes away, and
 ### Unit Tests
 
 - `buttonVariants` output across 6 variants and 8 sizes: bracket class present, six border-color classes absent, exactly one font-size class, default `text-base`.
-- `globals.css` contains the `bracket-frame` utility with both pseudo-elements, `1.5em`, and the color fallback.
+- `globals.css` contains the `bracket-frame` utility with both pseudo-elements, `top: 0`, `bottom: 0`, and the color fallback.
 - `isBracketInputType`: framed types, unframed types, `undefined`, and the empty string.
 - `getInputMirrorText`: empty, text, password, emoji, search, email.
 - `Input` markup through `react-dom/server`: framed and unframed types, the password mirror hiding the value, `className` on the frame, the caret markup.
@@ -417,13 +417,13 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 #### Automated
 
 - [ ] 1.1 `pnpm test` passes the new `button.test.ts` (6 variants times 8 sizes, bracket class present, six border-color classes absent, one font-size class, default size `text-base`).
-- [ ] 1.2 `pnpm test` passes the new `bracket-frame.test.ts` (utility, both pseudo-elements, `1.5em`, color fallback).
+- [ ] 1.2 `pnpm test` passes the new `bracket-frame.test.ts` (utility, both pseudo-elements, `top: 0`, `bottom: 0`, color fallback).
 - [ ] 1.3 `pnpm lint` and `pnpm typecheck` pass.
 
 #### Manual
 
 - [ ] 1.4 On `/login` and `/inventory`, each Button shows a left bracket and a right bracket with short arms, like the mock, and no full rectangle at idle, hover, focus, pressed, and disabled.
-- [ ] 1.5 Computed styles: a default-size button has a 16px label and 24px pseudo-element height. An `sm` button and an `xs` button show a frame of 1.5 times their own label size.
+- [ ] 1.5 Computed styles: a default-size button has a 16px label. The pseudo-elements run from the top edge of the button to the bottom edge. They are not 24px glyphs centered in the button.
 - [ ] 1.6 Bracket color matches the old border color per state in light and dark: outline `--border` (`--input` in dark), focus `--ring`, invalid destructive, and default, secondary, destructive, ghost, and link follow the text color.
 - [ ] 1.7 Button boxes did not move (default 32px, `actionButton` 44px, `size-11!` 44px, `size-17!` 68px), and no arm touches a label or icon at `xs`, `icon-xs`, and the 68px scan buttons.
 
