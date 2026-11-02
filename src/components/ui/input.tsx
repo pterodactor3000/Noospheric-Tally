@@ -186,7 +186,7 @@ function BracketInput({
         'h-8',
         'text-base',
         'md:text-sm',
-        '[--bracket-color:var(--color-input)]',
+        '[--bracket-color:var(--color-button)]',
         'focus-within:[--bracket-color:var(--color-ring)]',
         'has-[input:focus-visible]:[--bracket-color:var(--color-ring)]',
         'has-[input[aria-invalid=true]]:[--bracket-color:var(--color-destructive)]',
