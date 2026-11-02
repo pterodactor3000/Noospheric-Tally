@@ -6,8 +6,9 @@ These conventions apply to all code in this repository. Adapt names, framework r
 ## Developing
 
 - Check if the repository has a ruleset for development, or a guide
-- Follow the rileset, or guide, fully
+- Follow the ruleset, or guide, fully
 - If the models are not present, ask the user if they want to make changes to default models defined in the ruleset, or guide
+- If there are multiple providers available, list providers that have those models available, if no default is defined
 
 ## Naming
 
