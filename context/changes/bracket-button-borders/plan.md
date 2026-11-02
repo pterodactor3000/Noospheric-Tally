@@ -460,7 +460,7 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 - [ ] 3.9 After a form submit that resets or repopulates a field, after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - [x] 3.10 The controlled search on `/inventory` follows typing and clearing, and a value longer than the field scrolls without any text or dot leaving the frame. `8cb28f2`
 - [ ] 3.11 `aria-invalid` shows destructive brackets and ring, a disabled input dims the frame and dots, and the read-only invite fields on `/hab-unit/share` show their value followed by dots.
-- [x] 3.12 The JSON file field on `/inventory/new` uses the same brackets, dots, and focus caret as the barcode field. Choosing a file shows that file name, then the dots, and does not submit the form.
+- [x] 3.12 The JSON file field on `/inventory/new` uses the same brackets, dots, and focus caret as the barcode field. Choosing a file shows that file name, then the dots, and does not submit the form. `c8b42c0`
 
 ### Phase 4: Focus caret and input sweep
 
