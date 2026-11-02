@@ -14,6 +14,7 @@ const buttonVariants = cva(
     'border-transparent',
     'bg-clip-padding',
     'bracket-frame',
+    '[--bracket-arm:calc(0.4em+2px)]',
     '[--bracket-color:currentColor]',
     'bg-transparent',
     'text-foreground',

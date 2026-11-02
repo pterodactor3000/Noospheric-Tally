@@ -296,7 +296,7 @@
     box-sizing: border-box;
     pointer-events: none;
     border: 2px solid var(--bracket-color, currentColor);
-    width: calc(var(--bracket-arm, 0.4em) + 2px);
+    width: var(--bracket-arm, 0.4em);
   }
 
   &::before {

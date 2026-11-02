@@ -77,12 +77,14 @@ describe('buttonVariants', () => {
 
       expect({
         hasBracketFrame: classes.includes('bracket-frame'),
+        hasLongerArms: classes.includes('[--bracket-arm:calc(0.4em+2px)]'),
         hasLinkColor: classes.includes('text-foreground'),
         removedBorderColorClasses,
         backgroundClasses,
         fontSizeClasses,
       }).toEqual({
         hasBracketFrame: true,
+        hasLongerArms: true,
         hasLinkColor: true,
         removedBorderColorClasses: [],
         backgroundClasses: [],

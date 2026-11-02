@@ -65,7 +65,7 @@ describe('bracket-frame utility', () => {
       top: '0',
       bottom: '0',
       border: '2px solid var(--bracket-color, currentColor)',
-      width: 'calc(var(--bracket-arm, 0.4em) + 2px)',
+      width: 'var(--bracket-arm, 0.4em)',
       glow: false,
     })
   })
