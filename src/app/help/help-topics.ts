@@ -31,7 +31,7 @@ const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Add items below the tally',
     paragraphs: [
       'The controls under the tally are Add item, Scan item, Restock, Lookup, and the link Share hab unit.',
-      'Add item opens Item data creation. Type 8 to 14 digits in Barcode and press Apply. Lengths 8, 12, 13, and 14 need a valid check digit. Six and seven digits are accepted as UPC-E.',
+      'Add item opens Item data creation. Type 6 to 14 digits in Barcode and press Apply. Six and seven digits are read as UPC-E. Lengths 8, 12, 13, and 14 need a valid check digit. Other lengths, such as 11, have none.',
       'For an item with no barcode, use Or add an item without a barcode, enter an Item name of 1 to 120 characters, and press Add without barcode. That path is for spices and loose goods.',
       'For many items, use Or add many items from a JSON file, choose JSON file, and press Add items from file. The file is a JSON array of objects with name and barcode, at most 500 items and 256KB. Barcodes must be valid and must not repeat. If one entry is wrong, the message names that entry and the app adds nothing. A barcode that already exists says entries[<index>] uses barcode <barcode>, which already exists.',
       'A barcode already in the hab unit shows Already stocked. A barcode known from another hab unit shows Add to hab-unit with the saved name and Apply. A new item starts at count 1 and minimum 3.',
