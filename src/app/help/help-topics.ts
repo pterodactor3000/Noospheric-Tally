@@ -21,7 +21,7 @@ const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Search, sort, and categories',
     paragraphs: [
       'Search by name keeps rows whose name contains what you type, and it ignores case. It opens the categories that still have rows. If nothing matches, the page says so.',
-      'One button sorts names A to Z, then Z to A on the next press. The other sorts counts from low to high, then high to low. Items at 0 stay last.',
+      'The list starts A to Z. The name button switches it to Z to A, then back to A to Z. The count button sorts from low to high, then high to low. Items at 0 stay last.',
       'The layers button is labelled Group by category. It switches between category panels and one flat list. It stays disabled while a count change is saving.',
       'The search field appears once the hab unit holds an item.',
     ],
@@ -31,7 +31,7 @@ const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'Add items below the tally',
     paragraphs: [
       'The controls under the tally are Add item, Scan item, Restock, Lookup, and the link Share hab unit.',
-      'Add item opens Item data creation. Type 6 to 14 digits in Barcode and press Apply. Six and seven digits are read as UPC-E. Lengths 8, 12, 13, and 14 need a valid check digit. Other lengths, such as 11, have none.',
+      'Add item opens Item data creation. Type 6 to 14 digits in Barcode and press Apply. Six digits are read as UPC-E. Seven digits are read as UPC-E when they start with 0 or 1. A seven-digit code that starts with another digit is rejected. Lengths 8, 12, 13, and 14 need a valid check digit. Other lengths, such as 11, have none.',
       'For an item with no barcode, use Or add an item without a barcode, enter an Item name of 1 to 120 characters, and press Add without barcode. That path is for spices and loose goods.',
       'For many items, use Or add many items from a JSON file, choose JSON file, and press Add items from file. The file is a JSON array of objects with name and barcode, at most 500 items and 256KB. Barcodes must be valid and must not repeat. If one entry is wrong, the message names that entry and the app adds nothing. A barcode that already exists says entries[<index>] uses barcode <barcode>, which already exists.',
       'A barcode already in the hab unit shows Already stocked. A barcode known from another hab unit shows Add to hab-unit with the saved name and Apply. A new item starts at count 1 and minimum 3.',
