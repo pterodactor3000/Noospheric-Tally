@@ -2,6 +2,8 @@ import { DB_FUNCTION_SET_HOUSEHOLD_ITEM_LEVELS } from '../db/entities'
 import { type ItemCategory } from './item-category'
 
 // SQLSTATE serialization_failure. set_household_item_levels raises it for a stale count or category.
+// A saved decrease writes one household_quantity_changes row per unit removed.
+// A raise, a minimum-only save, and a category-only save write none.
 const STALE_QUANTITY_ERROR_CODE = '40001'
 
 interface HouseholdItemLevels {
