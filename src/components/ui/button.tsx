@@ -2,6 +2,8 @@ import { Button as ButtonPrimitive } from '@base-ui/react/button'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { clsx } from 'clsx'
 
+import { buttonStateBackground } from '@/app/styles/class-names'
+
 const buttonVariants = cva(
   clsx(
     'group/button',
@@ -17,8 +19,7 @@ const buttonVariants = cva(
     '[--bracket-arm:calc(0.4em+2px)]',
     '[--bracket-color:currentColor]',
     'bg-transparent',
-    'enabled:hover:bg-current/40',
-    'enabled:active:bg-current/60',
+    buttonStateBackground,
     'text-input',
     'font-medium',
     'whitespace-nowrap',

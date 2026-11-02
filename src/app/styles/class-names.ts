@@ -101,6 +101,12 @@ const countControlGroup = clsx(
   'whitespace-nowrap',
 )
 
+const buttonStateBackground = clsx(
+  'hover:bg-current/40',
+  'focus-visible:bg-current/40',
+  'active:bg-current/60',
+)
+
 const countBracketButton = clsx(
   'bracket-frame',
   'inline-flex',
@@ -113,8 +119,7 @@ const countBracketButton = clsx(
   'justify-center',
   'border-0',
   'bg-transparent',
-  'enabled:hover:bg-current/40',
-  'enabled:active:bg-current/60',
+  buttonStateBackground,
   'transition-colors',
   'px-[0.6em]',
   'font-[inherit]',
@@ -173,6 +178,7 @@ const passwordMaskBlock = clsx(
 
 export {
   actionButton,
+  buttonStateBackground,
   centeredPage,
   contentWidth,
   categoryTree,
