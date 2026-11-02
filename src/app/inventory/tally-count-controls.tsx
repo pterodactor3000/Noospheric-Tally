@@ -3,7 +3,10 @@
 import { useEffect, useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
-import { countControlGroup, countControlPart } from '@/app/styles/class-names'
+import {
+  countBracketButton,
+  countControlGroup,
+} from '@/app/styles/class-names'
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import type { QuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
@@ -20,20 +23,6 @@ interface TallyCountControlsProps {
   readonly children: ReactNode
 }
 
-const tallyControl = clsx(
-  'min-h-[36px]',
-  'min-w-11',
-  'border-0',
-  'bg-transparent',
-  'p-0',
-  'font-[inherit]',
-  'text-[length:inherit]',
-  'leading-[inherit]',
-  'text-inherit',
-  'no-underline',
-  'disabled:text-inherit',
-  'disabled:opacity-100',
-)
 const tallyLine = clsx('flex', 'items-baseline', 'gap-2')
 const tallyAlert = clsx(
   'min-h-6',
@@ -90,13 +79,7 @@ const TallyCountControls = ({
             type="button"
             disabled={isPending || quantity === 0}
             aria-label={`Decrease ${name}`}
-            className={clsx(
-              tallyControl,
-              countControlPart,
-              'bracket-frame',
-              'justify-self-start',
-              'text-center',
-            )}
+            className={countBracketButton}
             onClick={() => {
               adjustCount(-1)
             }}
@@ -110,13 +93,7 @@ const TallyCountControls = ({
             type="button"
             disabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
             aria-label={`Increase ${name}`}
-            className={clsx(
-              tallyControl,
-              countControlPart,
-              'bracket-frame',
-              'justify-self-end',
-              'text-center',
-            )}
+            className={countBracketButton}
             onClick={() => {
               adjustCount(1)
             }}

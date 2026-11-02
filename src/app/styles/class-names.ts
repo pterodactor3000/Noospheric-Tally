@@ -92,15 +92,35 @@ const formError = clsx(
 const actionButton = clsx('font-mono', 'min-h-11')
 
 const countControlGroup = clsx(
-  'grid',
-  'min-w-[110px]',
+  'inline-grid',
   'shrink-0',
-  'grid-cols-[1fr_auto_1fr]',
+  'grid-cols-[auto_auto_auto]',
   'items-baseline',
+  'gap-x-2',
   'whitespace-nowrap',
 )
 
-const countControlPart = clsx('w-11', 'shrink-0')
+const countBracketButton = clsx(
+  'bracket-frame',
+  'inline-flex',
+  'h-[1.25em]',
+  'w-auto',
+  'min-h-0',
+  'min-w-0',
+  'shrink-0',
+  'items-center',
+  'justify-center',
+  'border-0',
+  'bg-transparent',
+  'px-[0.6em]',
+  'font-[inherit]',
+  'text-[length:inherit]',
+  'leading-none',
+  'text-inherit',
+  'no-underline',
+  'disabled:text-inherit',
+  'disabled:opacity-100',
+)
 
 const categoryTree = clsx('m-0', 'list-none', 'p-0')
 
@@ -139,8 +159,8 @@ export {
   contentWidth,
   categoryTree,
   categoryTreeItem,
+  countBracketButton,
   countControlGroup,
-  countControlPart,
   fieldControl,
   fieldLabel,
   fieldStack,

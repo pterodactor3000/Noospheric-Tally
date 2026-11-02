@@ -174,7 +174,7 @@ Help, the tally, and the item page show `?`, `-`, and `+` with the bracket frame
 
 **Intent:** Frame the two raw buttons and drop their typed brackets.
 
-**Contract:** The decrease button (`:89-107`) and the increase button (`:108-124`) each add `bracket-frame`. Visible labels are `-` at `:103` and `+` at `:122`. `tallyControl` (`:23-36`) stays the shared reset list and does not gain the frame. `aria-label`, `disabled`, `onClick`, the group classes, the 36px row height, the 44px cells, and the sr-only stock label (`:125`) are unchanged. The bracket color is `currentColor`, so it follows the stock-state text color the buttons inherit. Disabled buttons keep `disabled:text-inherit disabled:opacity-100`, so they keep the frame and the color.
+**Contract:** The decrease and increase buttons use `countBracketButton`. Visible labels are `-` and `+`. The button box is `1.25em` tall with `0.6em` of horizontal padding, so the bracket sits just above the count text. The 36px row and the name link stay. `aria-label`, `disabled`, `onClick`, and the sr-only stock label stay. The bracket color is `currentColor`, so it follows the stock-state text color. Disabled buttons keep `disabled:text-inherit disabled:opacity-100`.
 
 #### 3. Item page count buttons
 
@@ -182,7 +182,7 @@ Help, the tally, and the item page show `?`, `-`, and `+` with the bracket frame
 
 **Intent:** Same treatment inside `LevelStepper`.
 
-**Contract:** The two buttons at `:175-188` and `:192-205` add `bracket-frame`. Labels are `-` at `:187` and `+` at `:204`. `itemControl` is not edited, so the category `<select>` (`:101-107`) and the no-barcode button (`barcode-line.tsx:44`) get no frame. The row's `text-unsaved` color (`:169`) carries to the brackets through `currentColor`.
+**Contract:** The two `LevelStepper` buttons use `countBracketButton`, the same `1.25em` box as the tally. Labels are `-` and `+`. `itemControl` is not edited, so the category `<select>` and the no-barcode button get no frame and keep their 44px box. The row's `text-unsaved` color carries to the brackets through `currentColor`.
 
 #### 4. Help copy
 

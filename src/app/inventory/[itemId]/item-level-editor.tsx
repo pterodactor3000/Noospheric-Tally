@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
   actionButton,
+  countBracketButton,
   countControlGroup,
-  countControlPart,
 } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 import { formatConsumptionRate } from '@/lib/items/format-consumption-rate'
@@ -176,13 +176,7 @@ const LevelStepper = ({
         type="button"
         disabled={value <= minimum}
         aria-label={`Decrease ${label}`}
-        className={clsx(
-          itemControl,
-          countControlPart,
-          'bracket-frame',
-          'justify-self-start',
-          'text-center',
-        )}
+        className={countBracketButton}
         onClick={onDecrease}
       >
         -
@@ -194,13 +188,7 @@ const LevelStepper = ({
         type="button"
         disabled={value >= maximum}
         aria-label={`Increase ${label}`}
-        className={clsx(
-          itemControl,
-          countControlPart,
-          'bracket-frame',
-          'justify-self-end',
-          'text-center',
-        )}
+        className={countBracketButton}
         onClick={onIncrease}
       >
         +
