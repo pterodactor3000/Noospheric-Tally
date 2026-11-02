@@ -9,8 +9,8 @@ import {
   fieldStack,
   formStack,
   fullWidthButton,
-  pageLead,
-  pageTitle,
+  sectionCopy,
+  sectionHeading,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,11 +37,9 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
 
   return (
     <>
-      <h1 className={pageTitle}>
-        Hab-unit data creation
-      </h1>
-      <p className={pageLead}>
-        Provide your hab-unit designation
+      <h2 className={sectionHeading}>Create hab-unit</h2>
+      <p className={sectionCopy}>
+        You can create your own hab-unit tally. You can share it later.
       </p>
 
       <form

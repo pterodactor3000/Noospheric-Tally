@@ -9,6 +9,7 @@ import {
   fieldStack,
   formStack,
   fullWidthButton,
+  sectionCopy,
   sectionHeading,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
@@ -36,7 +37,11 @@ const JoinHabUnitForm = ({ defaultCode }: JoinHabUnitFormProps) => {
 
   return (
     <>
-      <h2 className={sectionHeading}>Join hab unit</h2>
+      <h2 className={sectionHeading}>Join hab-unit</h2>
+      <p className={sectionCopy}>
+        If you received an invite code, you can join an existing hab-unit
+        here.
+      </p>
 
       <form action={formAction} className={formStack}>
         <div className={fieldStack}>

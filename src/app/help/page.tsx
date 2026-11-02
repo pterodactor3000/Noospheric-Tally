@@ -10,6 +10,7 @@ import {
   textLink,
 } from '@/app/styles/class-names'
 
+import { HelpScreenshot } from './help-screenshot'
 import { HELP_TOPICS } from './help-topics'
 
 export const metadata = { title: '// Help //' }
@@ -32,6 +33,11 @@ const HelpPage = () => (
               {paragraph}
             </p>
           ))}
+          <div className="mt-4 flex flex-col gap-4">
+            {topic.screenshots.map((image) => (
+              <HelpScreenshot key={image.fileName} image={image} />
+            ))}
+          </div>
         </section>
       ))}
       <p className={footnote}>
