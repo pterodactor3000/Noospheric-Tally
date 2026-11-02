@@ -66,7 +66,7 @@ Add one `@utility bracket-frame` in `globals.css` that draws both brackets with 
 ## Risks and Assumptions
 
 - **Default label conflict.** The closed decision says the default label stays 1rem. `button.tsx:16` makes it 0.875rem. The plan follows 1rem, a 2px change on the default size only.
-- The dot track can be misread as a password mask. Password uses `•` and the empty cells use `·`. Phase 3 checks both side by side.
+- The dot track can be misread as a password mask. Password uses `•` and the empty cells use `.`. Phase 3 checks both side by side.
 - No component test harness. Dot counts, blink, form reset, and overflow are checked in a browser. Chromium is not installed for the Playwright MCP on this machine (`/opt/google/chrome/chrome` is missing), so the parent needs another browser path for manual checks.
 - `input.test.ts` imports `@base-ui/react/input` and `react-dom/server` in the `node` environment. If that import fails, fall back to asserting class strings from an exported constant. Do not add jsdom.
 - The caret does not follow the native selection and the native caret is hidden. Editing in the middle of a value shows no insertion point. This follows the closed decision wording. Raise it as a follow-up if it hurts.
@@ -78,6 +78,6 @@ Add one `@utility bracket-frame` in `globals.css` that draws both brackets with 
 
 - Every `Button`, and the tally and item-page count buttons, shows both brackets in every state with today's colors.
 - Help shows `?`. The tally and item page show `-` and `+`. No typed brackets remain on those labels. Help copy says `-` and `+`.
-- A focused input shows a blinking block caret after the typed text. Untyped cells are middle dots. Each typed character removes one dot and deleting brings it back. Password still masks.
+- A focused input shows a blinking block caret after the typed text. Untyped cells are periods on the text baseline. Each typed character removes one dot and deleting brings it back. Password still masks.
 - File picker, hidden fields, checkboxes, radios, and `Textarea` are unchanged.
 - `pnpm test`, `pnpm lint`, `pnpm typecheck`, and `pnpm build` pass.

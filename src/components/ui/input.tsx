@@ -15,7 +15,7 @@ import { clsx } from 'clsx'
 import { getInputMirrorText } from '@/lib/inputs/get-input-mirror-text'
 import { isBracketInputType } from '@/lib/inputs/is-bracket-input-type'
 
-const INPUT_DOT_TRACK = '·'.repeat(300)
+const INPUT_DOT_TRACK = '.'.repeat(300)
 
 const plainInputClassName = clsx(
   'h-8',

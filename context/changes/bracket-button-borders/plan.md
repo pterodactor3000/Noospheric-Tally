@@ -2,7 +2,7 @@
 
 ## Overview
 
-Every shared `Button`, the raw count buttons on the tally and the item page, and every text, search, email, and password input get a bracket border: a left bracket and a right bracket with short arms, matching the mock on Linear TEC-65. Help, the tally, and the item page drop their typed brackets and show `?`, `-`, and `+`. Focused inputs show the app-title block caret. Untyped cells show a middle dot, and each typed character removes one dot.
+Every shared `Button`, the raw count buttons on the tally and the item page, and every text, search, email, and password input get a bracket border: a left bracket and a right bracket with short arms, matching the mock on Linear TEC-65. Help, the tally, and the item page drop their typed brackets and show `?`, `-`, and `+`. Focused inputs show the app-title block caret. Untyped cells show a period on the text baseline, and each typed character removes one dot.
 
 This is roadmap S-16 (`context/foundation/roadmap.md:251-262`), PRD FR-019 (`context/foundation/prd.md:176`). Linear TEC-65. GitHub issue pterodactor3000/Noospheric-Tally#72. Branch `feature/s-16-bracket-button-borders`, from `main`. Prerequisites: none. Not blocked.
 
@@ -49,7 +49,7 @@ Verified against branch `feature/s-16-bracket-button-borders` (one commit, `969b
 
 - Every `Button` (default, outline, secondary, destructive, ghost, link; sizes default, xs, sm, lg, icon, icon-xs, icon-sm, icon-lg) shows a left bracket and a right bracket, each with short arms, in every state: idle, hover, focus, pressed, disabled. The brackets are the side borders of the control: they run from its top edge to its bottom edge. They are not the `[` `]` characters, and they are not a 1.5em glyph centered in the hit area. The default label is 1rem. Hit areas, fills, rings, and colors are unchanged.
 - Help reads `?`. The tally and the item page read `-` and `+`. Each has the same frame. No typed brackets remain on those labels. Help copy says `-` and `+`. The `[<hab unit name>] tally` heading is unchanged.
-- Text, search, email, and password inputs show the same frame, spanning each input from its top edge to its bottom edge. Unfocused, middle dots fill every untyped cell and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password still masks and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
+- Text, search, email, and password inputs show the same frame, spanning each input from its top edge to its bottom edge. Unfocused, periods fill every untyped cell on the text baseline and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password still masks and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
 - The file picker, hidden fields, checkboxes, radios, `Textarea`, and `InputGroup*` are unchanged.
 - Verify: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, plus the per-phase browser checks.
 
@@ -71,7 +71,7 @@ Build one CSS primitive and reuse it. A Tailwind v4 `@utility bracket-frame` in 
 
 Bracket color is a CSS custom property, `--bracket-color`, defaulting to `currentColor`. Button variants and states set it where they used to set a border color. The real 2px border stays transparent and only reserves box geometry.
 
-Inputs get a frame element that owns `className`, around the real `<input>`. An `aria-hidden` track layer sits over the input and holds an invisible mirror of the typed text, the caret, and a long string of middle dots, in flex order. The mirror pushes the dots right by exactly the width of the typed text, so no cell math is needed. The track uses the same pattern as the existing dot leaders (`TALLY_DOT_LEADER`, `inventory-tally.tsx:39`; `ITEM_DOT_LEADER`, `item-level-editor.tsx:35`). Focus state is CSS only (`focus-within`). Value state is tracked in React so the mirror follows typing, `defaultValue`, form reset, and autofill.
+Inputs get a frame element that owns `className`, around the real `<input>`. An `aria-hidden` track layer sits over the input and holds an invisible mirror of the typed text, the caret, and a long string of periods, in flex order. The mirror pushes the dots right by exactly the width of the typed text, so no cell math is needed. The track uses the same pattern as the existing dot leaders (`TALLY_DOT_LEADER`, `inventory-tally.tsx:39`; `ITEM_DOT_LEADER`, `item-level-editor.tsx:35`). Focus state is CSS only (`focus-within`). Value state is tracked in React so the mirror follows typing, `defaultValue`, form reset, and autofill.
 
 Phases: shared frame and Button first (everything else depends on it), then the label and raw-button changes, then the input frame and dot track, then the caret and the full input sweep.
 
@@ -86,7 +86,7 @@ Phases: shared frame and Button first (everything else depends on it), then the 
 - **React 19 form reset.** Uncontrolled inputs are reset by form actions. The input state must re-read the DOM value after a form `reset` event, one macrotask later, because the event fires before the reset applies. It must also read the DOM value on mount to catch autofill and restored values.
 - **Password never reaches the mirror.** The mirror for `type="password"` is one `•` per code point. The typed value is never rendered into the track.
 - **Native chrome inside the field.** Hide the search cancel button and decoration, and the Edge password reveal, so the cells are the only content. Set `caret-transparent` only in Phase 4, when the block caret exists, so no phase ships a focused input with no caret.
-- **Dot track length.** `'·'.repeat(300)`, clipped by `overflow-hidden`, as the existing dot leaders do. The widest input is bounded by `max-w-4xl` (`class-names.ts:29`), so 300 cells is enough.
+- **Dot track length.** `'.'.repeat(300)`, clipped by `overflow-hidden`, as the existing dot leaders do. The glyph is a period, so it sits on the text baseline. The widest input is bounded by `max-w-4xl` (`class-names.ts:29`), so 300 cells is enough.
 
 ## Phase 1: Bracket frame utility and shared Button
 
@@ -257,7 +257,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 - When `isBracketInputType(type)` is false, render exactly today's single `InputPrimitive` with today's classes, including `file:*`. File pickers, hidden fields, checkboxes, and radios are unchanged.
 - When true, render a frame `<span data-slot="input-frame">` that owns `className`. The frame has `group/input bracket-frame relative flex w-full min-w-0 h-8 text-base md:text-sm` and sets `--bracket-arm` to `calc(0.4em + 2px)`, the same longer arm as a shared button, then `className`. Callers' `fieldControl` and `min-w-0 flex-1` therefore size the frame (`inventory-tally.tsx:182`). `<select>` and any other dropdown stay unframed.
 - Inside the frame, the `InputPrimitive` (keep `data-slot="input"`) fills it: `w-full self-stretch bg-transparent px-3 outline-none`, `text-[length:inherit] font-[inherit]`, no border, `placeholder:text-transparent` in place of `placeholder:text-muted-foreground`, and the search cancel, search decoration, and Edge password reveal hidden. The type, all other props, and the caller `ref` pass through. The input and frame font match, so `md:text-sm` lives on the frame only.
-- After the input, a track layer: `aria-hidden`, `pointer-events-none`, `absolute inset-y-0 left-3 right-3 flex items-center overflow-hidden`. Its children in order: the mirror (`data-slot="input-mirror"`, `invisible min-w-0 shrink overflow-hidden whitespace-pre`) rendering `getInputMirrorText`, then the dots (`data-slot="input-dots"`, `min-w-0 flex-1 overflow-hidden whitespace-nowrap text-muted-foreground`) rendering `INPUT_DOT_TRACK`, a module constant `'·'.repeat(300)`. Phase 4 inserts the caret between them.
+- After the input, a track layer: `aria-hidden`, `pointer-events-none`, `absolute inset-y-0 left-3 right-3 flex items-center overflow-hidden`. Its children in order: the mirror (`data-slot="input-mirror"`, `invisible min-w-0 shrink overflow-hidden whitespace-pre`) rendering `getInputMirrorText`, then the dots (`data-slot="input-dots"`, `min-w-0 flex-1 overflow-hidden whitespace-nowrap text-muted-foreground`) rendering `INPUT_DOT_TRACK`, a module constant `'.'.repeat(300)`. Phase 4 inserts the caret between them.
 - The mirror, not cell math, positions the dots. One typed code point takes one mono cell and removes one dot cell.
 - Bracket color on the frame follows what the input border did: base `var(--color-input)`, `focus-within` and `has-[input:focus-visible]` use `var(--color-ring)`, `has-[input[aria-invalid=true]]` uses `var(--color-destructive)` (50% in dark). The rectangular focus ring and invalid ring move to the frame through `has-[...]`. `disabled:*` effects (`disabled:opacity-50`, `disabled:cursor-not-allowed`, `disabled:pointer-events-none`) apply to the frame through `has-disabled:`.
 - Value tracking: keep the typed text in state. Initial state is `String(value ?? defaultValue ?? '')`. For a controlled input (`value !== undefined`), render from `value` directly. `onInput` updates the state and calls the caller's `onInput`. On mount, read the DOM `value`. Subscribe to the input's form `reset` event and, one macrotask later, read the DOM `value`. Clean up the listener and the timer in the effect cleanup. Merge the caller `ref` with the internal ref.
@@ -288,7 +288,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 #### Manual Verification
 
-- Unfocused empty inputs (`/login` email, `/inventory/new` barcode) show a left bracket, a right bracket, and middle dots across the full width. No block caret shows.
+- Unfocused empty inputs (`/login` email, `/inventory/new` barcode) show a left bracket, a right bracket, and periods on the text baseline across the full width. No block caret shows.
 - Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character. Backspace brings one dot back each time. Total cells (dots plus characters) stay constant.
 - Password (`/login`) masks every character, and the mask cells are the same width as the dot cells. If a browser's mask glyph differs, stop and ask.
 - After a form submit that resets or repopulates a field, and after back and forward navigation, and after browser autofill, the dot count matches the visible text.
@@ -454,7 +454,7 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 
 #### Manual
 
-- [x] 3.6 Unfocused empty inputs show both brackets and middle dots across the full width, with no block caret. `400f170`
+- [x] 3.6 Unfocused empty inputs show both brackets and periods on the text baseline across the full width, with no block caret. `400f170`
 - [ ] 3.7 Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character, backspace brings one back each time, and total cells stay constant.
 - [x] 3.8 Password masks every character, and the mask cells are the same width as the dot cells. `400f170`
 - [ ] 3.9 After a form submit that resets or repopulates a field, after back and forward navigation, and after browser autofill, the dot count matches the visible text.

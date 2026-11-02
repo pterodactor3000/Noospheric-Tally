@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest'
 
 import { Input } from './input'
 
-const INPUT_DOT_TRACK = '·'.repeat(300)
+const INPUT_DOT_TRACK = '.'.repeat(300)
 
 const FRAMED_TYPES = ['text', 'search', 'email', 'password'] as const
 
