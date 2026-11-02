@@ -93,6 +93,7 @@ const TallyCountControls = ({
             className={clsx(
               tallyControl,
               countControlPart,
+              'bracket-frame',
               'justify-self-start',
               'text-center',
             )}
@@ -100,7 +101,7 @@ const TallyCountControls = ({
               adjustCount(-1)
             }}
           >
-            [-]
+            -
           </button>
           <span className={clsx('min-h-[36px]', 'leading-[36px]', 'text-center')}>
             {quantity}
@@ -112,6 +113,7 @@ const TallyCountControls = ({
             className={clsx(
               tallyControl,
               countControlPart,
+              'bracket-frame',
               'justify-self-end',
               'text-center',
             )}
@@ -119,7 +121,7 @@ const TallyCountControls = ({
               adjustCount(1)
             }}
           >
-            [+]
+            +
           </button>
           <span className="sr-only">{stockStateLabel}</span>
         </span>

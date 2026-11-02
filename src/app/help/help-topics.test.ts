@@ -13,6 +13,8 @@ const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
 const SCREENSHOT_NAME = /^help-(\d{2})-[a-z-]+\.png$/
 
 const KEBAB_CASE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+const TYPED_DECREASE = `${'['}-${']'}`
+const TYPED_INCREASE = `${'['}+${']'}`
 
 const joinTopicParagraphs = (topicId: string): string => {
   const topic = HELP_TOPICS.find((entry) => entry.id === topicId)
@@ -93,6 +95,34 @@ describe('HELP_TOPICS', () => {
     expect(text.includes('Minimum')).toEqual(true)
     expect(text.includes('Category')).toEqual(true)
     expect(text.includes('Use')).toEqual(true)
+  })
+
+  test('names the - button and the + button in the tally topic', () => {
+    const text = joinTopicParagraphs('tally-list')
+
+    expect(text.includes('[<hab unit name>] tally')).toEqual(true)
+    expect(
+      text.includes(
+        'Each row shows the name, a dot leader, the - button, the count, and the + button.',
+      ),
+    ).toEqual(true)
+    expect(
+      text.includes(
+        'The - button lowers the count by 1. The + button raises it by 1. The tally saves that change at once. The - button is disabled at 0. The + button is disabled at 99.',
+      ),
+    ).toEqual(true)
+    expect(text.includes(TYPED_DECREASE)).toEqual(false)
+    expect(text.includes(TYPED_INCREASE)).toEqual(false)
+  })
+
+  test('names the - button and the + button in the item details topic', () => {
+    const text = joinTopicParagraphs('item-details')
+
+    expect(
+      text.includes('The - button, the + button, and the category list'),
+    ).toEqual(true)
+    expect(text.includes(TYPED_DECREASE)).toEqual(false)
+    expect(text.includes(TYPED_INCREASE)).toEqual(false)
   })
 
   test('maps each topic to its screenshot file names', () => {

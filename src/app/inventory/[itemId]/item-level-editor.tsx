@@ -179,12 +179,13 @@ const LevelStepper = ({
         className={clsx(
           itemControl,
           countControlPart,
+          'bracket-frame',
           'justify-self-start',
           'text-center',
         )}
         onClick={onDecrease}
       >
-        [-]
+        -
       </button>
       <span className={clsx('min-h-11', 'leading-11', 'text-center')}>
         {value}
@@ -196,12 +197,13 @@ const LevelStepper = ({
         className={clsx(
           itemControl,
           countControlPart,
+          'bracket-frame',
           'justify-self-end',
           'text-center',
         )}
         onClick={onIncrease}
       >
-        [+]
+        +
       </button>
     </span>
   </div>

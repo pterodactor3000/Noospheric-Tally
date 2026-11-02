@@ -11,7 +11,7 @@ const HelpLink = () => {
       aria-label="Help"
       className="px-2!"
     >
-      {'[ ? ]'}
+      ?
     </Button>
   )
 }
