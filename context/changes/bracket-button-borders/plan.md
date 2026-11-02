@@ -174,7 +174,7 @@ Help, the tally, and the item page show `?`, `-`, and `+` with the bracket frame
 
 **Intent:** Frame the two raw buttons and drop their typed brackets.
 
-**Contract:** The decrease and increase buttons use `countBracketButton`. Visible labels are `-` and `+`. The button box is `1.25em` tall with `0.6em` of horizontal padding, so the bracket sits just above the count text. The 36px row and the name link stay. `aria-label`, `disabled`, `onClick`, and the sr-only stock label stay. The bracket color is `currentColor`, so it follows the stock-state text color. Disabled buttons keep `disabled:text-inherit disabled:opacity-100`.
+**Contract:** The decrease and increase buttons use `countBracketButton`. Visible labels are `-` and `+`. The button box is `1.25em` tall with `0.6em` of horizontal padding, so the bracket sits just above the count text. The 36px row and the name link stay. The count is a centered `2ch` column, and the row centers the buttons on that count, so `5` and `12` share the same `-` and `+`. `aria-label`, `disabled`, `onClick`, and the sr-only stock label stay. The bracket color is `currentColor`, so it follows the stock-state text color. Disabled buttons keep `disabled:text-inherit disabled:opacity-100`.
 
 #### 3. Item page count buttons
 

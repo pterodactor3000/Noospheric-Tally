@@ -23,7 +23,8 @@ interface TallyCountControlsProps {
   readonly children: ReactNode
 }
 
-const tallyLine = clsx('flex', 'items-baseline', 'gap-2')
+const tallyLine = clsx('flex', 'items-center', 'gap-2')
+const tallyCount = clsx('w-[2ch]', 'min-h-[36px]', 'text-center', 'leading-[36px]')
 const tallyAlert = clsx(
   'min-h-6',
   'text-sm',
@@ -86,7 +87,7 @@ const TallyCountControls = ({
           >
             -
           </button>
-          <span className={clsx('min-h-[36px]', 'leading-[36px]', 'text-center')}>
+          <span className={tallyCount}>
             {quantity}
           </span>
           <button

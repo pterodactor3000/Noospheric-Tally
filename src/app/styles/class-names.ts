@@ -95,7 +95,7 @@ const countControlGroup = clsx(
   'inline-grid',
   'shrink-0',
   'grid-cols-[auto_auto_auto]',
-  'items-baseline',
+  'items-center',
   'gap-x-2',
   'whitespace-nowrap',
 )
