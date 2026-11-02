@@ -4,17 +4,14 @@ import { useActionState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   formStack,
-  fullWidthButton,
   sectionCopy,
   sectionHeading,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 
 import { joinHabUnit } from '../actions'
 
@@ -45,7 +42,7 @@ const JoinHabUnitForm = ({ defaultCode }: JoinHabUnitFormProps) => {
 
       <form action={formAction} className={formStack}>
         <div className={fieldStack}>
-          <Label htmlFor="invite-code" className={fieldLabel}>
+          <Label htmlFor="invite-code">
             Invite code
           </Label>
           <Input
@@ -56,7 +53,6 @@ const JoinHabUnitForm = ({ defaultCode }: JoinHabUnitFormProps) => {
             defaultValue={defaultCode}
             aria-invalid={isCodeError}
             aria-errormessage={isCodeError ? 'invite-code-error' : undefined}
-            className={fieldControl}
           />
         </div>
         <FormAlert
@@ -67,7 +63,7 @@ const JoinHabUnitForm = ({ defaultCode }: JoinHabUnitFormProps) => {
             variant="outline"
             type="submit"
             disabled={isPending}
-            className={fullWidthButton}
+            size="touch"
           >
             Join
           </Button>

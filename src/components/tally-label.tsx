@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import { terminalCaret } from '@/app/styles/class-names'
+import { TerminalCaret } from './ui/terminal-caret'
 
 const TallyLabel = () => {
   return (
@@ -23,7 +23,7 @@ const TallyLabel = () => {
         )}
       >
         Noospheric Tally
-        <span className={terminalCaret} />
+        <TerminalCaret />
       </p>
     </Link>
   )

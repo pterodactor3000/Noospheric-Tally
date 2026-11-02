@@ -16,10 +16,14 @@ const SIZES = [
   'xs',
   'sm',
   'lg',
+  'touch',
+  'glyph',
   'icon',
   'icon-xs',
   'icon-sm',
   'icon-lg',
+  'icon-touch',
+  'icon-xl',
 ] as const
 
 const REMOVED_BORDER_COLOR_CLASSES = [
@@ -52,10 +56,14 @@ const FONT_SIZE_BY_SIZE: Record<
   xs: 'text-xs',
   sm: 'text-[0.8rem]',
   lg: 'text-sm',
+  touch: 'text-base',
+  glyph: 'text-base',
   icon: 'text-sm',
   'icon-xs': 'text-sm',
   'icon-sm': 'text-sm',
   'icon-lg': 'text-sm',
+  'icon-touch': 'text-sm',
+  'icon-xl': 'text-sm',
 }
 
 const splitClasses = (className: string): string[] =>

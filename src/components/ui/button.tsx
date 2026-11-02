@@ -2,7 +2,7 @@ import { Button as ButtonPrimitive } from '@base-ui/react/button'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { clsx } from 'clsx'
 
-import { buttonStateBackground } from '@/app/styles/class-names'
+import { buttonStateBackground } from './button-state-background'
 
 const buttonVariants = cva(
   clsx(
@@ -89,7 +89,18 @@ const buttonVariants = cva(
           'has-data-[icon=inline-end]:pr-2',
           'has-data-[icon=inline-start]:pl-2',
         ),
+        touch: clsx(
+          'h-11',
+          'gap-1.5',
+          'px-2.5',
+          'text-base',
+          'has-data-[icon=inline-end]:pr-2',
+          'has-data-[icon=inline-start]:pl-2',
+        ),
+        glyph: clsx('h-8', 'px-2', 'text-base'),
         icon: clsx('size-8', 'text-sm'),
+        'icon-touch': clsx('size-11', 'text-sm'),
+        'icon-xl': clsx('size-17', 'p-3', 'text-sm'),
         'icon-xs': clsx(
           'size-6',
           'rounded-[min(var(--radius-md),10px)]',

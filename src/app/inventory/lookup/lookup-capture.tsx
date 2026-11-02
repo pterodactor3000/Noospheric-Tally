@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 
 import { BarcodeScanner } from '@/components/barcode-scanner'
+import { DotLeader } from '@/components/ui/dot-leader'
 import { centeredPage } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 import type { LookupDisplay } from '@/lib/items/resolve-lookup-display'
@@ -11,7 +12,6 @@ import { STOCK_STATE_LABELS } from '@/lib/items/stock-state'
 
 const LOOKUP_BLOCKED_MESSAGE = 'Not in your hab unit.'
 const LOOKUP_NOTICE_COUNT_LABEL = 'Count'
-const LOOKUP_NOTICE_DOT_LEADER = '.'.repeat(300)
 
 const noticeOverlay = clsx(
   'pointer-events-none',
@@ -55,13 +55,6 @@ const noticeCountLine = clsx(
   'gap-2',
   'text-base',
   'leading-6',
-)
-
-const noticeDots = clsx(
-  'min-w-0',
-  'flex-1',
-  'overflow-hidden',
-  'whitespace-nowrap',
 )
 
 const noticeCountValue = clsx('shrink-0', 'whitespace-nowrap')
@@ -141,9 +134,7 @@ const LookupNotice = ({ failureMessage, display }: LookupNoticeProps) => {
       </p>
       <p className={clsx(noticeCountLine, stockTextClassName)}>
         <span>{LOOKUP_NOTICE_COUNT_LABEL}</span>
-        <span aria-hidden="true" className={noticeDots}>
-          {LOOKUP_NOTICE_DOT_LEADER}
-        </span>
+        <DotLeader />
         <span className={noticeCountValue}>{display.quantity}</span>
       </p>
     </div>

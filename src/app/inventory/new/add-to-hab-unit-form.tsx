@@ -3,17 +3,14 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   formStack,
-  fullWidthButton,
   pageLead,
   pageTitle,
 } from '@/app/styles/class-names'
 import { addItemToHousehold } from '../actions'
 import { useActionState } from 'react'
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 import { Button } from '@/components/ui/button'
 
 interface AddToHabUnitFormProps {
@@ -46,10 +43,7 @@ const AddToHabUnitForm = ({ itemId, canonicalName }: AddToHabUnitFormProps) => {
       >
         <input type="hidden" name="itemId" value={itemId} />
         <div className={fieldStack}>
-          <Label
-            htmlFor="name"
-            className={fieldLabel}
-          >
+          <Label htmlFor="name">
             Item name
           </Label>
           <Input
@@ -59,7 +53,6 @@ const AddToHabUnitForm = ({ itemId, canonicalName }: AddToHabUnitFormProps) => {
             autoComplete="off"
             defaultValue={canonicalName}
             aria-invalid={state?.status === 'error' && state.field === 'name'}
-            className={fieldControl}
           />
         </div>
         <FormAlert message={state?.status === 'error' ? state.message : null}>
@@ -67,7 +60,7 @@ const AddToHabUnitForm = ({ itemId, canonicalName }: AddToHabUnitFormProps) => {
             variant="outline"
             type="submit"
             disabled={isPending}
-            className={fullWidthButton}
+            size="touch"
           >
             Apply
           </Button>

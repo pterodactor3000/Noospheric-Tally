@@ -64,71 +64,11 @@ const sectionCopy = clsx(
 
 const footnote = clsx('mt-6', 'text-sm', 'text-foreground/70', 'font-mono')
 
-const textLink = clsx(
-  'font-medium',
-  'text-input',
-  'underline-offset-4',
-  'hover:underline',
-  'font-mono',
-)
+const formFields = clsx('flex', 'flex-col', 'gap-4')
 
-const formStack = clsx('mt-8', 'flex', 'flex-col', 'gap-4')
+const formStack = clsx('mt-8', formFields)
 
 const fieldStack = clsx('flex', 'flex-col', 'gap-2')
-
-const fieldLabel = clsx('text-sm', 'font-medium', 'font-mono')
-
-const fieldControl = clsx('min-h-11', 'text-base', 'font-mono')
-
-const formError = clsx(
-  'min-h-6',
-  'text-sm',
-  'text-destructive',
-  'font-mono',
-  'font-semibold',
-  'motion-safe:animate-form-alert-in',
-)
-
-const actionButton = clsx('font-mono', 'min-h-11')
-
-const countControlGroup = clsx(
-  'inline-grid',
-  'shrink-0',
-  'grid-cols-[auto_auto_auto]',
-  'items-center',
-  'gap-x-2',
-  'whitespace-nowrap',
-)
-
-const buttonStateBackground = clsx(
-  'hover:bg-current/40',
-  'focus-visible:bg-current/40',
-  'active:bg-current/60',
-)
-
-const countBracketButton = clsx(
-  'bracket-frame',
-  'inline-flex',
-  'h-[1.25em]',
-  'w-auto',
-  'min-h-0',
-  'min-w-0',
-  'shrink-0',
-  'items-center',
-  'justify-center',
-  'border-0',
-  'bg-transparent',
-  buttonStateBackground,
-  'transition-colors',
-  'px-[0.6em]',
-  'font-[inherit]',
-  'text-[length:inherit]',
-  'leading-none',
-  'text-inherit',
-  'no-underline',
-  'disabled:text-inherit',
-  'disabled:opacity-100',
-)
 
 const categoryTree = clsx('m-0', 'list-none', 'p-0')
 
@@ -159,44 +99,18 @@ const categoryTreeItem = clsx(
   'last:before:h-[18px]',
 )
 
-const fullWidthButton = clsx(actionButton, 'w-full')
-
-const terminalCaretShape = clsx('border-r-[1ch]', 'border-foreground')
-
-const terminalCaret = clsx(terminalCaretShape, 'animate-terminal-blink')
-
-const passwordMaskBlock = clsx(
-  'inline-block',
-  'h-[1.25em]',
-  'w-0',
-  'shrink-0',
-  'border-r-[calc(1ch-2px)]',
-  'border-foreground',
-  'mr-[2px]',
-)
-
 export {
-  actionButton,
-  buttonStateBackground,
   centeredPage,
   contentWidth,
   categoryTree,
   categoryTreeItem,
-  countBracketButton,
-  countControlGroup,
-  fieldControl,
-  fieldLabel,
   fieldStack,
   footnote,
-  formError,
+  formFields,
   formStack,
-  fullWidthButton,
   pageLead,
   pageShell,
   pageTitle,
-  passwordMaskBlock,
   sectionCopy,
   sectionHeading,
-  terminalCaret,
-  textLink,
 }

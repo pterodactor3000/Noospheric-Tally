@@ -26,7 +26,7 @@ const RestockPage = async () => {
     <main className={centeredPage}>
       <section className={restockSection}>
         <h1 className={restockTitle}>Restock</h1>
-        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
+        <Separator variant="heading" />
         <RestockList lines={restockLines} />
       </section>
     </main>

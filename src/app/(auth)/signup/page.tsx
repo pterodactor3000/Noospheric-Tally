@@ -1,24 +1,20 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   footnote,
   formStack,
-  fullWidthButton,
   pageLead,
   pageTitle,
-  textLink,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { TextLink } from '@/components/ui/text-link'
 
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 
 import { signUpWithPassword } from '../actions'
 
@@ -49,10 +45,7 @@ const Signup = () => {
         className={formStack}
       >
         <div className={fieldStack}>
-          <Label
-            htmlFor="email"
-            className={fieldLabel}
-          >
+          <Label htmlFor="email">
             Email
           </Label>
           <Input
@@ -61,15 +54,11 @@ const Signup = () => {
             id="email"
             autoComplete="email"
             aria-invalid={state?.field === 'email'}
-            className={fieldControl}
           />
         </div>
 
         <div className={fieldStack}>
-          <Label
-            htmlFor="password"
-            className={fieldLabel}
-          >
+          <Label htmlFor="password">
             Password
           </Label>
           <Input
@@ -78,7 +67,6 @@ const Signup = () => {
             id="password"
             autoComplete="new-password"
             aria-invalid={state?.field === 'password'}
-            className={fieldControl}
           />
         </div>
 
@@ -87,7 +75,7 @@ const Signup = () => {
             variant="outline"
             type="submit"
             disabled={isPending}
-            className={fullWidthButton}
+            size="touch"
           >
             Sign up
           </Button>
@@ -96,9 +84,9 @@ const Signup = () => {
 
       <p className={footnote}>
         Cogitation unit already requisitioned?{' '}
-        <Link href="/login" className={textLink}>
+        <TextLink href="/login">
           Enter credentials
-        </Link>
+        </TextLink>
       </p>
     </>
   )

@@ -3,10 +3,7 @@
 import { useEffect, useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
-import {
-  countBracketButton,
-  countControlGroup,
-} from '@/app/styles/class-names'
+import { CountStepper } from '@/components/ui/count-stepper'
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import type { QuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
@@ -24,7 +21,6 @@ interface TallyCountControlsProps {
 }
 
 const tallyLine = clsx('flex', 'items-center', 'gap-2')
-const tallyCount = clsx('w-[2ch]', 'min-h-[36px]', 'text-center', 'leading-[36px]')
 const tallyAlert = clsx(
   'min-h-6',
   'text-sm',
@@ -75,34 +71,21 @@ const TallyCountControls = ({
     <div>
       <div className={clsx(tallyLine, stockTextClassName)}>
         {children}
-        <span className={countControlGroup}>
-          <button
-            type="button"
-            disabled={isPending || quantity === 0}
-            aria-label={`Decrease ${name}`}
-            className={countBracketButton}
-            onClick={() => {
-              adjustCount(-1)
-            }}
-          >
-            -
-          </button>
-          <span className={tallyCount}>
-            {quantity}
-          </span>
-          <button
-            type="button"
-            disabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
-            aria-label={`Increase ${name}`}
-            className={countBracketButton}
-            onClick={() => {
-              adjustCount(1)
-            }}
-          >
-            +
-          </button>
+        <CountStepper
+          name={name}
+          value={quantity}
+          density="compact"
+          isDecreaseDisabled={isPending || quantity === 0}
+          isIncreaseDisabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
+          onDecrease={() => {
+            adjustCount(-1)
+          }}
+          onIncrease={() => {
+            adjustCount(1)
+          }}
+        >
           <span className="sr-only">{stockStateLabel}</span>
-        </span>
+        </CountStepper>
       </div>
       {errorMessage === null ? null : (
         <p role="alert" className={tallyAlert}>

@@ -348,7 +348,7 @@ A focused input shows the app-title block caret, the native caret goes away, and
 #### Automated Verification
 
 - `pnpm test` passes the `terminalCaret` string test and the caret markup tests.
-- `rg -n "border-r-\[1ch\]" src` returns only `src/app/styles/class-names.ts`.
+- `rg -n "border-r-\[1ch\]" src` returns only `src/components/ui/terminal-caret.tsx` and its test.
 - `rg -n "Textarea" src --glob '!src/components/ui/*'` returns no matches, and `git diff --name-only main` lists neither `textarea.tsx` nor `input-group.tsx`.
 - `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass.
 
@@ -467,7 +467,7 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 #### Automated
 
 - [x] 4.1 `pnpm test` passes the `terminalCaret` string test and the caret markup tests. `8cb28f2`
-- [ ] 4.2 `rg -n "border-r-\[1ch\]" src` returns only `src/app/styles/class-names.ts`.
+- [ ] 4.2 `rg -n "border-r-\[1ch\]" src` returns only `src/components/ui/terminal-caret.tsx` and its test.
 - [x] 4.3 `rg -n "Textarea" src --glob '!src/components/ui/*'` returns no matches, and `git diff --name-only main` lists neither `textarea.tsx` nor `input-group.tsx`. `8cb28f2`
 - [x] 4.4 `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass. `8cb28f2`
 

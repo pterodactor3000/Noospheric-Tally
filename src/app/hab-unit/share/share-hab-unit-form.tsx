@@ -4,17 +4,14 @@ import { useActionState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   formStack,
-  fullWidthButton,
   pageTitle,
   sectionCopy,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 import { buildHabUnitInviteUrl } from '@/lib/hab-unit/build-hab-unit-invite-url'
 
 import { createHabUnitInvite } from '../actions'
@@ -50,7 +47,7 @@ const ShareHabUnitForm = () => {
             variant="outline"
             type="submit"
             disabled={isPending}
-            className={fullWidthButton}
+            size="touch"
           >
             Generate invite code
           </Button>
@@ -59,7 +56,7 @@ const ShareHabUnitForm = () => {
         {state?.status === 'created' ? (
           <>
             <div className={fieldStack}>
-              <Label htmlFor="generated-invite-code" className={fieldLabel}>
+              <Label htmlFor="generated-invite-code">
                 Invite code
               </Label>
               <Input
@@ -67,11 +64,10 @@ const ShareHabUnitForm = () => {
                 id="generated-invite-code"
                 readOnly
                 value={state.inviteCode}
-                className={fieldControl}
               />
             </div>
             <div className={fieldStack}>
-              <Label htmlFor="invite-link" className={fieldLabel}>
+              <Label htmlFor="invite-link">
                 Invite link
               </Label>
               <Input
@@ -82,7 +78,6 @@ const ShareHabUnitForm = () => {
                   window.location.origin,
                   state.inviteCode,
                 )}
-                className={fieldControl}
               />
             </div>
             <p className={sectionCopy}>Expires {state.expiresAt}</p>

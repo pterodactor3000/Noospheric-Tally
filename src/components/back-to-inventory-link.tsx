@@ -22,7 +22,8 @@ const BackToInventoryLink = () => {
         href="/inventory"
         className={buttonVariants({
           variant: 'link',
-          className: clsx('-ml-2.5', 'min-h-11'),
+          size: 'touch',
+          className: '-ml-2.5',
         })}
       >
         Back to inventory

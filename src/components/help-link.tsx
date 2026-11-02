@@ -9,7 +9,7 @@ const HelpLink = () => {
       nativeButton={false}
       render={<Link href="/help" />}
       aria-label="Help"
-      className="px-2!"
+      size="glyph"
     >
       ?
     </Button>

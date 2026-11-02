@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { clsx } from 'clsx'
 
-import { ItemListMarker } from '@/components/item-list-marker'
+import { ItemListMarker } from '@/components/ui/item-list-marker'
 import { Button } from '@/components/ui/button'
 import type { ScanSessionLine } from '@/lib/items/load-scan-session-lines'
 import {

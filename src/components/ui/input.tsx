@@ -3,20 +3,39 @@
 import {
   useCallback,
   useEffect,
+  useEffectEvent,
   useRef,
   useState,
   type ComponentProps,
+  type ReactNode,
   type Ref,
 } from 'react'
 import { Input as InputPrimitive } from '@base-ui/react/input'
 
 import { clsx } from 'clsx'
 
-import { passwordMaskBlock, terminalCaret } from '@/app/styles/class-names'
 import { getInputMirrorText } from '@/lib/inputs/get-input-mirror-text'
 import { isBracketInputType } from '@/lib/inputs/is-bracket-input-type'
 
-const INPUT_DOT_TRACK = '.'.repeat(300)
+import { DotLeader } from './dot-leader'
+import { TerminalCaret } from './terminal-caret'
+
+type InputProps = ComponentProps<'input'>
+
+type FileInputProps = Omit<InputProps, 'type' | 'value' | 'defaultValue'>
+
+interface InputFrameProps {
+  readonly className?: string
+  readonly children: ReactNode
+}
+
+interface InputTrackProps {
+  readonly children: ReactNode
+}
+
+interface PasswordMaskProps {
+  readonly value: string
+}
 
 const plainInputClassName = clsx(
   'h-8',
@@ -66,7 +85,7 @@ const inputFrameClassName = clsx(
   'flex',
   'w-full',
   'min-w-0',
-  'h-8',
+  'h-11',
   'text-base',
   'md:text-sm',
   '[--bracket-color:var(--color-button)]',
@@ -101,6 +120,44 @@ const framedInputClassName = clsx(
   '[&::-ms-reveal]:hidden',
 )
 
+const fileInputClassName = clsx(
+  'absolute',
+  'inset-0',
+  'z-10',
+  'size-full',
+  'cursor-pointer',
+  'opacity-0',
+  'outline-none',
+)
+
+const inputTrackClassName = clsx(
+  'pointer-events-none',
+  'absolute',
+  'inset-y-0',
+  'left-3',
+  'right-3',
+  'flex',
+  'items-center',
+  'overflow-hidden',
+)
+
+const inputTextClassName = clsx(
+  'min-w-0',
+  'shrink',
+  'overflow-hidden',
+  'whitespace-pre',
+)
+
+const passwordMaskBlock = clsx(
+  'inline-block',
+  'h-[1.25em]',
+  'w-0',
+  'shrink-0',
+  'border-r-[calc(1ch-2px)]',
+  'border-foreground',
+  'mr-[2px]',
+)
+
 const assignInputRef = (
   ref: Ref<HTMLInputElement> | undefined,
   node: HTMLInputElement | null,
@@ -118,19 +175,114 @@ const assignInputRef = (
 }
 
 const readInputText = (
-  inputValue: ComponentProps<'input'>['value'] | ComponentProps<'input'>['defaultValue'],
+  inputValue: InputProps['value'] | InputProps['defaultValue'],
 ): string => String(inputValue ?? '')
 
 const readSelectedFileNames = (input: HTMLInputElement): string =>
   Array.from(input.files ?? [], (file) => file.name).join(', ')
 
-const withoutControlledValue = (
-  props: Omit<ComponentProps<'input'>, 'className' | 'type'>,
-): Omit<ComponentProps<'input'>, 'className' | 'type' | 'value' | 'defaultValue'> => {
+const withoutInputValue = (
+  props: Omit<InputProps, 'className' | 'type'>,
+): Omit<FileInputProps, 'className'> => {
   const fileProps = { ...props }
   delete fileProps.value
   delete fileProps.defaultValue
   return fileProps
+}
+
+const useInputBinding = (
+  ref: Ref<HTMLInputElement> | undefined,
+  syncFromInput: (input: HTMLInputElement) => void,
+) => {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const forwardedRef = useRef(ref)
+  const onSync = useEffectEvent(syncFromInput)
+
+  const bindInput = useCallback((node: HTMLElement | null): void => {
+    const input = node instanceof HTMLInputElement ? node : null
+    inputRef.current = input
+    assignInputRef(forwardedRef.current, input)
+  }, [])
+
+  useEffect(() => {
+    const previousRef = forwardedRef.current
+    forwardedRef.current = ref
+    if (previousRef === ref) {
+      return
+    }
+
+    assignInputRef(previousRef, null)
+    assignInputRef(ref, inputRef.current)
+  }, [ref])
+
+  useEffect(() => {
+    const input = inputRef.current
+    if (input === null) {
+      return
+    }
+
+    onSync(input)
+
+    const form = input.form
+    let resetTimerId: ReturnType<typeof setTimeout> | undefined
+
+    const handleReset = (): void => {
+      clearTimeout(resetTimerId)
+      // reset fires before the browser restores each field.
+      resetTimerId = setTimeout(() => {
+        const currentInput = inputRef.current
+        if (currentInput === null) {
+          return
+        }
+
+        onSync(currentInput)
+      }, 0)
+    }
+
+    form?.addEventListener('reset', handleReset)
+
+    return () => {
+      form?.removeEventListener('reset', handleReset)
+      clearTimeout(resetTimerId)
+    }
+  }, [])
+
+  return bindInput
+}
+
+function InputFrame({ className, children }: InputFrameProps) {
+  return (
+    <span
+      data-slot="input-frame"
+      className={clsx(inputFrameClassName, className)}
+    >
+      {children}
+    </span>
+  )
+}
+
+function InputTrack({ children }: InputTrackProps) {
+  return (
+    <span aria-hidden="true" className={inputTrackClassName}>
+      {children}
+      <TerminalCaret visibility="input-focus" data-slot="input-caret" />
+      <DotLeader tone="muted" data-slot="input-dots" />
+    </span>
+  )
+}
+
+function PasswordMask({ value }: PasswordMaskProps) {
+  return (
+    <span className={clsx('flex', 'min-w-0', 'shrink', 'overflow-hidden')}>
+      {Array.from(value).map((_, index) => (
+        <span
+          key={index}
+          data-slot="input-password-block"
+          className={passwordMaskBlock}
+        />
+      ))}
+    </span>
+  )
 }
 
 function BracketInput({
@@ -139,70 +291,19 @@ function BracketInput({
   ref,
   value,
   defaultValue,
-  onChange,
   onInput,
   ...props
-}: ComponentProps<'input'>) {
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const forwardedRef = useRef(ref)
+}: InputProps) {
   const [trackedValue, setTrackedValue] = useState(() =>
     String(value ?? defaultValue ?? ''),
   )
   const isControlled = value !== undefined
   const mirrorValue = isControlled ? readInputText(value) : trackedValue
-
-  const bindInput = useCallback((node: HTMLElement | null): void => {
-    const input = node instanceof HTMLInputElement ? node : null
-    inputRef.current = input
-    assignInputRef(forwardedRef.current, input)
-  }, [])
-
-  useEffect(() => {
-    const previousRef = forwardedRef.current
-    forwardedRef.current = ref
-    if (previousRef === ref) {
-      return
-    }
-
-    assignInputRef(previousRef, null)
-    assignInputRef(ref, inputRef.current)
-  }, [ref])
-
-  useEffect(() => {
-    const input = inputRef.current
-    if (input === null) {
-      return
-    }
-
+  const bindInput = useInputBinding(ref, (input) => {
     setTrackedValue(input.value)
+  })
 
-    const form = input.form
-    let resetTimerId: ReturnType<typeof setTimeout> | undefined
-
-    const handleReset = (): void => {
-      clearTimeout(resetTimerId)
-      // reset fires before the browser restores each field.
-      resetTimerId = setTimeout(() => {
-        const currentInput = inputRef.current
-        if (currentInput === null) {
-          return
-        }
-
-        setTrackedValue(currentInput.value)
-      }, 0)
-    }
-
-    form?.addEventListener('reset', handleReset)
-
-    return () => {
-      form?.removeEventListener('reset', handleReset)
-      clearTimeout(resetTimerId)
-    }
-  }, [])
-
-  const handleInput: NonNullable<ComponentProps<'input'>['onInput']> = (
-    event,
-  ) => {
+  const handleInput: NonNullable<InputProps['onInput']> = (event) => {
     if (!isControlled) {
       setTrackedValue(event.currentTarget.value)
     }
@@ -211,16 +312,12 @@ function BracketInput({
   }
 
   return (
-    <span
-      data-slot="input-frame"
-      className={clsx(inputFrameClassName, className)}
-    >
+    <InputFrame className={className}>
       <InputPrimitive
         {...props}
         type={type}
         ref={bindInput}
         {...(isControlled ? { value } : { defaultValue })}
-        onChange={onChange}
         onInput={handleInput}
         data-slot="input"
         className={clsx(
@@ -228,69 +325,19 @@ function BracketInput({
           type === 'password' && 'text-transparent',
         )}
       />
-      <span
-        aria-hidden="true"
-        className={clsx(
-          'pointer-events-none',
-          'absolute',
-          'inset-y-0',
-          'left-3',
-          'right-3',
-          'flex',
-          'items-center',
-          'overflow-hidden',
+      <InputTrack>
+        {type === 'password' ? (
+          <PasswordMask value={mirrorValue} />
+        ) : (
+          <span
+            data-slot="input-mirror"
+            className={clsx('invisible', inputTextClassName)}
+          >
+            {getInputMirrorText(mirrorValue, type)}
+          </span>
         )}
-      >
-        {type === 'password'
-          ? (
-              <span className={clsx('flex', 'min-w-0', 'shrink', 'overflow-hidden')}>
-                {Array.from(mirrorValue).map((_, index) => (
-                  <span
-                    key={index}
-                    data-slot="input-password-block"
-                    className={passwordMaskBlock}
-                  />
-                ))}
-              </span>
-            )
-          : (
-              <span
-                data-slot="input-mirror"
-                className={clsx(
-                  'invisible',
-                  'min-w-0',
-                  'shrink',
-                  'overflow-hidden',
-                  'whitespace-pre',
-                )}
-              >
-                {getInputMirrorText(mirrorValue, type)}
-              </span>
-            )}
-        <span
-          data-slot="input-caret"
-          className={clsx(
-            'hidden',
-            'shrink-0',
-            'group-focus-within/input:block',
-            'h-[1.25em]',
-            terminalCaret,
-          )}
-        />
-        <span
-          data-slot="input-dots"
-          className={clsx(
-            'min-w-0',
-            'flex-1',
-            'overflow-hidden',
-            'whitespace-nowrap',
-            'text-muted-foreground',
-          )}
-        >
-          {INPUT_DOT_TRACK}
-        </span>
-      </span>
-    </span>
+      </InputTrack>
+    </InputFrame>
   )
 }
 
@@ -298,153 +345,41 @@ function FileBracketInput({
   className,
   ref,
   onChange,
-  onInput,
   ...props
-}: Omit<ComponentProps<'input'>, 'value' | 'defaultValue'>) {
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const forwardedRef = useRef(ref)
+}: FileInputProps) {
   const [fileName, setFileName] = useState('')
-
-  const bindInput = useCallback((node: HTMLElement | null): void => {
-    const input = node instanceof HTMLInputElement ? node : null
-    inputRef.current = input
-    assignInputRef(forwardedRef.current, input)
-  }, [])
-
-  useEffect(() => {
-    const previousRef = forwardedRef.current
-    forwardedRef.current = ref
-    if (previousRef === ref) {
-      return
-    }
-
-    assignInputRef(previousRef, null)
-    assignInputRef(ref, inputRef.current)
-  }, [ref])
-
-  useEffect(() => {
-    const input = inputRef.current
-    if (input === null) {
-      return
-    }
-
+  const bindInput = useInputBinding(ref, (input) => {
     setFileName(readSelectedFileNames(input))
+  })
 
-    const form = input.form
-    let resetTimerId: ReturnType<typeof setTimeout> | undefined
-
-    const handleReset = (): void => {
-      clearTimeout(resetTimerId)
-      // reset fires before the browser restores each field.
-      resetTimerId = setTimeout(() => {
-        const currentInput = inputRef.current
-        if (currentInput === null) {
-          return
-        }
-
-        setFileName(readSelectedFileNames(currentInput))
-      }, 0)
-    }
-
-    form?.addEventListener('reset', handleReset)
-
-    return () => {
-      form?.removeEventListener('reset', handleReset)
-      clearTimeout(resetTimerId)
-    }
-  }, [])
-
-  const handleChange: NonNullable<ComponentProps<'input'>['onChange']> = (
-    event,
-  ) => {
+  const handleChange: NonNullable<InputProps['onChange']> = (event) => {
     setFileName(readSelectedFileNames(event.currentTarget))
     onChange?.(event)
   }
 
-  const handleInput: NonNullable<ComponentProps<'input'>['onInput']> = (
-    event,
-  ) => {
-    setFileName(readSelectedFileNames(event.currentTarget))
-    onInput?.(event)
-  }
-
   return (
-    <span
-      data-slot="input-frame"
-      className={clsx(inputFrameClassName, className)}
-    >
+    <InputFrame className={className}>
       <InputPrimitive
         {...props}
         type="file"
         ref={bindInput}
         onChange={handleChange}
-        onInput={handleInput}
         data-slot="input"
-        className={clsx(
-          'absolute',
-          'inset-0',
-          'z-10',
-          'size-full',
-          'cursor-pointer',
-          'opacity-0',
-          'outline-none',
-        )}
+        className={fileInputClassName}
       />
-      <span
-        aria-hidden="true"
-        className={clsx(
-          'pointer-events-none',
-          'absolute',
-          'inset-y-0',
-          'left-3',
-          'right-3',
-          'flex',
-          'items-center',
-          'overflow-hidden',
-        )}
-      >
-        <span
-          data-slot="input-file-name"
-          className={clsx(
-            'min-w-0',
-            'shrink',
-            'overflow-hidden',
-            'whitespace-pre',
-          )}
-        >
+      <InputTrack>
+        <span data-slot="input-file-name" className={inputTextClassName}>
           {fileName}
         </span>
-        <span
-          data-slot="input-caret"
-          className={clsx(
-            'hidden',
-            'shrink-0',
-            'group-focus-within/input:block',
-            'h-[1.25em]',
-            terminalCaret,
-          )}
-        />
-        <span
-          data-slot="input-dots"
-          className={clsx(
-            'min-w-0',
-            'flex-1',
-            'overflow-hidden',
-            'whitespace-nowrap',
-            'text-muted-foreground',
-          )}
-        >
-          {INPUT_DOT_TRACK}
-        </span>
-      </span>
-    </span>
+      </InputTrack>
+    </InputFrame>
   )
 }
 
-function Input({ className, type, ...props }: ComponentProps<'input'>) {
+function Input({ className, type, ...props }: InputProps) {
   if (type === 'file') {
     return (
-      <FileBracketInput className={className} {...withoutControlledValue(props)} />
+      <FileBracketInput className={className} {...withoutInputValue(props)} />
     )
   }
 

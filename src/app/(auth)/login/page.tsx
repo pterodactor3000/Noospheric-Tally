@@ -1,24 +1,20 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   footnote,
   formStack,
-  fullWidthButton,
   pageLead,
   pageTitle,
-  textLink,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { TextLink } from '@/components/ui/text-link'
 
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 
 import { signInWithPassword } from '../actions'
 
@@ -49,10 +45,7 @@ const Login = () => {
         className={formStack}
       >
         <div className={fieldStack}>
-          <Label
-            htmlFor="email"
-            className={fieldLabel}
-          >
+          <Label htmlFor="email">
             Email
           </Label>
           <Input
@@ -61,15 +54,11 @@ const Login = () => {
             id="email"
             autoComplete="email"
             aria-invalid={state?.field === 'email'}
-            className={fieldControl}
           />
         </div>
 
         <div className={fieldStack}>
-          <Label
-            htmlFor="password"
-            className={fieldLabel}
-          >
+          <Label htmlFor="password">
             Password
           </Label>
           <Input
@@ -78,7 +67,6 @@ const Login = () => {
             id="password"
             autoComplete="current-password"
             aria-invalid={state?.field === 'password'}
-            className={fieldControl}
           />
         </div>
 
@@ -87,7 +75,7 @@ const Login = () => {
             variant="outline"
             type="submit"
             disabled={isPending}
-            className={fullWidthButton}
+            size="touch"
           >
             Sign in
           </Button>
@@ -96,9 +84,9 @@ const Login = () => {
 
       <p className={footnote}>
         No personal cogitation unit?{' '}
-        <Link href="/signup" className={textLink}>
+        <TextLink href="/signup">
           Requisite one
-        </Link>
+        </TextLink>
       </p>
     </>
   )

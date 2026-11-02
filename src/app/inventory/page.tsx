@@ -5,7 +5,7 @@ import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { actionButton, centeredPage } from '@/app/styles/class-names'
+import { centeredPage } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 import InventoryTally from './inventory-tally'
@@ -34,8 +34,6 @@ const inventoryActions = clsx(
   'gap-4',
 )
 
-const inventoryActionButton = clsx(actionButton, 'w-full')
-
 const inventoryTitle = clsx('m-0', 'text-center', 'text-2xl', 'font-semibold')
 
 const InventoryPage = async () => {
@@ -52,14 +50,14 @@ const InventoryPage = async () => {
           </span>{' '}
           tally
         </h1>
-        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
+        <Separator variant="heading" />
         <InventoryTally lines={tallyLines} />
         <div className={inventoryActions}>
           <Button
             variant="outline"
             nativeButton={false}
             render={<Link href="/inventory/new" />}
-            className={inventoryActionButton}
+            size="touch"
           >
             Add item
           </Button>
@@ -67,7 +65,7 @@ const InventoryPage = async () => {
             variant="outline"
             nativeButton={false}
             render={<Link href="/inventory/scan" />}
-            className={inventoryActionButton}
+            size="touch"
           >
             Scan item
           </Button>
@@ -75,7 +73,7 @@ const InventoryPage = async () => {
             variant="outline"
             nativeButton={false}
             render={<Link href="/inventory/restock" />}
-            className={inventoryActionButton}
+            size="touch"
           >
             Restock
           </Button>
@@ -83,7 +81,7 @@ const InventoryPage = async () => {
             variant="outline"
             nativeButton={false}
             render={<Link href="/inventory/lookup" />}
-            className={inventoryActionButton}
+            size="touch"
           >
             Lookup
           </Button>
