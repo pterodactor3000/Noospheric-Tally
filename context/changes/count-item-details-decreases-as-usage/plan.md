@@ -125,9 +125,9 @@ To roll back, restore `set_household_item_levels` from `supabase/migrations/2026
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes, including the unchanged RPC argument test.
-- [ ] 1.2 `pnpm lint` passes.
-- [ ] 1.3 `pnpm typecheck` passes.
+- [x] 1.1 `pnpm test` passes, including the unchanged RPC argument test. 7120d1c
+- [x] 1.2 `pnpm lint` passes. 7120d1c
+- [x] 1.3 `pnpm typecheck` passes. 7120d1c
 
 #### Manual
 
