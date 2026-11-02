@@ -48,7 +48,16 @@ const tallyPanelStack = clsx(
   'sm:text-[16px]',
 )
 const tallyMiss = clsx('mt-[1rem]')
-const tallySearchRow = clsx('flex', 'items-center', 'gap-2')
+const tallySearchRow = clsx('relative', 'flex', 'w-full', 'items-center', 'gap-2')
+const tallySearchField = clsx(
+  fieldControl,
+  'min-w-0',
+  'flex-1',
+  'max-sm:focus-within:absolute',
+  'max-sm:focus-within:inset-0',
+  'max-sm:focus-within:z-10',
+  'max-sm:focus-within:bg-background',
+)
 const tallySortGroup = clsx('flex', 'shrink-0', 'gap-2')
 const tallyName = clsx(
   'min-h-[36px]',
@@ -179,7 +188,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                 setQuery(event.currentTarget.value)
                 setToggled({})
               }}
-              className={clsx(fieldControl, 'min-w-0', 'flex-1')}
+              className={tallySearchField}
             />
             <div role="group" aria-label="Sort tally" className={tallySortGroup}>
               <Button
