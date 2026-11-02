@@ -14,6 +14,8 @@ describe('isProtectedPath', () => {
     expect(isProtectedPath('/')).toEqual(false)
     expect(isProtectedPath('/login')).toEqual(false)
     expect(isProtectedPath('/signup')).toEqual(false)
+    expect(isProtectedPath('/help')).toEqual(false)
+    expect(isProtectedPath('/help/')).toEqual(false)
     expect(isProtectedPath('/inventoryfoo')).toEqual(false)
     expect(isProtectedPath('/hab-units')).toEqual(false)
   })
