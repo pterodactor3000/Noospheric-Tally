@@ -446,17 +446,17 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 
 #### Automated
 
-- [ ] 3.1 `pnpm test` passes `is-bracket-input-type.test.ts` (five true types, six false values).
-- [ ] 3.2 `pnpm test` passes `get-input-mirror-text.test.ts` (text, empty, password per character, emoji, search, email).
-- [ ] 3.3 `pnpm test` passes `input.test.ts` (framed markup for four types, password mirror hides the value, unframed markup for four types, `className` on the frame).
-- [ ] 3.4 `pnpm lint` and `pnpm typecheck` pass.
-- [ ] 3.5 `git diff --name-only main` lists neither `src/components/ui/textarea.tsx` nor `src/components/ui/input-group.tsx`.
+- [x] 3.1 `pnpm test` passes `is-bracket-input-type.test.ts` (five true types, six false values). `400f170`
+- [x] 3.2 `pnpm test` passes `get-input-mirror-text.test.ts` (text, empty, password per character, emoji, search, email). `400f170`
+- [x] 3.3 `pnpm test` passes `input.test.ts` (framed markup for four types, password mirror hides the value, unframed markup for four types, `className` on the frame). `400f170`
+- [x] 3.4 `pnpm lint` and `pnpm typecheck` pass. `400f170`
+- [x] 3.5 `git diff --name-only main` lists neither `src/components/ui/textarea.tsx` nor `src/components/ui/input-group.tsx`. `400f170`
 
 #### Manual
 
-- [ ] 3.6 Unfocused empty inputs show both brackets and middle dots across the full width, with no block caret.
+- [x] 3.6 Unfocused empty inputs show both brackets and middle dots across the full width, with no block caret. `400f170`
 - [ ] 3.7 Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character, backspace brings one back each time, and total cells stay constant.
-- [ ] 3.8 Password masks every character, and the mask cells are the same width as the dot cells.
+- [x] 3.8 Password masks every character, and the mask cells are the same width as the dot cells. `400f170`
 - [ ] 3.9 After a form submit that resets or repopulates a field, after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - [ ] 3.10 The controlled search on `/inventory` follows typing and clearing, and a value longer than the field scrolls without any text or dot leaving the frame.
 - [ ] 3.11 `aria-invalid` shows destructive brackets and ring, a disabled input dims the frame and dots, and the read-only invite fields on `/hab-unit/share` show their value followed by dots.
