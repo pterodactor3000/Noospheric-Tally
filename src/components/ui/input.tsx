@@ -105,28 +105,17 @@ function BracketInput({
 }: ComponentProps<'input'>) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const forwardedRef = useRef(ref)
-  const onInputRef = useRef(onInput)
   const [trackedValue, setTrackedValue] = useState(() =>
-    readInputText(value ?? defaultValue),
+    String(value ?? defaultValue ?? ''),
   )
   const isControlled = value !== undefined
   const mirrorValue = isControlled ? readInputText(value) : trackedValue
-
-  const frameRef = useRef<HTMLSpanElement | null>(null)
 
   const bindInput = useCallback((node: HTMLElement | null): void => {
     const input = node instanceof HTMLInputElement ? node : null
     inputRef.current = input
     assignInputRef(forwardedRef.current, input)
   }, [])
-
-  const setFrameNode = useCallback((node: HTMLSpanElement | null): void => {
-    frameRef.current = node
-  }, [])
-
-  useEffect(() => {
-    onInputRef.current = onInput
-  }, [onInput])
 
   useEffect(() => {
     const previousRef = forwardedRef.current
@@ -140,36 +129,12 @@ function BracketInput({
   }, [ref])
 
   useEffect(() => {
-    const input = frameRef.current?.querySelector('input') ?? null
-    if (!(input instanceof HTMLInputElement)) {
+    const input = inputRef.current
+    if (input === null) {
       return
     }
 
-    inputRef.current = input
-    assignInputRef(forwardedRef.current, input)
-
     setTrackedValue(input.value)
-
-    const handleInput = (event: Event): void => {
-      if (event.currentTarget !== input) {
-        return
-      }
-
-      setTrackedValue(input.value)
-      const callerOnInput = onInputRef.current
-      if (callerOnInput === undefined || !(event instanceof InputEvent)) {
-        return
-      }
-
-      // React's onInput type is a synthetic event. The DOM event is what the field emits.
-      callerOnInput(
-        event as unknown as Parameters<
-          NonNullable<ComponentProps<'input'>['onInput']>
-        >[0],
-      )
-    }
-
-    input.addEventListener('input', handleInput)
 
     const form = input.form
     let resetTimerId: ReturnType<typeof setTimeout> | undefined
@@ -190,15 +155,23 @@ function BracketInput({
     form?.addEventListener('reset', handleReset)
 
     return () => {
-      input.removeEventListener('input', handleInput)
       form?.removeEventListener('reset', handleReset)
       clearTimeout(resetTimerId)
     }
   }, [])
 
+  const handleInput: NonNullable<ComponentProps<'input'>['onInput']> = (
+    event,
+  ) => {
+    if (!isControlled) {
+      setTrackedValue(event.currentTarget.value)
+    }
+
+    onInput?.(event)
+  }
+
   return (
     <span
-      ref={setFrameNode}
       data-slot="input-frame"
       className={clsx(
         'group/input',
@@ -233,6 +206,7 @@ function BracketInput({
         ref={bindInput}
         {...(isControlled ? { value } : { defaultValue })}
         onChange={onChange}
+        onInput={handleInput}
         data-slot="input"
         className={framedInputClassName}
       />
