@@ -174,7 +174,7 @@ const BarcodeScanner = ({
         }}
         className={clsx(formStack, 'pt-24')}
       >
-        <FormError>{displayedError}</FormError>
+        <FormError id="barcode-error">{displayedError}</FormError>
         <div className={fieldStack}>
           <Label htmlFor="barcode">
             Barcode
@@ -188,6 +188,7 @@ const BarcodeScanner = ({
             required
             defaultValue={defaultBarcode}
             aria-invalid={Boolean(displayedError)}
+            aria-errormessage="barcode-error"
           />
         </div>
         <Button

@@ -4,7 +4,7 @@ import { clsx } from 'clsx'
 
 const textLinkClassName = clsx(
   'font-medium',
-  'text-input',
+  'text-button',
   'underline-offset-4',
   'hover:underline',
 )
