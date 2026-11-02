@@ -68,14 +68,24 @@ describe('buttonVariants', () => {
       const removedBorderColorClasses = REMOVED_BORDER_COLOR_CLASSES.filter(
         (token) => classes.includes(token),
       )
+      const backgroundClasses = classes.filter(
+        (token) =>
+          /(^|:)bg-/.test(token) &&
+          token !== 'bg-transparent' &&
+          token !== 'bg-clip-padding',
+      )
 
       expect({
         hasBracketFrame: classes.includes('bracket-frame'),
+        hasLinkColor: classes.includes('text-foreground'),
         removedBorderColorClasses,
+        backgroundClasses,
         fontSizeClasses,
       }).toEqual({
         hasBracketFrame: true,
+        hasLinkColor: true,
         removedBorderColorClasses: [],
+        backgroundClasses: [],
         fontSizeClasses: [FONT_SIZE_BY_SIZE[size]],
       })
     },

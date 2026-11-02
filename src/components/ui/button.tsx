@@ -15,6 +15,8 @@ const buttonVariants = cva(
     'bg-clip-padding',
     'bracket-frame',
     '[--bracket-color:currentColor]',
+    'bg-transparent',
+    'text-foreground',
     'font-medium',
     'whitespace-nowrap',
     'transition-all',
@@ -38,47 +40,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: clsx(
-          'bg-primary',
-          'text-primary-foreground',
-          'hover:bg-primary/80',
-        ),
-        outline: clsx(
-          '[--bracket-color:var(--color-border)]',
-          'bg-background',
-          'hover:bg-muted',
-          'hover:text-foreground',
-          'aria-expanded:bg-muted',
-          'aria-expanded:text-foreground',
-          'dark:[--bracket-color:var(--color-input)]',
-          'dark:bg-input/30',
-          'dark:hover:bg-input/50',
-        ),
-        secondary: clsx(
-          'bg-secondary',
-          'text-secondary-foreground',
-          'hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]',
-          'aria-expanded:bg-secondary',
-          'aria-expanded:text-secondary-foreground',
-        ),
-        ghost: clsx(
-          'hover:bg-muted',
-          'hover:text-foreground',
-          'aria-expanded:bg-muted',
-          'aria-expanded:text-foreground',
-          'dark:hover:bg-muted/50',
-        ),
-        destructive: clsx(
-          'bg-destructive/10',
-          'text-destructive',
-          'hover:bg-destructive/20',
-          'focus-visible:[--bracket-color:color-mix(in_oklab,var(--color-destructive)_40%,transparent)]',
-          'focus-visible:ring-destructive/20',
-          'dark:bg-destructive/20',
-          'dark:hover:bg-destructive/30',
-          'dark:focus-visible:ring-destructive/40',
-        ),
-        link: clsx('text-primary', 'underline-offset-4', 'hover:underline'),
+        default: '',
+        outline: '',
+        secondary: '',
+        ghost: '',
+        destructive: '',
+        link: clsx('underline-offset-4', 'hover:underline'),
       },
       size: {
         default: clsx(
