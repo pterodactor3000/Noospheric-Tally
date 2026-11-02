@@ -1,6 +1,6 @@
 import HabUnitNameForm from './hab-unit-name-form'
 import JoinHabUnitForm from './join-hab-unit-form'
-import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
+import { contentWidth, pageShell } from '@/app/styles/class-names'
 import { Separator } from '@/components/ui/separator'
 import { requireCurrentUser } from '@/lib/helpers'
 import {
@@ -32,13 +32,11 @@ const NewHabUnit = async ({
   return (
     <main className={pageShell}>
       <div className={contentWidth}>
-        <div className={panel}>
-          <JoinHabUnitForm defaultCode={inviteCode} />
-          <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
-          <HabUnitNameForm
-            defaultName={buildDefaultHabUnitName(readRandomHabUnitSuffix())}
-          />
-        </div>
+        <JoinHabUnitForm defaultCode={inviteCode} />
+        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
+        <HabUnitNameForm
+          defaultName={buildDefaultHabUnitName(readRandomHabUnitSuffix())}
+        />
       </div>
     </main>
   )

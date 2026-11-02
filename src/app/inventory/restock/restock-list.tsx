@@ -12,9 +12,8 @@ import {
   type ItemCategory,
 } from '@/lib/items/item-category'
 import { resolveCategoryPanelOpen } from '@/lib/items/resolve-category-panel-open'
+import { categoryTree, categoryTreeItem } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
-import { ItemListMarker } from '@/components/item-list-marker'
-
 import InventoryCategoryPanel from '../inventory-category-panel'
 
 const RESTOCK_DOT_LEADER = '.'.repeat(300)
@@ -50,9 +49,8 @@ const formatRestockEnd = (quantity: number, shortfall: number): string =>
   `${quantity} // [${shortfall} short]`
 
 const RestockLineRow = ({ line }: RestockLineRowProps) => (
-  <li className={clsx('px-2', STOCK_STATE_TEXT_CLASS_NAMES.critical)}>
+  <li className={clsx(categoryTreeItem, STOCK_STATE_TEXT_CLASS_NAMES.critical)}>
     <div className={restockLine}>
-      <ItemListMarker />
       <Link href={`/inventory/${line.itemId}`} className={restockName}>
         {line.name}
       </Link>
@@ -110,7 +108,7 @@ const RestockList = ({ lines }: RestockListProps) => {
             itemCount={group.lines.length}
             shortage={shortage}
           >
-            <ul>
+            <ul className={categoryTree}>
               {group.lines.map((line) => (
                 <RestockLineRow key={line.itemId} line={line} />
               ))}

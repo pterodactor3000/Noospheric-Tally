@@ -1,7 +1,7 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 
-import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
+import { contentWidth, pageShell } from '@/app/styles/class-names'
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
 
 const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -12,11 +12,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <main className={pageShell}>
-      <div className={contentWidth}>
-        <div className={panel}>
-          {children}
-        </div>
-      </div>
+      <div className={contentWidth}>{children}</div>
     </main>
   )
 }

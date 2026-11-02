@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { contentWidth, pageShell, panel } from '@/app/styles/class-names'
+import { contentWidth, pageShell } from '@/app/styles/class-names'
 
 import { validateBarcode } from '@/lib/items/validate-barcode'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
@@ -89,11 +89,7 @@ const NewItemPage = async ({
 
   return (
     <main className={pageShell}>
-      <div className={contentWidth}>
-        <div className={panel}>
-          {body}
-        </div>
-      </div>
+      <div className={contentWidth}>{body}</div>
     </main>
   )
 }
