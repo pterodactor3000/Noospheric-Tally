@@ -77,7 +77,7 @@ Phases: shared frame and Button first (everything else depends on it), then the 
 
 ## Critical Implementation Details
 
-- **The bracket is the control border.** The pseudo-elements stretch from `top: 0` to `bottom: 0`. The vertical bar is the side of the control and the arms sit on the top and bottom corners. Do not center a `1.5em` glyph in the hit area. That glyph reads as the `[` `]` characters. `actionButton` stays `min-h-11` and the tally icon buttons stay `size-11!`. The arm length stays `0.4em`.
+- **The bracket is the control border.** The pseudo-elements stretch from `top: 0` to `bottom: 0`. The vertical bar is the side of the control and the arms sit on the top and bottom corners. Do not center a `1.5em` glyph in the hit area. That glyph reads as the `[` `]` characters. `actionButton` stays `min-h-11` and the tally icon buttons stay `size-11!`. The arm length is `0.4em` plus `2px`. The arms have no glow.
 - **Label size conflict.** Closed decision: default label 1rem. Live: `text-sm` at `button.tsx:16`. The base and the size variants both set a font size on one element with no merge, so the cascade order decides. Before editing, record the computed `font-size` of every size variant in a browser. Then move font size out of the base and into each size variant. Keep each recorded value except `default`, which becomes `text-base` (1rem). Each size then sets exactly one font-size class. A unit test enforces that.
 - **Border classes that must go.** Removing the visible rectangle means removing every class that colors the real border: `border-border` (`:46`), `dark:border-input` (`:52`), `focus-visible:border-ring` (`:22`), `aria-invalid:border-destructive` (`:28`), `dark:aria-invalid:border-destructive/50` (`:31`), and `focus-visible:border-destructive/40` (`:74`). `border-2 border-transparent` stays for box geometry. Each removed color moves to `--bracket-color` under the same state.
 - **`--bracket-color` is read with a fallback, not declared by the utility.** The pseudo-elements use `var(--bracket-color, currentColor)`. The utility never declares the property, so variant classes cannot lose a same-element cascade fight.
@@ -105,8 +105,8 @@ Add the shared frame primitive and apply it to every shared `Button`. After this
 **Contract:** `@utility bracket-frame` with these properties.
 
 - The element is `position: relative`.
-- `::before` is the left bracket and `::after` is the right bracket. Each has `content: ''`, `position: absolute`, `top: 0`, `bottom: 0`, `box-sizing: border-box`, `pointer-events: none`, `border: 2px solid var(--bracket-color, currentColor)`, and `width: var(--bracket-arm, 0.4em)`. No `height` and no translate.
-- `::before` sits at `left: 0` with `border-right-width: 0`. `::after` sits at `right: 0` with `border-left-width: 0`. Together each bracket is a 2px vertical bar with top and bottom arms of `--bracket-arm` length, pointing inward.
+- `::before` is the left bracket and `::after` is the right bracket. Each has `content: ''`, `position: absolute`, `top: 0`, `bottom: 0`, `box-sizing: border-box`, `pointer-events: none`, `border: 2px solid var(--bracket-color, currentColor)`, and `width: calc(var(--bracket-arm, 0.4em) + 2px)`. No glow.
+- `::before` sits at `left: 0` with `border-right-width: 0`. `::after` sits at `right: 0` with `border-left-width: 0`.
 - The utility declares no `--bracket-color` and no `--bracket-arm` value.
 - If an arm reaches the label or icon at a size, shorten `--bracket-arm` for that size. Do not change the label.
 

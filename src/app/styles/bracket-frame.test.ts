@@ -55,18 +55,18 @@ describe('bracket-frame utility', () => {
       after: /::after\s*[,{]/.test(bracketFrameBlock),
       top: readDeclaration(bracketFrameBlock, 'top'),
       bottom: readDeclaration(bracketFrameBlock, 'bottom'),
-      height: readDeclaration(bracketFrameBlock, 'height'),
       border: readDeclaration(bracketFrameBlock, 'border'),
       width: readDeclaration(bracketFrameBlock, 'width'),
+      glow: bracketFrameBlock.includes('color-mix'),
     }).toEqual({
       utility: true,
       before: true,
       after: true,
       top: '0',
       bottom: '0',
-      height: null,
       border: '2px solid var(--bracket-color, currentColor)',
-      width: 'var(--bracket-arm, 0.4em)',
+      width: 'calc(var(--bracket-arm, 0.4em) + 2px)',
+      glow: false,
     })
   })
 })
