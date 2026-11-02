@@ -164,8 +164,11 @@ const terminalCaret = clsx(terminalCaretShape, 'animate-terminal-blink')
 const passwordMaskBlock = clsx(
   'inline-block',
   'h-[1.25em]',
+  'w-0',
   'shrink-0',
-  terminalCaretShape,
+  'border-r-[calc(1ch-2px)]',
+  'border-foreground',
+  'mr-[2px]',
 )
 
 export {
