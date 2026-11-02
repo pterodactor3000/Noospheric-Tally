@@ -50,6 +50,14 @@ describe('Input', () => {
     (type) => {
       const markup = renderInput({ type })
       const inputTag = getOpeningTag(markup, 'input')
+      const caretClassTokens = (
+        getOpeningTag(markup, 'input-caret').match(/class="([^"]*)"/)?.[1] ?? ''
+      ).split(/\s+/)
+      const textIndex = type === 'password'
+        ? markup.indexOf('data-slot="input-caret"')
+        : markup.indexOf('data-slot="input-mirror"')
+      const caretIndex = markup.indexOf('data-slot="input-caret"')
+      const dotsIndex = markup.indexOf('data-slot="input-dots"')
 
       expect({
         hasFrame: markup.includes('data-slot="input-frame"'),
@@ -62,9 +70,9 @@ describe('Input', () => {
         ),
         hidesNativeCaret: inputTag.includes('caret-transparent'),
         hasBlockCaret: markup.includes('data-slot="input-caret"'),
-        caretIsHiddenUntilFocus: getOpeningTag(markup, 'input-caret').includes(
-          'group-focus-within/input:block',
-        ) && getOpeningTag(markup, 'input-caret').includes('hidden'),
+        caretHasHiddenClass: caretClassTokens.includes('hidden'),
+        caretShowsOnFocus: caretClassTokens.includes('group-focus-within/input:block'),
+        caretSitsBeforeDots: textIndex >= 0 && textIndex <= caretIndex && caretIndex < dotsIndex,
       }).toEqual({
         hasFrame: true,
         hasDots: true,
@@ -74,7 +82,9 @@ describe('Input', () => {
         hasLongerArms: true,
         hidesNativeCaret: true,
         hasBlockCaret: true,
-        caretIsHiddenUntilFocus: true,
+        caretHasHiddenClass: true,
+        caretShowsOnFocus: true,
+        caretSitsBeforeDots: true,
       })
     },
   )
@@ -88,6 +98,9 @@ describe('Input', () => {
       .split('data-slot="input-password-block"')
       .slice(1)
       .some((part) => part.slice(0, part.indexOf('>')).includes('animate-terminal-blink'))
+    const blockIndex = markup.indexOf('data-slot="input-password-block"')
+    const caretIndex = markup.indexOf('data-slot="input-caret"')
+    const dotsIndex = markup.indexOf('data-slot="input-dots"')
 
     expect({
       blockCount,
@@ -95,12 +108,14 @@ describe('Input', () => {
       passwordBlocksBlink,
       inputHidesNativeGlyphs: getOpeningTag(markup, 'input').includes('text-transparent'),
       nativeCaretHidden: getOpeningTag(markup, 'input').includes('caret-transparent'),
+      caretFollowsBlocks: blockIndex < caretIndex && caretIndex < dotsIndex,
     }).toEqual({
       blockCount: 6,
       trackContainsSecret: false,
       passwordBlocksBlink: false,
       inputHidesNativeGlyphs: true,
       nativeCaretHidden: true,
+      caretFollowsBlocks: true,
     })
   })
 

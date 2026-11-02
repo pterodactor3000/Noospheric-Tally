@@ -229,13 +229,17 @@ function BracketInput({
         )}
       >
         {type === 'password'
-          ? Array.from(mirrorValue).map((_, index) => (
-              <span
-                key={index}
-                data-slot="input-password-block"
-                className={passwordMaskBlock}
-              />
-            ))
+          ? (
+              <span className={clsx('flex', 'min-w-0', 'shrink', 'overflow-hidden')}>
+                {Array.from(mirrorValue).map((_, index) => (
+                  <span
+                    key={index}
+                    data-slot="input-password-block"
+                    className={passwordMaskBlock}
+                  />
+                ))}
+              </span>
+            )
           : (
               <span
                 data-slot="input-mirror"
