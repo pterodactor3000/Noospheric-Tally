@@ -17,6 +17,8 @@ const buttonVariants = cva(
     '[--bracket-arm:calc(0.4em+2px)]',
     '[--bracket-color:currentColor]',
     'bg-transparent',
+    'enabled:hover:bg-current/10',
+    'enabled:active:bg-current/20',
     'text-foreground',
     'font-medium',
     'whitespace-nowrap',

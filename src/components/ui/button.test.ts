@@ -31,6 +31,11 @@ const REMOVED_BORDER_COLOR_CLASSES = [
   'focus-visible:border-destructive/40',
 ] as const
 
+const TINT_CLASSES = [
+  'enabled:hover:bg-current/10',
+  'enabled:active:bg-current/20',
+] as const
+
 const FONT_SIZE_CLASSES = [
   'text-xs',
   'text-sm',
@@ -72,13 +77,15 @@ describe('buttonVariants', () => {
         (token) =>
           /(^|:)bg-/.test(token) &&
           token !== 'bg-transparent' &&
-          token !== 'bg-clip-padding',
+          token !== 'bg-clip-padding' &&
+          !(TINT_CLASSES as readonly string[]).includes(token),
       )
 
       expect({
         hasBracketFrame: classes.includes('bracket-frame'),
         hasLongerArms: classes.includes('[--bracket-arm:calc(0.4em+2px)]'),
         hasLinkColor: classes.includes('text-foreground'),
+        tintClasses: TINT_CLASSES.filter((token) => classes.includes(token)),
         removedBorderColorClasses,
         backgroundClasses,
         fontSizeClasses,
@@ -86,6 +93,7 @@ describe('buttonVariants', () => {
         hasBracketFrame: true,
         hasLongerArms: true,
         hasLinkColor: true,
+        tintClasses: [...TINT_CLASSES],
         removedBorderColorClasses: [],
         backgroundClasses: [],
         fontSizeClasses: [FONT_SIZE_BY_SIZE[size]],
