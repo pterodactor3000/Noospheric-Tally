@@ -19,7 +19,7 @@ const buttonVariants = cva(
     'bg-transparent',
     'enabled:hover:bg-current/10',
     'enabled:active:bg-current/20',
-    'text-foreground',
+    'text-input',
     'font-medium',
     'whitespace-nowrap',
     'transition-all',

@@ -66,7 +66,7 @@ const footnote = clsx('mt-6', 'text-sm', 'text-foreground/70', 'font-mono')
 
 const textLink = clsx(
   'font-medium',
-  'text-foreground',
+  'text-input',
   'underline-offset-4',
   'hover:underline',
   'font-mono',
