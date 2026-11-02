@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -11,8 +10,6 @@ import {
   pageLead,
   pageShell,
   pageTitle,
-  sectionCopy,
-  sectionHeading,
   textLink,
 } from '@/app/styles/class-names'
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
@@ -30,9 +27,8 @@ export default async function Home() {
           Know what is at home before you shop.
         </h1>
         <p className={pageLead}>
-          Noospheric Tally keeps everyday supplies visible at the moment stock
-          changes. The deployment foundation is in place for the inventory
-          experience to follow.
+          Noospheric Tally records stock when you scan an item or change its
+          count. It shows what needs restocking.
         </p>
 
         <div className={formStack}>
@@ -60,32 +56,6 @@ export default async function Home() {
             Requisite one
           </Link>
         </p>
-
-        <div
-          className={clsx(
-            'mt-12',
-            'grid',
-            'gap-4',
-            'border-t',
-            'border-foreground/50',
-            'pt-6',
-            'sm:grid-cols-2',
-          )}
-        >
-          <section>
-            <h2 className={sectionHeading}>Inventory</h2>
-            <p className={sectionCopy}>
-              A signed-in member can scan an unknown barcode and save a
-              hab-unit name.
-            </p>
-          </section>
-          <section>
-            <h2 className={sectionHeading}>Platform</h2>
-            <p className={sectionCopy}>
-              Secure web delivery for phone-ready barcode scanning.
-            </p>
-          </section>
-        </div>
       </div>
     </main>
   )
