@@ -21,11 +21,12 @@ import {
   type TallySortField,
 } from '@/lib/items/sort-tally-lines'
 import { STOCK_STATE_LABELS, getStockState } from '@/lib/items/stock-state'
-import { ItemListMarker } from '@/components/item-list-marker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
+  categoryTree,
+  categoryTreeItem,
   fieldControl,
   fieldLabel,
   fieldStack,
@@ -69,6 +70,7 @@ interface InventoryTallyProps {
 
 interface TallyLineListProps {
   readonly lines: readonly HabUnitTallyLine[]
+  readonly isTree: boolean
   readonly onPendingChange: (itemId: string, isPending: boolean) => void
 }
 
@@ -81,13 +83,17 @@ const sortButtonLabel = (sort: TallySort, field: TallySortField): string => {
   return `Sort by ${fieldLabel} ${nextDirection}`
 }
 
-const TallyLineList = ({ lines, onPendingChange }: TallyLineListProps) => (
-  <ul>
+const TallyLineList = ({
+  lines,
+  isTree,
+  onPendingChange,
+}: TallyLineListProps) => (
+  <ul className={isTree ? categoryTree : undefined}>
     {lines.map((line) => {
       const stockState = getStockState(line.quantity, line.minimumQuantity)
 
       return (
-        <li key={line.itemId} className="px-2">
+        <li key={line.itemId} className={isTree ? categoryTreeItem : 'px-2'}>
           <TallyCountControls
             itemId={line.itemId}
             name={line.name}
@@ -96,7 +102,6 @@ const TallyLineList = ({ lines, onPendingChange }: TallyLineListProps) => (
             stockTextClassName={STOCK_STATE_TEXT_CLASS_NAMES[stockState]}
             onPendingChange={onPendingChange}
           >
-            <ItemListMarker />
             <Link href={`/inventory/${line.itemId}`} className={tallyName}>
               {line.name}
             </Link>
@@ -246,6 +251,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                 >
                   <TallyLineList
                     lines={group.lines}
+                    isTree
                     onPendingChange={handlePendingChange}
                   />
                 </InventoryCategoryPanel>
@@ -255,6 +261,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
         {!isCategorized && visibleLines.length > 0 ? (
           <TallyLineList
             lines={visibleLines}
+            isTree={false}
             onPendingChange={handlePendingChange}
           />
         ) : null}

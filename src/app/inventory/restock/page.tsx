@@ -4,15 +4,14 @@ import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { rankRestockLines } from '@/lib/items/rank-restock-lines'
 import { Separator } from '@/components/ui/separator'
-import { centeredPage, panel } from '@/app/styles/class-names'
+import { centeredPage } from '@/app/styles/class-names'
 
 import { RestockList } from './restock-list'
 
 const restockSection = clsx(
-  panel,
+  'w-full',
   '[width:-webkit-fill-available]',
   '[width:stretch]',
-  'max-w-[900px]',
 )
 
 const restockTitle = clsx('m-0', 'text-center', 'text-2xl', 'font-semibold')

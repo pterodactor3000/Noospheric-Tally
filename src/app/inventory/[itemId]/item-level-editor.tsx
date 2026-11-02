@@ -13,6 +13,7 @@ import {
   countControlPart,
 } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { formatConsumptionRate } from '@/lib/items/format-consumption-rate'
 import {
   ITEM_CATEGORIES,
   ITEM_CATEGORY_LABELS,
@@ -84,6 +85,26 @@ const itemDots = clsx(
   'whitespace-nowrap',
 )
 const itemValue = clsx('shrink-0', 'whitespace-nowrap')
+const categoryField = clsx(
+  'relative',
+  'inline-block',
+  'min-w-44',
+  'focus-within:ring-2',
+  'focus-within:ring-ring',
+)
+const categoryFieldLabel = clsx(
+  'grid',
+  'w-full',
+  'grid-cols-[auto_1fr_auto]',
+  'items-baseline',
+)
+const categorySelect = clsx(
+  itemControl,
+  'absolute',
+  'inset-0',
+  'cursor-pointer',
+  'opacity-0',
+)
 const WIDE_ITEM_HEADING_QUERY = '(min-width: 40rem)'
 
 const subscribeToWideItemHeading = (onStoreChange: () => void) => {
@@ -121,7 +142,7 @@ interface ItemLevelEditorProps {
   readonly name: string
   readonly quantity: number
   readonly minimumQuantity: number
-  readonly consumptionRate: string
+  readonly consumptionCount: number
   readonly category: ItemCategory
   readonly barcodes: readonly string[]
 }
@@ -131,6 +152,7 @@ interface LevelStepperProps {
   readonly value: number
   readonly minimum: number
   readonly maximum: number
+  readonly isUnsaved: boolean
   readonly onDecrease: () => void
   readonly onIncrease: () => void
 }
@@ -140,10 +162,11 @@ const LevelStepper = ({
   value,
   minimum,
   maximum,
+  isUnsaved,
   onDecrease,
   onIncrease,
 }: LevelStepperProps) => (
-  <div className={itemLine}>
+  <div className={clsx(itemLine, isUnsaved && 'text-unsaved')}>
     <span className={itemLabel}>{label}</span>
     <span aria-hidden="true" className={itemDots}>
       {ITEM_DOT_LEADER}
@@ -153,26 +176,29 @@ const LevelStepper = ({
         type="button"
         disabled={value <= minimum}
         aria-label={`Decrease ${label}`}
-        className={clsx(itemControl, countControlPart, 'text-center')}
+        className={clsx(
+          itemControl,
+          countControlPart,
+          'justify-self-start',
+          'text-center',
+        )}
         onClick={onDecrease}
       >
         [-]
       </button>
-      <span
-        className={clsx(
-          countControlPart,
-          'min-h-11',
-          'leading-11',
-          'text-center',
-        )}
-      >
+      <span className={clsx('min-h-11', 'leading-11', 'text-center')}>
         {value}
       </span>
       <button
         type="button"
         disabled={value >= maximum}
         aria-label={`Increase ${label}`}
-        className={clsx(itemControl, countControlPart, 'text-right')}
+        className={clsx(
+          itemControl,
+          countControlPart,
+          'justify-self-end',
+          'text-center',
+        )}
         onClick={onIncrease}
       >
         [+]
@@ -186,7 +212,7 @@ const ItemLevelEditor = ({
   name,
   quantity,
   minimumQuantity,
-  consumptionRate,
+  consumptionCount,
   category,
   barcodes,
 }: ItemLevelEditorProps) => {
@@ -205,6 +231,8 @@ const ItemLevelEditor = ({
     null,
   )
   const stockState = getStockState(count, minimum)
+  const pendingUses = Math.max(0, quantity - count)
+  const consumptionRate = formatConsumptionRate(consumptionCount + pendingUses)
 
   return (
     <form action={formAction}>
@@ -273,6 +301,7 @@ const ItemLevelEditor = ({
           value={count}
           minimum={0}
           maximum={HOUSEHOLD_QUANTITY_MAX}
+          isUnsaved={count !== quantity}
           onDecrease={() => setCount((current) => current - 1)}
           onIncrease={() => setCount((current) => current + 1)}
         />
@@ -281,17 +310,30 @@ const ItemLevelEditor = ({
           value={minimum}
           minimum={MINIMUM_QUANTITY_MIN}
           maximum={MINIMUM_QUANTITY_MAX}
+          isUnsaved={minimum !== minimumQuantity}
           onDecrease={() => setMinimum((current) => current - 1)}
           onIncrease={() => setMinimum((current) => current + 1)}
         />
-        <div className={itemLine}>
+        <div
+          className={clsx(
+            itemLine,
+            selectedCategory !== category && 'text-unsaved',
+          )}
+        >
           <label htmlFor="item-category" className={itemLabel}>
             Category
           </label>
           <span aria-hidden="true" className={itemDots}>
             {ITEM_DOT_LEADER}
           </span>
-          <span className={itemValue}>
+          <span className={clsx(itemValue, categoryField)}>
+            <span aria-hidden="true" className={categoryFieldLabel}>
+              <span>[</span>
+              <span className="text-center">
+                {ITEM_CATEGORY_LABELS[selectedCategory]}
+              </span>
+              <span>]</span>
+            </span>
             <select
               id="item-category"
               name="category"
@@ -302,22 +344,17 @@ const ItemLevelEditor = ({
                   setSelectedCategory(nextCategory)
                 }
               }}
-              className={clsx(
-                itemControl,
-                'appearance-none',
-                'bg-none',
-                '[text-align-last:right]',
-              )}
+              className={categorySelect}
             >
               {ITEM_CATEGORIES.map((itemCategory) => (
                 <option key={itemCategory} value={itemCategory}>
-                  [{ITEM_CATEGORY_LABELS[itemCategory]}]
+                  {ITEM_CATEGORY_LABELS[itemCategory]}
                 </option>
               ))}
             </select>
           </span>
         </div>
-        <div className={itemLine}>
+        <div className={clsx(itemLine, pendingUses > 0 && 'text-unsaved')}>
           <span className={itemLabel}>Use</span>
           <span aria-hidden="true" className={itemDots}>
             {ITEM_DOT_LEADER}

@@ -90,28 +90,31 @@ const TallyCountControls = ({
             type="button"
             disabled={isPending || quantity === 0}
             aria-label={`Decrease ${name}`}
-            className={clsx(tallyControl, countControlPart, 'text-center')}
+            className={clsx(
+              tallyControl,
+              countControlPart,
+              'justify-self-start',
+              'text-center',
+            )}
             onClick={() => {
               adjustCount(-1)
             }}
           >
             [-]
           </button>
-          <span
-            className={clsx(
-              countControlPart,
-              'min-h-[36px]',
-              'leading-[36px]',
-              'text-center',
-            )}
-          >
+          <span className={clsx('min-h-[36px]', 'leading-[36px]', 'text-center')}>
             {quantity}
           </span>
           <button
             type="button"
             disabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
             aria-label={`Increase ${name}`}
-            className={clsx(tallyControl, countControlPart, 'text-right')}
+            className={clsx(
+              tallyControl,
+              countControlPart,
+              'justify-self-end',
+              'text-center',
+            )}
             onClick={() => {
               adjustCount(1)
             }}

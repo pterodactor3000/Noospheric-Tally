@@ -29,6 +29,7 @@
   --stock-warning-text: oklch(0.52 0.14 85);
   --stock-in-stock: oklch(0.62 0.17 145);
   --stock-in-stock-foreground: oklch(0.2 0.015 160);
+  --unsaved: oklch(0.55 0.15 92);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,6 +51,7 @@
     --input: oklch(0.55 0.03 160);
     --ring: oklch(0.55 0.05 158);
     --stock-warning-text: oklch(0.8 0.16 85);
+    --unsaved: oklch(0.84 0.16 95);
   }
 }
 
@@ -78,6 +80,7 @@
   --color-stock-warning-text: var(--stock-warning-text);
   --color-stock-in-stock: var(--stock-in-stock);
   --color-stock-in-stock-foreground: var(--stock-in-stock-foreground);
+  --color-unsaved: var(--unsaved);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);

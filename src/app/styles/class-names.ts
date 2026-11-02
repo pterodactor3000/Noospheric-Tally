@@ -10,6 +10,8 @@ const pageShell = clsx(
   'py-12',
   'text-foreground',
   'sm:px-10',
+  'max-sm:items-start',
+  'max-sm:pt-4',
 )
 
 const centeredPage = clsx(
@@ -20,20 +22,11 @@ const centeredPage = clsx(
   'items-center',
   'justify-center',
   'px-6',
+  'max-sm:justify-start',
+  'max-sm:pt-4',
 )
 
 const contentWidth = clsx('mx-auto', 'w-full', 'max-w-4xl')
-
-const panel = clsx(
-  'border-2',
-  'border-foreground/50',
-  'p-8',
-  'shadow-sm',
-  'backdrop-blur',
-  'sm:p-12',
-  'bg-card',
-  'text-card-foreground',
-)
 
 const pageTitle = clsx(
   'font-mono',
@@ -99,13 +92,44 @@ const formError = clsx(
 const actionButton = clsx('font-mono', 'min-h-11')
 
 const countControlGroup = clsx(
-  'flex',
+  'grid',
+  'min-w-[110px]',
   'shrink-0',
+  'grid-cols-[1fr_auto_1fr]',
   'items-baseline',
   'whitespace-nowrap',
 )
 
 const countControlPart = clsx('w-11', 'shrink-0')
+
+const categoryTree = clsx('m-0', 'list-none', 'p-0')
+
+const categoryTreeItem = clsx(
+  'relative',
+  'py-0',
+  'pr-2',
+  'pl-5',
+  'before:absolute',
+  'before:top-0',
+  'before:bottom-0',
+  'before:left-[4px]',
+  'before:w-px',
+  "before:content-['']",
+  'before:bg-border',
+  'before:shadow-[0_0_8px]',
+  'before:shadow-primary/40',
+  'after:absolute',
+  'after:top-[18px]',
+  'after:left-[4px]',
+  'after:h-px',
+  'after:w-[14px]',
+  "after:content-['']",
+  'after:bg-border',
+  'after:shadow-[0_0_8px]',
+  'after:shadow-primary/40',
+  'last:before:bottom-auto',
+  'last:before:h-[18px]',
+)
 
 const fullWidthButton = clsx(actionButton, 'w-full')
 
@@ -113,6 +137,8 @@ export {
   actionButton,
   centeredPage,
   contentWidth,
+  categoryTree,
+  categoryTreeItem,
   countControlGroup,
   countControlPart,
   fieldControl,
@@ -125,7 +151,6 @@ export {
   pageLead,
   pageShell,
   pageTitle,
-  panel,
   sectionCopy,
   sectionHeading,
   textLink,

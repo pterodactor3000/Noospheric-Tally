@@ -4,7 +4,6 @@ import {
   contentWidth,
   footnote,
   pageShell,
-  panel,
   textLink,
 } from '@/app/styles/class-names'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
@@ -18,14 +17,12 @@ const ShareHabUnitPage = async () => {
   return (
     <main className={pageShell}>
       <div className={contentWidth}>
-        <div className={panel}>
-          <ShareHabUnitForm />
-          <p className={footnote}>
-            <Link href="/inventory" className={textLink}>
-              Back to inventory
-            </Link>
-          </p>
-        </div>
+        <ShareHabUnitForm />
+        <p className={footnote}>
+          <Link href="/inventory" className={textLink}>
+            Back to inventory
+          </Link>
+        </p>
       </div>
     </main>
   )

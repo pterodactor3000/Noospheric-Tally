@@ -140,6 +140,18 @@ describe('theme tokens', () => {
     expect(actualStockValues).toEqual(STOCK_TOKEN_VALUES)
   })
 
+  test('defines a yellow gold unsaved color in both color schemes', () => {
+    expect({
+      light: lightBlock.declarations['--unsaved'],
+      dark: darkBlock.declarations['--unsaved'],
+      theme: globalsCss.includes('--color-unsaved: var(--unsaved)'),
+    }).toEqual({
+      light: 'oklch(0.55 0.15 92)',
+      dark: 'oklch(0.84 0.16 95)',
+      theme: true,
+    })
+  })
+
   test('keeps stock label colors in the light root, and overrides warning text in the dark root', () => {
     const lightStockNames = Object.keys(lightBlock.declarations)
       .filter((name) => name.startsWith('--stock-'))
