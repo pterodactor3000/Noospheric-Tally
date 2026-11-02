@@ -41,6 +41,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-13 | softer-green-interface | read every screen in a muted green palette, on shadcn defaults, with square corners | - | FR-019 | proposed |
 | S-14 | compact-attach-item-picker | choose an existing item from a 36px Item designation list, with the selection in yellow gold and no radio styling | S-02 | FR-005 | ready |
 | S-15 | landing-and-help | read what the app does on the signed-out landing page, and open a ten-step help page from `[ ? ]` in the header | - | none (?) | proposed |
+| S-16 | bracket-button-borders | see buttons and text inputs in a bracket border, with a blinking caret and a dot track on inputs | - | FR-019 | proposed |
 
 ## Streams
 
@@ -247,6 +248,19 @@ The household's main grocery buyer does not know how much pet food or cooking st
 - **Risk:** The signed-out page is the only explanation a new visitor gets, and the help control is easy to miss if it does not sit on the right of the header.
 - **Status:** proposed
 
+### S-16: Bracket control borders
+
+- **Outcome:** user can see every shared button, and every text input, framed by a bracket-shaped border that is 50% taller than its text, including Help and the count controls on the tally and the item page. A focused input shows the app-title block caret blinking. Dots fill the untyped width, and each typed character removes one dot.
+- **Decisions (2026-11-02):** Help, the tally, and the item page drop the typed brackets. The visible labels are `?`, `-`, and `+`. The bracket border is the only pair. The tally and item-page controls are raw buttons, and they get the same border. Help copy that names those controls uses `-` and `+`. The tally heading `[<hab unit name>] tally` stays. Text, search, email, password, and file inputs use the bracket border, the blinking caret, and the dot track. The file field hides the native picker and shows the chosen file name. Hidden fields, checkboxes, and radios stay as they are.
+- **Change ID:** bracket-button-borders
+- **PRD refs:** FR-019
+- **Prerequisites:** -
+- **Parallel with:** S-13, S-15
+- **Blockers:** -
+- **Unknowns:** -
+- **Risk:** A frame 50% taller than the text can crowd the smallest buttons, and the dot track can be read as a password mask.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for planning | Notes |
@@ -266,6 +280,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 | S-13 | softer-green-interface | Restyle the app in muted green | no | Run `/rites-of-true-aim softer-green-interface` |
 | S-14 | compact-attach-item-picker | Replace attach radios with a compact selectable item list | yes | Built on the S-05 branch as Item designation. Mark done when that pull request merges. |
 | S-15 | landing-and-help | Explain the product and add a help page | no | Run `/rites-of-true-aim landing-and-help` |
+| S-16 | bracket-button-borders | Frame buttons and inputs with a bracket border | no | Run `/rites-of-true-aim bracket-button-borders`. Help, tally, and item-page labels are `?`, `-`, and `+`. |
 
 ## Open Roadmap Questions
 

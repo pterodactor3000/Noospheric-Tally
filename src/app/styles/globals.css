@@ -20,6 +20,7 @@
   --destructive: oklch(0.55 0.19 27);
   --border: oklch(0.72 0.03 155);
   --input: oklch(0.72 0.03 155);
+  --button: oklch(0.48 0.04 158);
   --ring: oklch(0.6 0.05 160);
 
   --stock-critical: oklch(0.58 0.21 27);
@@ -49,6 +50,7 @@
     --destructive: oklch(0.7 0.17 25);
     --border: oklch(0.5 0.03 160);
     --input: oklch(0.55 0.03 160);
+    --button: oklch(0.78 0.04 158);
     --ring: oklch(0.55 0.05 158);
     --stock-warning-text: oklch(0.8 0.16 85);
     --unsaved: oklch(0.84 0.16 95);
@@ -71,6 +73,7 @@
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-button: var(--button);
   --color-ring: var(--ring);
 
   --color-stock-critical: var(--stock-critical);
@@ -281,6 +284,32 @@
 @keyframes caret-blink {
   50% {
     background: transparent;
+  }
+}
+
+@utility bracket-frame {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    border: 2px solid var(--bracket-color, currentColor);
+    width: var(--bracket-arm, 0.4em);
+  }
+
+  &::before {
+    left: 0;
+    border-right-width: 0;
+  }
+
+  &::after {
+    right: 0;
+    border-left-width: 0;
   }
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
-import { countControlGroup, countControlPart } from '@/app/styles/class-names'
+import { CountStepper } from '@/components/ui/count-stepper'
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
 import type { QuantityAdjustment } from '@/lib/items/quantity-adjustment'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
@@ -20,21 +20,7 @@ interface TallyCountControlsProps {
   readonly children: ReactNode
 }
 
-const tallyControl = clsx(
-  'min-h-[36px]',
-  'min-w-11',
-  'border-0',
-  'bg-transparent',
-  'p-0',
-  'font-[inherit]',
-  'text-[length:inherit]',
-  'leading-[inherit]',
-  'text-inherit',
-  'no-underline',
-  'disabled:text-inherit',
-  'disabled:opacity-100',
-)
-const tallyLine = clsx('flex', 'items-baseline', 'gap-2')
+const tallyLine = clsx('flex', 'items-center', 'gap-2')
 const tallyAlert = clsx(
   'min-h-6',
   'text-sm',
@@ -85,44 +71,21 @@ const TallyCountControls = ({
     <div>
       <div className={clsx(tallyLine, stockTextClassName)}>
         {children}
-        <span className={countControlGroup}>
-          <button
-            type="button"
-            disabled={isPending || quantity === 0}
-            aria-label={`Decrease ${name}`}
-            className={clsx(
-              tallyControl,
-              countControlPart,
-              'justify-self-start',
-              'text-center',
-            )}
-            onClick={() => {
-              adjustCount(-1)
-            }}
-          >
-            [-]
-          </button>
-          <span className={clsx('min-h-[36px]', 'leading-[36px]', 'text-center')}>
-            {quantity}
-          </span>
-          <button
-            type="button"
-            disabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
-            aria-label={`Increase ${name}`}
-            className={clsx(
-              tallyControl,
-              countControlPart,
-              'justify-self-end',
-              'text-center',
-            )}
-            onClick={() => {
-              adjustCount(1)
-            }}
-          >
-            [+]
-          </button>
+        <CountStepper
+          name={name}
+          value={quantity}
+          density="compact"
+          isDecreaseDisabled={isPending || quantity === 0}
+          isIncreaseDisabled={isPending || quantity >= HOUSEHOLD_QUANTITY_MAX}
+          onDecrease={() => {
+            adjustCount(-1)
+          }}
+          onIncrease={() => {
+            adjustCount(1)
+          }}
+        >
           <span className="sr-only">{stockStateLabel}</span>
-        </span>
+        </CountStepper>
       </div>
       {errorMessage === null ? null : (
         <p role="alert" className={tallyAlert}>

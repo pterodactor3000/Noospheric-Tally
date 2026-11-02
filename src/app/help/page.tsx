@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { TextLink } from '@/components/ui/text-link'
 
 import {
   contentWidth,
@@ -7,7 +7,6 @@ import {
   pageTitle,
   sectionCopy,
   sectionHeading,
-  textLink,
 } from '@/app/styles/class-names'
 
 import { HelpScreenshot } from './help-screenshot'
@@ -41,9 +40,9 @@ const HelpPage = () => (
         </section>
       ))}
       <p className={footnote}>
-        <Link href="/" className={textLink}>
+        <TextLink href="/">
           Back
-        </Link>
+        </TextLink>
       </p>
     </div>
   </main>

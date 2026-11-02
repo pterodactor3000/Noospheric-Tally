@@ -34,9 +34,9 @@ const HELP_TOPICS: readonly HelpTopic[] = [
     id: 'tally-list',
     title: 'The tally list',
     paragraphs: [
-      'The tally lists every item in the hab unit. Each row shows the name, a dot leader, [-], the count, and [+]. The heading is [<hab unit name>] tally.',
+      'The tally lists every item in the hab unit. Each row shows the name, a dot leader, the - button, the count, and the + button. The heading is [<hab unit name>] tally.',
       'Items sit in Pet food, Food, Beauty, Other, then Uncategorized. A category header shows how many items it holds.',
-      '[-] lowers the count by 1. [+] raises it by 1. The tally saves that change at once. [-] is disabled at 0. [+] is disabled at 99.',
+      'The - button lowers the count by 1. The + button raises it by 1. The tally saves that change at once. The - button is disabled at 0. The + button is disabled at 99.',
       'The row is green for IN STOCK, yellow for WARNING, and red for CRITICAL. Tap a name to open that item.',
       'A category with a WARNING or CRITICAL item uses that color and opens on its own. The other categories stay closed until you tap them.',
     ],
@@ -200,7 +200,7 @@ const HELP_TOPICS: readonly HelpTopic[] = [
       'On a wide screen the barcode sits on the line under the name. On a phone, tap the name to show the barcode.',
       'The rows are Count from 0 to 99, Minimum from 0 to 999, Category with Pet food, Food, Beauty, Other, and Uncategorized, and Use.',
       'Use is information only. It counts consume scans from the last 7 days as <n> per week, or it says No use recorded.',
-      '[-], [+], and the category list change Count, Minimum, and Category. Unsaved edits turn yellow gold. They apply when you press Save. Cancel drops them and returns to the tally. The state label follows the count and the minimum while you edit.',
+      'The - button, the + button, and the category list change Count, Minimum, and Category. Unsaved edits turn yellow gold. They apply when you press Save. Cancel drops them and returns to the tally. The state label follows the count and the minimum while you edit.',
     ],
     screenshots: [
       {

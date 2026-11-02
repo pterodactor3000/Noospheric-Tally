@@ -6,8 +6,9 @@ These conventions apply to all code in this repository. Adapt names, framework r
 ## Developing
 
 - Check if the repository has a ruleset for development, or a guide
-- Follow the rileset, or guide, fully
+- Follow the ruleset, or guide, fully
 - If the models are not present, ask the user if they want to make changes to default models defined in the ruleset, or guide
+- If there are multiple providers available, list providers that have those models available, if no default is defined
 
 ## Naming
 
@@ -91,6 +92,32 @@ feat(api)!: rename /v1/orders to /v1/checkout
 
 BREAKING CHANGE: clients must migrate to /v1/checkout; old route returns 410
 ```
+
+## Agent notes
+
+Browser checks:
+
+- Open the dev server at `http://localhost:3000`. On `127.0.0.1`, Next blocks the dev HMR origin and React never hydrates.
+- Playwright uses Chromium at `/usr/bin/chromium`. Navigate with `waitUntil: 'commit'`, because `load` and `networkidle` hang on `next dev`.
+- Hover utilities sit inside `@media (hover: hover)`, and headless Chromium reports `hover: none`. Emulate it with CDP `Emulation.setEmulatedMedia` and the feature `{ name: 'hover', value: 'hover' }`.
+- Buttons use `transition-all` (150ms). Read computed colors after about 250ms.
+- To get `:focus-visible`, blur the element, then call `focus({ focusVisible: true })`.
+- Mouse up on a link navigates, on a count button writes data, and on Sign out submits. Cancel the click in the capture phase when you only measure the pressed state.
+- A Base UI `Button` rendered as a `Link` has `role="button"`. Query it with `getByRole('button')`.
+- Dark mode follows `prefers-color-scheme`. Set `colorScheme` on the browser context.
+- Sign in with `TEST_EMAIL` and `TEST_PASSWORD` read from `.env` inside the script. Never print, log, or screenshot them.
+
+Code and tests:
+
+- The body font is Kode Mono, so `font-mono` adds nothing.
+- Vitest runs in `node` without jsdom. Test component markup with `renderToStaticMarkup` from `react-dom/server`.
+- Run tests with `pnpm test`. If `pnpm exec vitest` fails through the shell wrapper, run `node ./node_modules/vitest/vitest.mjs run`.
+
+Delegation:
+
+- When Claude or another named provider is unavailable, look up the providers enabled in the harness (for example t3 `orchestrator_capabilities`) and delegate through one that offers the named model. Stop and ask only when no enabled provider offers it.
+- The Cursor subagent list can show only `inherit` and `composer-2.5-fast`. That does not mean a named model is missing. Check the enabled providers first.
+- t3 `delegate_task` with `mode: wait` can return MCP error `-32001` while the child keeps running. Check `t3_thread_list` before starting another child.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

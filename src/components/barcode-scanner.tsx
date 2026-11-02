@@ -13,14 +13,8 @@ import { DecodeHintType } from '@zxing/library'
 import { validateBarcode } from '@/lib/items/validate-barcode'
 
 import { Button } from './ui/button'
-import {
-  fieldControl,
-  fieldLabel,
-  fieldStack,
-  formError,
-  formStack,
-  fullWidthButton,
-} from '@/app/styles/class-names'
+import { fieldStack, formStack } from '@/app/styles/class-names'
+import { FormError } from './ui/form-alert'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 
@@ -180,18 +174,9 @@ const BarcodeScanner = ({
         }}
         className={clsx(formStack, 'pt-24')}
       >
-        <div
-          role="alert"
-          aria-live="polite"
-          className={formError}
-        >
-          {displayedError}
-        </div>
+        <FormError id="barcode-error">{displayedError}</FormError>
         <div className={fieldStack}>
-          <Label
-            htmlFor="barcode"
-            className={fieldLabel}
-          >
+          <Label htmlFor="barcode">
             Barcode
           </Label>
           <Input
@@ -203,13 +188,13 @@ const BarcodeScanner = ({
             required
             defaultValue={defaultBarcode}
             aria-invalid={Boolean(displayedError)}
-            className={fieldControl}
+            aria-errormessage="barcode-error"
           />
         </div>
         <Button
           variant="outline"
           type="submit"
-          className={fullWidthButton}
+          size="touch"
         >
           Apply
         </Button>

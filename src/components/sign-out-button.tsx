@@ -1,12 +1,10 @@
-import { clsx } from 'clsx'
-
 import { signOut } from '@/app/(auth)/actions'
 
 import { Button } from './ui/button'
 
 const SignOutButton = () => {
   return (
-    <form action={signOut} className={clsx()}>
+    <form action={signOut}>
       <Button variant="outline" type="submit">
         Sign out
       </Button>

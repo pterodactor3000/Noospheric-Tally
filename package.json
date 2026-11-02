@@ -44,7 +44,7 @@
     "clsx": "^2.1.1",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.3",
-    "supabase": "^2.118.0",
+    "supabase": "^2.122.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.11",

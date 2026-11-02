@@ -1,16 +1,16 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { TextLink } from '@/components/ui/text-link'
+
 import { Button } from '@/components/ui/button'
 import {
   contentWidth,
   footnote,
   formStack,
-  fullWidthButton,
   pageLead,
   pageShell,
   pageTitle,
-  textLink,
 } from '@/app/styles/class-names'
 import loadCurrentUser from '@/lib/auth/loadCurrentUser'
 
@@ -36,7 +36,7 @@ export default async function Home() {
             variant="outline"
             nativeButton={false}
             render={<Link href="/login" />}
-            className={fullWidthButton}
+            size="touch"
           >
             Sign in
           </Button>
@@ -44,7 +44,7 @@ export default async function Home() {
             variant="outline"
             nativeButton={false}
             render={<Link href="/signup" />}
-            className={fullWidthButton}
+            size="touch"
           >
             Sign up
           </Button>
@@ -52,9 +52,9 @@ export default async function Home() {
 
         <p className={footnote}>
           No personal cogitation unit?{' '}
-          <Link href="/signup" className={textLink}>
+          <TextLink href="/signup">
             Requisite one
-          </Link>
+          </TextLink>
         </p>
       </div>
     </main>

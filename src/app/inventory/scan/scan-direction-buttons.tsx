@@ -112,9 +112,8 @@ const ScanDirectionButtons = () => {
             aria-checked={isSelected}
             aria-label={SCAN_DIRECTION_LABELS[direction]}
             variant={isSelected ? 'default' : 'outline'}
-            size="icon"
+            size="icon-xl"
             onClick={() => handleSelectDirection(direction)}
-            className="size-17! p-3"
           >
             <DirectionIcon className="size-10" aria-hidden="true" />
           </Button>

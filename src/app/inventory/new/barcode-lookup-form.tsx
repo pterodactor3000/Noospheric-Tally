@@ -1,14 +1,11 @@
 import { Button } from '@/components/ui/button'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   formStack,
-  fullWidthButton,
   pageLead,
   pageTitle,
 } from '@/app/styles/class-names'
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -35,10 +32,7 @@ const BarcodeLookupForm = ({
         className={formStack}
       >
         <div className={fieldStack}>
-          <Label
-            htmlFor="barcode"
-            className={fieldLabel}
-          >
+          <Label htmlFor="barcode">
             Barcode
           </Label>
           <Input
@@ -50,14 +44,13 @@ const BarcodeLookupForm = ({
             required
             defaultValue={defaultBarcode}
             aria-invalid={Boolean(errorMessage)}
-            className={fieldControl}
           />
         </div>
         <FormAlert message={errorMessage ?? null}>
           <Button
             variant="outline"
             type="submit"
-            className={fullWidthButton}
+            size="touch"
           >
             Apply
           </Button>

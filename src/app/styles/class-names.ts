@@ -64,43 +64,11 @@ const sectionCopy = clsx(
 
 const footnote = clsx('mt-6', 'text-sm', 'text-foreground/70', 'font-mono')
 
-const textLink = clsx(
-  'font-medium',
-  'text-foreground',
-  'underline-offset-4',
-  'hover:underline',
-  'font-mono',
-)
+const formFields = clsx('flex', 'flex-col', 'gap-4')
 
-const formStack = clsx('mt-8', 'flex', 'flex-col', 'gap-4')
+const formStack = clsx('mt-8', formFields)
 
 const fieldStack = clsx('flex', 'flex-col', 'gap-2')
-
-const fieldLabel = clsx('text-sm', 'font-medium', 'font-mono')
-
-const fieldControl = clsx('min-h-11', 'text-base', 'font-mono')
-
-const formError = clsx(
-  'min-h-6',
-  'text-sm',
-  'text-destructive',
-  'font-mono',
-  'font-semibold',
-  'motion-safe:animate-form-alert-in',
-)
-
-const actionButton = clsx('font-mono', 'min-h-11')
-
-const countControlGroup = clsx(
-  'grid',
-  'min-w-[110px]',
-  'shrink-0',
-  'grid-cols-[1fr_auto_1fr]',
-  'items-baseline',
-  'whitespace-nowrap',
-)
-
-const countControlPart = clsx('w-11', 'shrink-0')
 
 const categoryTree = clsx('m-0', 'list-none', 'p-0')
 
@@ -131,27 +99,18 @@ const categoryTreeItem = clsx(
   'last:before:h-[18px]',
 )
 
-const fullWidthButton = clsx(actionButton, 'w-full')
-
 export {
-  actionButton,
   centeredPage,
   contentWidth,
   categoryTree,
   categoryTreeItem,
-  countControlGroup,
-  countControlPart,
-  fieldControl,
-  fieldLabel,
   fieldStack,
   footnote,
-  formError,
+  formFields,
   formStack,
-  fullWidthButton,
   pageLead,
   pageShell,
   pageTitle,
   sectionCopy,
   sectionHeading,
-  textLink,
 }

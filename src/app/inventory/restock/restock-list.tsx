@@ -14,9 +14,8 @@ import {
 import { resolveCategoryPanelOpen } from '@/lib/items/resolve-category-panel-open'
 import { categoryTree, categoryTreeItem } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
+import { DotLeader } from '@/components/ui/dot-leader'
 import InventoryCategoryPanel from '../inventory-category-panel'
-
-const RESTOCK_DOT_LEADER = '.'.repeat(300)
 
 const restockStack = clsx('mt-[1rem]', 'text-[14px]', 'sm:text-[16px]')
 const restockLine = clsx('flex', 'items-baseline', 'gap-2')
@@ -26,12 +25,6 @@ const restockName = clsx(
   'truncate',
   'leading-[36px]',
   'text-inherit',
-)
-const restockDots = clsx(
-  'min-w-0',
-  'flex-1',
-  'overflow-hidden',
-  'whitespace-nowrap',
 )
 const restockValue = clsx('shrink-0', 'whitespace-nowrap')
 const restockWideValue = clsx(restockValue, 'max-sm:hidden')
@@ -54,17 +47,13 @@ const RestockLineRow = ({ line }: RestockLineRowProps) => (
       <Link href={`/inventory/${line.itemId}`} className={restockName}>
         {line.name}
       </Link>
-      <span aria-hidden="true" className={restockDots}>
-        {RESTOCK_DOT_LEADER}
-      </span>
+      <DotLeader />
       <span className={restockWideValue}>
         {formatRestockEnd(line.quantity, line.shortfall)}
       </span>
     </div>
     <div className={restockNarrowLine}>
-      <span aria-hidden="true" className={restockDots}>
-        {RESTOCK_DOT_LEADER}
-      </span>
+      <DotLeader />
       <span className={restockValue}>
         {formatRestockEnd(line.quantity, line.shortfall)}
       </span>

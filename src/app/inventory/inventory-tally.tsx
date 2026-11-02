@@ -22,21 +22,14 @@ import {
 } from '@/lib/items/sort-tally-lines'
 import { STOCK_STATE_LABELS, getStockState } from '@/lib/items/stock-state'
 import { Button } from '@/components/ui/button'
+import { DotLeader } from '@/components/ui/dot-leader'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  categoryTree,
-  categoryTreeItem,
-  fieldControl,
-  fieldLabel,
-  fieldStack,
-} from '@/app/styles/class-names'
+import { categoryTree, categoryTreeItem, fieldStack } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
 import InventoryCategoryPanel from './inventory-category-panel'
 import TallyCountControls from './tally-count-controls'
-
-const TALLY_DOT_LEADER = '.'.repeat(300)
 
 const tallyRoot = clsx('contents')
 const tallyPanelStack = clsx(
@@ -48,7 +41,15 @@ const tallyPanelStack = clsx(
   'sm:text-[16px]',
 )
 const tallyMiss = clsx('mt-[1rem]')
-const tallySearchRow = clsx('flex', 'items-center', 'gap-2')
+const tallySearchRow = clsx('relative', 'flex', 'w-full', 'items-center', 'gap-2')
+const tallySearchField = clsx(
+  'min-w-0',
+  'flex-1',
+  'max-sm:focus-within:absolute',
+  'max-sm:focus-within:inset-0',
+  'max-sm:focus-within:z-10',
+  'max-sm:focus-within:bg-background',
+)
 const tallySortGroup = clsx('flex', 'shrink-0', 'gap-2')
 const tallyName = clsx(
   'min-h-[36px]',
@@ -56,12 +57,6 @@ const tallyName = clsx(
   'truncate',
   'leading-[36px]',
   'text-inherit',
-)
-const tallyDots = clsx(
-  'min-w-0',
-  'flex-1',
-  'overflow-hidden',
-  'whitespace-nowrap',
 )
 
 interface InventoryTallyProps {
@@ -105,9 +100,7 @@ const TallyLineList = ({
             <Link href={`/inventory/${line.itemId}`} className={tallyName}>
               {line.name}
             </Link>
-            <span aria-hidden="true" className={tallyDots}>
-              {TALLY_DOT_LEADER}
-            </span>
+            <DotLeader />
           </TallyCountControls>
         </li>
       )
@@ -166,7 +159,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
         <p role="status">Nothing is added here yet.</p>
       ) : (
         <div className={clsx(fieldStack, 'shrink-0')}>
-          <Label htmlFor="inventory-name-search" className={fieldLabel}>
+          <Label htmlFor="inventory-name-search">
             Search by name
           </Label>
           <div className={tallySearchRow}>
@@ -179,7 +172,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                 setQuery(event.currentTarget.value)
                 setToggled({})
               }}
-              className={clsx(fieldControl, 'min-w-0', 'flex-1')}
+              className={tallySearchField}
             />
             <div role="group" aria-label="Sort tally" className={tallySortGroup}>
               <Button
@@ -187,9 +180,8 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                 aria-pressed={sort.field === 'name'}
                 aria-label={sortButtonLabel(sort, 'name')}
                 variant={sort.field === 'name' ? 'default' : 'outline'}
-                size="icon"
+                size="icon-touch"
                 onClick={() => setSort((current) => toggleTallySort(current, 'name'))}
-                className="size-11!"
               >
                 <NameSortIcon aria-hidden="true" />
               </Button>
@@ -198,9 +190,8 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
                 aria-pressed={sort.field === 'count'}
                 aria-label={sortButtonLabel(sort, 'count')}
                 variant={sort.field === 'count' ? 'default' : 'outline'}
-                size="icon"
+                size="icon-touch"
                 onClick={() => setSort((current) => toggleTallySort(current, 'count'))}
-                className="size-11!"
               >
                 <CountSortIcon aria-hidden="true" />
               </Button>
@@ -210,8 +201,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
               aria-pressed={isCategorized}
               aria-label="Group by category"
               variant={isCategorized ? 'default' : 'outline'}
-              size="icon"
-              className="size-11!"
+              size="icon-touch"
               disabled={isCountWritePending}
               onClick={() => setIsCategorized((current) => !current)}
             >

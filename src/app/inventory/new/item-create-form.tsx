@@ -3,15 +3,14 @@
 import { useActionState, useState } from 'react'
 import { attachBarcode, createItem } from '../actions'
 import { clsx } from 'clsx'
-import { FormAlert } from '@/components/form-alert'
-import { ItemListMarker } from '@/components/item-list-marker'
 import { Button } from '@/components/ui/button'
+import { Disclosure } from '@/components/ui/disclosure'
+import { FormAlert } from '@/components/ui/form-alert'
+import { ItemListMarker } from '@/components/ui/item-list-marker'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
+  formFields,
   formStack,
-  fullWidthButton,
   pageLead,
   pageTitle,
 } from '@/app/styles/class-names'
@@ -33,10 +32,7 @@ interface ItemCreateFormProps {
 type ItemCreateFormState = Awaited<ReturnType<typeof createItem>> | null
 type ItemAttachFormState = Awaited<ReturnType<typeof attachBarcode>> | null
 
-interface AttachChevronProps {
-  readonly isOpen: boolean
-}
-
+const attachLegend = clsx('text-sm', 'font-medium')
 const attachList = clsx('mt-[1rem]', 'text-[14px]', 'sm:text-[16px]')
 const attachName = clsx(
   'block',
@@ -53,29 +49,6 @@ const attachBracket = clsx(
   'shrink-0',
   'peer-checked:inline',
   'peer-checked:text-stock-warning-text',
-)
-
-const AttachChevron = ({ isOpen }: AttachChevronProps) => (
-  <svg
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-    className={clsx(
-      'size-5',
-      'shrink-0',
-      'transition-transform',
-      'duration-500',
-      'ease-in-out',
-      'motion-reduce:transition-none',
-      isOpen && 'rotate-180',
-    )}
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m6 9 6 6 6-6" />
-  </svg>
 )
 
 const ItemCreateForm = ({
@@ -99,7 +72,6 @@ const ItemCreateForm = ({
   )
 
   const [filter, setFilter] = useState('')
-  const [isAttachOpen, setIsAttachOpen] = useState(false)
   const normalizedFilter = filter.trim().toLowerCase()
   const offeredItems =
     normalizedFilter.length === 0
@@ -136,10 +108,7 @@ const ItemCreateForm = ({
         <input type="hidden" name="barcode" value={barcode} />
         <input type="hidden" name="category" value={category} />
         <div className={fieldStack}>
-          <Label
-            htmlFor="name"
-            className={fieldLabel}
-          >
+          <Label htmlFor="name">
             Item name
           </Label>
           <Input
@@ -151,7 +120,6 @@ const ItemCreateForm = ({
             aria-invalid={
               createState?.status === 'error' && createState.field === 'name'
             }
-            className={fieldControl}
           />
         </div>
         <FormAlert
@@ -161,128 +129,68 @@ const ItemCreateForm = ({
             variant="outline"
             type="submit"
             disabled={isCreatePending}
-            className={fullWidthButton}
+            size="touch"
           >
             Apply
           </Button>
         </FormAlert>
       </form>
       {habUnitItems.length === 0 ? null : (
-        <div className={clsx('mt-12', 'flex', 'flex-col')}>
-          <h2 className="m-0">
-            <button
-              type="button"
-              aria-expanded={isAttachOpen}
-              aria-controls="attach-existing-item"
-              onClick={() => setIsAttachOpen((isOpen) => !isOpen)}
-              className={clsx(
-                'flex',
-                'w-full',
-                'items-center',
-                'justify-between',
-                'gap-3',
-                'text-left',
-                'font-mono',
-                'text-base',
-                'leading-7',
-              )}
-            >
-              Attach to existing item
-              <AttachChevron isOpen={isAttachOpen} />
-            </button>
-          </h2>
-          <div
-            className={clsx(
-              'grid',
-              '-mx-1',
-              'transition-[grid-template-rows]',
-              'duration-500',
-              'ease-in-out',
-              'motion-reduce:transition-none',
-              isAttachOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-            )}
-          >
-            <div className={clsx('min-h-0', 'overflow-hidden')}>
-              <form
-                id="attach-existing-item"
-                action={attachFormAction}
-                inert={!isAttachOpen}
-                aria-hidden={!isAttachOpen}
-                className={clsx(
-                  'flex',
-                  'flex-col',
-                  'gap-4',
-                  'px-1',
-                  'pt-4',
-                  'pb-1',
-                  'transition-transform',
-                  'duration-500',
-                  'ease-in-out',
-                  'motion-reduce:transition-none',
-                  isAttachOpen ? 'translate-y-0' : 'translate-y-3',
-                )}
-              >
-                <input type="hidden" name="barcode" value={barcode} />
-                <div className={fieldStack}>
-                  <Label
-                    htmlFor="filter"
-                    className={fieldLabel}
-                  >
-                    Filter
-                  </Label>
-                  <Input
-                    type="search"
-                    id="filter"
-                    autoComplete="off"
-                    value={filter}
-                    onChange={(event) => setFilter(event.currentTarget.value)}
-                    className={fieldControl}
-                  />
-                </div>
-                <fieldset aria-invalid={attachState?.status === 'error'}>
-                  <legend className={fieldLabel}>Item designation</legend>
-                  <ul className={attachList}>
-                    {offeredItems.map((item) => (
-                      <li key={item.itemId} className="px-2">
-                        <label className="flex cursor-pointer items-baseline gap-2">
-                          <input
-                            type="radio"
-                            name="itemId"
-                            value={item.itemId}
-                            required
-                            className="peer sr-only"
-                          />
-                          <ItemListMarker className="peer-checked:text-stock-warning-text" />
-                          <span aria-hidden="true" className={attachBracket}>
-                            {'['}
-                          </span>
-                          <span className={attachName}>{item.name}</span>
-                          <span aria-hidden="true" className={attachBracket}>
-                            {']'}
-                          </span>
-                        </label>
-                      </li>
-                    ))}
-                  </ul>
-                </fieldset>
-                <FormAlert
-                  message={
-                    attachState?.status === 'error' ? attachState.message : null
-                  }
-                >
-                  <Button
-                    variant="outline"
-                    type="submit"
-                    disabled={isAttachPending}
-                    className={fullWidthButton}
-                  >
-                    Attach
-                  </Button>
-                </FormAlert>
-              </form>
+        <Disclosure title="Attach to existing item" contentId="attach-existing-item">
+          <form action={attachFormAction} className={formFields}>
+            <input type="hidden" name="barcode" value={barcode} />
+            <div className={fieldStack}>
+              <Label htmlFor="filter">Filter</Label>
+              <Input
+                type="search"
+                id="filter"
+                autoComplete="off"
+                value={filter}
+                onChange={(event) => setFilter(event.currentTarget.value)}
+              />
             </div>
-          </div>
-        </div>
+            <fieldset aria-invalid={attachState?.status === 'error'}>
+              <legend className={attachLegend}>Item designation</legend>
+              <ul className={attachList}>
+                {offeredItems.map((item) => (
+                  <li key={item.itemId} className="px-2">
+                    <label className="flex cursor-pointer items-baseline gap-2">
+                      <input
+                        type="radio"
+                        name="itemId"
+                        value={item.itemId}
+                        required
+                        className="peer sr-only"
+                      />
+                      <ItemListMarker highlight="peer-checked" />
+                      <span aria-hidden="true" className={attachBracket}>
+                        {'['}
+                      </span>
+                      <span className={attachName}>{item.name}</span>
+                      <span aria-hidden="true" className={attachBracket}>
+                        {']'}
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </fieldset>
+            <FormAlert
+              message={
+                attachState?.status === 'error' ? attachState.message : null
+              }
+            >
+              <Button
+                variant="outline"
+                type="submit"
+                disabled={isAttachPending}
+                size="touch"
+              >
+                Attach
+              </Button>
+            </FormAlert>
+          </form>
+        </Disclosure>
       )}
     </>
   )

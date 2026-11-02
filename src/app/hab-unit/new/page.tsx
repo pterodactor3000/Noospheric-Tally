@@ -36,7 +36,7 @@ const NewHabUnit = async ({
         <div className="mt-10">
           <JoinHabUnitForm defaultCode={inviteCode} />
         </div>
-        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
+        <Separator variant="heading" />
         <HabUnitNameForm
           defaultName={buildDefaultHabUnitName(readRandomHabUnitSuffix())}
         />

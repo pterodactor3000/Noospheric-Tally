@@ -4,14 +4,11 @@ import { useActionState, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 
-import { FormAlert } from '@/components/form-alert'
 import { Button } from '@/components/ui/button'
+import { CountStepper } from '@/components/ui/count-stepper'
+import { DotLeader } from '@/components/ui/dot-leader'
+import { FormAlert } from '@/components/ui/form-alert'
 import { Separator } from '@/components/ui/separator'
-import {
-  actionButton,
-  countControlGroup,
-  countControlPart,
-} from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 import { formatConsumptionRate } from '@/lib/items/format-consumption-rate'
 import {
@@ -31,8 +28,6 @@ import {
 
 import { submitItemForm } from '../actions'
 import { BarcodeLine, itemControl } from './barcode-line'
-
-const ITEM_DOT_LEADER = '.'.repeat(300)
 
 const itemRows = clsx('text-[14px]', 'sm:text-[16px]')
 const itemLine = clsx('flex', 'items-baseline', 'gap-2')
@@ -78,12 +73,6 @@ const barcodeLineMotion = clsx(
   'sm:translate-y-0',
 )
 const itemLabel = clsx('min-h-11', 'min-w-0', 'truncate', 'leading-11')
-const itemDots = clsx(
-  'min-w-0',
-  'flex-1',
-  'overflow-hidden',
-  'whitespace-nowrap',
-)
 const itemValue = clsx('shrink-0', 'whitespace-nowrap')
 const categoryField = clsx(
   'relative',
@@ -135,8 +124,6 @@ const itemActions = clsx(
   'grid-cols-2',
   'gap-4',
 )
-const itemActionButton = clsx(actionButton, 'w-full')
-
 interface ItemLevelEditorProps {
   readonly itemId: string
   readonly name: string
@@ -168,42 +155,16 @@ const LevelStepper = ({
 }: LevelStepperProps) => (
   <div className={clsx(itemLine, isUnsaved && 'text-unsaved')}>
     <span className={itemLabel}>{label}</span>
-    <span aria-hidden="true" className={itemDots}>
-      {ITEM_DOT_LEADER}
-    </span>
-    <span className={countControlGroup}>
-      <button
-        type="button"
-        disabled={value <= minimum}
-        aria-label={`Decrease ${label}`}
-        className={clsx(
-          itemControl,
-          countControlPart,
-          'justify-self-start',
-          'text-center',
-        )}
-        onClick={onDecrease}
-      >
-        [-]
-      </button>
-      <span className={clsx('min-h-11', 'leading-11', 'text-center')}>
-        {value}
-      </span>
-      <button
-        type="button"
-        disabled={value >= maximum}
-        aria-label={`Increase ${label}`}
-        className={clsx(
-          itemControl,
-          countControlPart,
-          'justify-self-end',
-          'text-center',
-        )}
-        onClick={onIncrease}
-      >
-        [+]
-      </button>
-    </span>
+    <DotLeader />
+    <CountStepper
+      name={label}
+      value={value}
+      density="comfortable"
+      isDecreaseDisabled={value <= minimum}
+      isIncreaseDisabled={value >= maximum}
+      onDecrease={onDecrease}
+      onIncrease={onIncrease}
+    />
   </div>
 )
 
@@ -267,9 +228,7 @@ const ItemLevelEditor = ({
             >
               {name}
             </button>
-            <span aria-hidden="true" className={itemDots}>
-              {ITEM_DOT_LEADER}
-            </span>
+            <DotLeader />
           </span>
           <div
             className={clsx(
@@ -287,15 +246,13 @@ const ItemLevelEditor = ({
                   isBarcodeLineOpen ? 'translate-y-0' : 'translate-y-3',
                 )}
               >
-                <span aria-hidden="true" className={itemDots}>
-                  {ITEM_DOT_LEADER}
-                </span>
+                <DotLeader />
                 <BarcodeLine barcodes={barcodes} />
               </span>
             </div>
           </div>
         </h1>
-        <Separator className="my-4 h-0.5! shadow-[0_0_8px] shadow-primary/40" />
+        <Separator variant="heading" />
         <LevelStepper
           label="Count"
           value={count}
@@ -323,9 +280,7 @@ const ItemLevelEditor = ({
           <label htmlFor="item-category" className={itemLabel}>
             Category
           </label>
-          <span aria-hidden="true" className={itemDots}>
-            {ITEM_DOT_LEADER}
-          </span>
+          <DotLeader />
           <span className={clsx(itemValue, categoryField)}>
             <span aria-hidden="true" className={categoryFieldLabel}>
               <span>[</span>
@@ -356,15 +311,13 @@ const ItemLevelEditor = ({
         </div>
         <div className={clsx(itemLine, pendingUses > 0 && 'text-unsaved')}>
           <span className={itemLabel}>Use</span>
-          <span aria-hidden="true" className={itemDots}>
-            {ITEM_DOT_LEADER}
-          </span>
+          <DotLeader />
           <span className={itemValue}>{consumptionRate}</span>
         </div>
       </div>
       <FormAlert
         message={state?.status === 'error' ? state.message : null}
-        alertClassName="pt-4"
+        alertSpacing="top"
       >
         <div className={itemActions}>
           <Button
@@ -372,8 +325,8 @@ const ItemLevelEditor = ({
             name="intent"
             value="save"
             variant="outline"
+            size="touch"
             disabled={isPending}
-            className={itemActionButton}
             onClick={() => setIsHideArmed(false)}
           >
             Save
@@ -381,9 +334,9 @@ const ItemLevelEditor = ({
           <Button
             type="button"
             variant="outline"
+            size="touch"
             nativeButton={false}
             render={<Link href="/inventory" />}
-            className={itemActionButton}
           >
             Cancel
           </Button>
@@ -392,8 +345,9 @@ const ItemLevelEditor = ({
             name="intent"
             value="hide"
             variant="outline"
+            size="touch"
             disabled={isPending}
-            className={clsx(itemActionButton, 'col-span-2')}
+            className="col-span-2"
             onClick={(event) => {
               if (isHideArmed) {
                 return

@@ -1,10 +1,9 @@
-import Link from 'next/link'
+import { TextLink } from '@/components/ui/text-link'
 
 import {
   contentWidth,
   footnote,
   pageShell,
-  textLink,
 } from '@/app/styles/class-names'
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
 
@@ -19,9 +18,9 @@ const ShareHabUnitPage = async () => {
       <div className={contentWidth}>
         <ShareHabUnitForm />
         <p className={footnote}>
-          <Link href="/inventory" className={textLink}>
+          <TextLink href="/inventory">
             Back to inventory
-          </Link>
+          </TextLink>
         </p>
       </div>
     </main>

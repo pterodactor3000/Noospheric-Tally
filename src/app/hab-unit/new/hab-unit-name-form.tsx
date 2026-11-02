@@ -4,17 +4,14 @@ import { useActionState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
-  fieldControl,
-  fieldLabel,
   fieldStack,
   formStack,
-  fullWidthButton,
   sectionCopy,
   sectionHeading,
 } from '@/app/styles/class-names'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FormAlert } from '@/components/form-alert'
+import { FormAlert } from '@/components/ui/form-alert'
 
 import { createHabUnit } from '../actions'
 
@@ -47,10 +44,7 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
         className={formStack}
       >
         <div className={fieldStack}>
-          <Label
-            htmlFor="name"
-            className={fieldLabel}
-          >
+          <Label htmlFor="name">
             Hab-unit designation
           </Label>
           <Input
@@ -60,7 +54,6 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
             autoComplete="name"
             defaultValue={defaultName}
             aria-invalid={isNameError}
-            className={fieldControl}
           />
         </div>
         <FormAlert message={state?.status === 'error' ? state.message : null}>
@@ -68,7 +61,7 @@ const HabUnitNameForm = ({ defaultName }: HabUnitNameFormProps) => {
             variant="outline"
             type="submit"
             disabled={isPending}
-            className={fullWidthButton}
+            size="touch"
           >
             Apply
           </Button>
