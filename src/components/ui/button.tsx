@@ -19,7 +19,6 @@ const buttonVariants = cva(
     '[--bracket-arm:calc(0.4em+2px)]',
     '[--bracket-color:currentColor]',
     'bg-transparent',
-    buttonStateBackground,
     'text-button',
     'font-medium',
     'whitespace-nowrap',
@@ -44,11 +43,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: '',
-        outline: '',
-        secondary: '',
-        ghost: '',
-        destructive: '',
+        default: buttonStateBackground,
+        outline: buttonStateBackground,
+        secondary: buttonStateBackground,
+        ghost: buttonStateBackground,
+        destructive: buttonStateBackground,
         link: clsx('underline-offset-4', 'hover:underline'),
       },
       size: {

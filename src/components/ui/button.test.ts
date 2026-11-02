@@ -94,7 +94,7 @@ describe('buttonVariants', () => {
         hasBracketFrame: true,
         hasLongerArms: true,
         hasBorderColor: true,
-        tintClasses: [...TINT_CLASSES],
+        tintClasses: variant === 'link' ? [] : [...TINT_CLASSES],
         removedBorderColorClasses: [],
         backgroundClasses: [],
         fontSizeClasses: [FONT_SIZE_BY_SIZE[size]],

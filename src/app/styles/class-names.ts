@@ -68,7 +68,6 @@ const textLink = clsx(
   'font-medium',
   'text-input',
   'underline-offset-4',
-  'hover:bg-current/40',
   'hover:underline',
   'font-mono',
 )
