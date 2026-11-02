@@ -13,7 +13,7 @@ Roadmap S-15 (`context/foundation/roadmap.md`). Linear TEC-64, team Tech Heresy,
 
 Branch: `feature/s-15-landing-and-help`.
 
-Outcome: the signed-out landing page says the app records stock when an item is handled and shows what needs restocking. A `[ ? ]` control in the header opens a help page with ten topics and dark-mode screenshots of the real UI.
+Outcome: the signed-out landing page says the app records stock when you scan an item or change its count, and it shows what needs restocking. A `[ ? ]` control in the header opens a help page with ten topics and dark-mode screenshots of the real UI.
 
 Confirmed product decisions from 2026-11-02:
 

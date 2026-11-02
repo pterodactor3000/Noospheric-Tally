@@ -13,7 +13,7 @@ The signed-out landing page still talks about a deployment foundation and two pl
 
 ## Desired End State
 
-A signed-out visitor reads one sentence: the app records stock when an item is handled and shows what needs restocking. `[ ? ]` sits on the right of the header. Signed in, it sits right after Sign out. It opens `/help`, ten numbered topics from the tally list to sharing a hab unit, with thirteen dark-mode screenshots under the topics they illustrate.
+A signed-out visitor reads two sentences: the app records stock when you scan an item or change its count, and it shows what needs restocking. `[ ? ]` sits on the right of the header. Signed in, it sits right after Sign out. It opens `/help`, ten numbered topics from the tally list to sharing a hab unit, with thirteen dark-mode screenshots under the topics they illustrate.
 
 ## Key Decisions Made
 
@@ -73,7 +73,7 @@ Landing copy first, because it stands alone. Then the help route before anything
 - **Assumption (changes screenshots):** 390 by 844, one device scale for all files. A different viewport changes every file.
 - **Assumption (changes screenshots):** The invite link in `help-10-share.png` shows the local origin (`http://localhost:3000`). The code is dead by the end of the phase.
 - **Assumption (changes `[ ? ]` placement):** None for the placement itself. Order is Sign out then `[ ? ]` in both states. The narrow-width ladder can tighten the app-name tracking at small widths, and it never moves, wraps, or hides `[ ? ]`.
-- **Assumption (copy):** The landing sentence is "Noospheric Tally records stock when an item is handled and shows what needs restocking." The wording is the planner's. The meaning is the confirmed scope.
+- **Assumption (copy):** The landing paragraph is "Noospheric Tally records stock when you scan an item or change its count. It shows what needs restocking." Unslop replaced "when an item is handled" with the two actions. The meaning is the confirmed scope.
 - **Risk:** The roadmap handoff lists S-15 as not ready for planning. The user confirmed the scope and ordered implementation, so the plan proceeds.
 - **Risk:** Help page markup and header placement have no automated render test, since the harness is `node`-only. They are covered by source greps, DOM reads in the browser, and manual steps.
 
