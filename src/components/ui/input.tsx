@@ -58,6 +58,32 @@ const plainInputClassName = clsx(
   'dark:focus-visible:aria-invalid:border-destructive',
 )
 
+const inputFrameClassName = clsx(
+  'group/input',
+  'bracket-frame',
+  '[--bracket-arm:calc(0.4em+2px)]',
+  'relative',
+  'flex',
+  'w-full',
+  'min-w-0',
+  'h-8',
+  'text-base',
+  'md:text-sm',
+  '[--bracket-color:var(--color-button)]',
+  'focus-within:[--bracket-color:var(--color-ring)]',
+  'has-[input:focus-visible]:[--bracket-color:var(--color-ring)]',
+  'has-[input[aria-invalid=true]]:[--bracket-color:var(--color-destructive)]',
+  'dark:has-[input[aria-invalid=true]]:[--bracket-color:color-mix(in_oklab,var(--color-destructive)_50%,transparent)]',
+  'has-[input:focus-visible]:ring-3',
+  'has-[input:focus-visible]:ring-ring/50',
+  'has-[input[aria-invalid=true]]:ring-3',
+  'has-[input[aria-invalid=true]]:ring-destructive/20',
+  'dark:has-[input[aria-invalid=true]]:ring-destructive/40',
+  'has-disabled:pointer-events-none',
+  'has-disabled:cursor-not-allowed',
+  'has-disabled:opacity-50',
+)
+
 const framedInputClassName = clsx(
   'w-full',
   'min-w-0',
@@ -94,6 +120,18 @@ const assignInputRef = (
 const readInputText = (
   inputValue: ComponentProps<'input'>['value'] | ComponentProps<'input'>['defaultValue'],
 ): string => String(inputValue ?? '')
+
+const readSelectedFileNames = (input: HTMLInputElement): string =>
+  Array.from(input.files ?? [], (file) => file.name).join(', ')
+
+const withoutControlledValue = (
+  props: Omit<ComponentProps<'input'>, 'className' | 'type'>,
+): Omit<ComponentProps<'input'>, 'className' | 'type' | 'value' | 'defaultValue'> => {
+  const fileProps = { ...props }
+  delete fileProps.value
+  delete fileProps.defaultValue
+  return fileProps
+}
 
 function BracketInput({
   className,
@@ -175,32 +213,7 @@ function BracketInput({
   return (
     <span
       data-slot="input-frame"
-      className={clsx(
-        'group/input',
-        'bracket-frame',
-        '[--bracket-arm:calc(0.4em+2px)]',
-        'relative',
-        'flex',
-        'w-full',
-        'min-w-0',
-        'h-8',
-        'text-base',
-        'md:text-sm',
-        '[--bracket-color:var(--color-button)]',
-        'focus-within:[--bracket-color:var(--color-ring)]',
-        'has-[input:focus-visible]:[--bracket-color:var(--color-ring)]',
-        'has-[input[aria-invalid=true]]:[--bracket-color:var(--color-destructive)]',
-        'dark:has-[input[aria-invalid=true]]:[--bracket-color:color-mix(in_oklab,var(--color-destructive)_50%,transparent)]',
-        'has-[input:focus-visible]:ring-3',
-        'has-[input:focus-visible]:ring-ring/50',
-        'has-[input[aria-invalid=true]]:ring-3',
-        'has-[input[aria-invalid=true]]:ring-destructive/20',
-        'dark:has-[input[aria-invalid=true]]:ring-destructive/40',
-        'has-disabled:pointer-events-none',
-        'has-disabled:cursor-not-allowed',
-        'has-disabled:opacity-50',
-        className,
-      )}
+      className={clsx(inputFrameClassName, className)}
     >
       <InputPrimitive
         {...props}
@@ -281,7 +294,160 @@ function BracketInput({
   )
 }
 
+function FileBracketInput({
+  className,
+  ref,
+  onChange,
+  onInput,
+  ...props
+}: Omit<ComponentProps<'input'>, 'value' | 'defaultValue'>) {
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const forwardedRef = useRef(ref)
+  const [fileName, setFileName] = useState('')
+
+  const bindInput = useCallback((node: HTMLElement | null): void => {
+    const input = node instanceof HTMLInputElement ? node : null
+    inputRef.current = input
+    assignInputRef(forwardedRef.current, input)
+  }, [])
+
+  useEffect(() => {
+    const previousRef = forwardedRef.current
+    forwardedRef.current = ref
+    if (previousRef === ref) {
+      return
+    }
+
+    assignInputRef(previousRef, null)
+    assignInputRef(ref, inputRef.current)
+  }, [ref])
+
+  useEffect(() => {
+    const input = inputRef.current
+    if (input === null) {
+      return
+    }
+
+    setFileName(readSelectedFileNames(input))
+
+    const form = input.form
+    let resetTimerId: ReturnType<typeof setTimeout> | undefined
+
+    const handleReset = (): void => {
+      clearTimeout(resetTimerId)
+      // reset fires before the browser restores each field.
+      resetTimerId = setTimeout(() => {
+        const currentInput = inputRef.current
+        if (currentInput === null) {
+          return
+        }
+
+        setFileName(readSelectedFileNames(currentInput))
+      }, 0)
+    }
+
+    form?.addEventListener('reset', handleReset)
+
+    return () => {
+      form?.removeEventListener('reset', handleReset)
+      clearTimeout(resetTimerId)
+    }
+  }, [])
+
+  const handleChange: NonNullable<ComponentProps<'input'>['onChange']> = (
+    event,
+  ) => {
+    setFileName(readSelectedFileNames(event.currentTarget))
+    onChange?.(event)
+  }
+
+  const handleInput: NonNullable<ComponentProps<'input'>['onInput']> = (
+    event,
+  ) => {
+    setFileName(readSelectedFileNames(event.currentTarget))
+    onInput?.(event)
+  }
+
+  return (
+    <span
+      data-slot="input-frame"
+      className={clsx(inputFrameClassName, className)}
+    >
+      <InputPrimitive
+        {...props}
+        type="file"
+        ref={bindInput}
+        onChange={handleChange}
+        onInput={handleInput}
+        data-slot="input"
+        className={clsx(
+          'absolute',
+          'inset-0',
+          'z-10',
+          'size-full',
+          'cursor-pointer',
+          'opacity-0',
+          'outline-none',
+        )}
+      />
+      <span
+        aria-hidden="true"
+        className={clsx(
+          'pointer-events-none',
+          'absolute',
+          'inset-y-0',
+          'left-3',
+          'right-3',
+          'flex',
+          'items-center',
+          'overflow-hidden',
+        )}
+      >
+        <span
+          data-slot="input-file-name"
+          className={clsx(
+            'min-w-0',
+            'shrink',
+            'overflow-hidden',
+            'whitespace-pre',
+          )}
+        >
+          {fileName}
+        </span>
+        <span
+          data-slot="input-caret"
+          className={clsx(
+            'hidden',
+            'shrink-0',
+            'group-focus-within/input:block',
+            'h-[1.25em]',
+            terminalCaret,
+          )}
+        />
+        <span
+          data-slot="input-dots"
+          className={clsx(
+            'min-w-0',
+            'flex-1',
+            'overflow-hidden',
+            'whitespace-nowrap',
+            'text-muted-foreground',
+          )}
+        >
+          {INPUT_DOT_TRACK}
+        </span>
+      </span>
+    </span>
+  )
+}
+
 function Input({ className, type, ...props }: ComponentProps<'input'>) {
+  if (type === 'file') {
+    return (
+      <FileBracketInput className={className} {...withoutControlledValue(props)} />
+    )
+  }
+
   if (!isBracketInputType(type)) {
     return (
       <InputPrimitive

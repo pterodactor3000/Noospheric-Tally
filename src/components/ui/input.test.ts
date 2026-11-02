@@ -8,7 +8,7 @@ const INPUT_DOT_TRACK = '.'.repeat(300)
 
 const FRAMED_TYPES = ['text', 'search', 'email', 'password'] as const
 
-const UNFRAMED_TYPES = ['file', 'checkbox', 'radio', 'hidden'] as const
+const UNFRAMED_TYPES = ['checkbox', 'radio', 'hidden'] as const
 
 const renderInput = (props: ComponentProps<'input'>): string =>
   renderToStaticMarkup(createElement(Input, props))
@@ -139,6 +139,50 @@ describe('Input', () => {
       })
     },
   )
+
+  test('frames a file input with the dot track and hides the native picker', () => {
+    const markup = renderInput({ type: 'file', className: 'min-h-11' })
+    const frameTag = getOpeningTag(markup, 'input-frame')
+    const inputTag = getOpeningTag(markup, 'input')
+    const caretClassTokens = (
+      getOpeningTag(markup, 'input-caret').match(/class="([^"]*)"/)?.[1] ?? ''
+    ).split(/\s+/)
+    const nameIndex = markup.indexOf('data-slot="input-file-name"')
+    const caretIndex = markup.indexOf('data-slot="input-caret"')
+    const dotsIndex = markup.indexOf('data-slot="input-dots"')
+
+    expect({
+      hasFrame: markup.includes('data-slot="input-frame"'),
+      hasDots: markup.includes(INPUT_DOT_TRACK),
+      hasLongerArms: frameTag.includes('[--bracket-arm:calc(0.4em+2px)]'),
+      hasButtonInk: frameTag.includes('[--bracket-color:var(--color-button)]'),
+      frameHasClassName: frameTag.includes('min-h-11'),
+      inputHasClassName: inputTag.includes('min-h-11'),
+      inputCount: countInputElements(markup),
+      inputIsFile: inputTag.includes('type="file"'),
+      hidesNativePicker: inputTag.includes('opacity-0'),
+      hasFileNameSlot: nameIndex >= 0,
+      caretHasHiddenClass: caretClassTokens.includes('hidden'),
+      caretShowsOnFocus: caretClassTokens.includes('group-focus-within/input:block'),
+      caretSitsBeforeDots: nameIndex < caretIndex && caretIndex < dotsIndex,
+      hasChooseFileClasses: markup.includes('file:h-6'),
+    }).toEqual({
+      hasFrame: true,
+      hasDots: true,
+      hasLongerArms: true,
+      hasButtonInk: true,
+      frameHasClassName: true,
+      inputHasClassName: false,
+      inputCount: 1,
+      inputIsFile: true,
+      hidesNativePicker: true,
+      hasFileNameSlot: true,
+      caretHasHiddenClass: true,
+      caretShowsOnFocus: true,
+      caretSitsBeforeDots: true,
+      hasChooseFileClasses: false,
+    })
+  })
 
   test('puts className on the frame for a framed input', () => {
     const markup = renderInput({ type: 'text', className: 'min-h-11' })

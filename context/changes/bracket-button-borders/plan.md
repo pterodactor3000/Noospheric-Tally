@@ -50,7 +50,7 @@ Verified against branch `feature/s-16-bracket-button-borders` (one commit, `969b
 - Every `Button` (default, outline, secondary, destructive, ghost, link; sizes default, xs, sm, lg, icon, icon-xs, icon-sm, icon-lg) shows a left bracket and a right bracket, each with short arms, in every state: idle, hover, focus, pressed, disabled. The brackets are the side borders of the control: they run from its top edge to its bottom edge. They are not the `[` `]` characters, and they are not a 1.5em glyph centered in the hit area. The default label is 1rem. Hit areas, fills, rings, and colors are unchanged.
 - Help reads `?`. The tally and the item page read `-` and `+`. Each has the same frame. No typed brackets remain on those labels. Help copy says `-` and `+`. The `[<hab unit name>] tally` heading is unchanged.
 - Text, search, email, and password inputs show the same frame, spanning each input from its top edge to its bottom edge. Unfocused, periods fill every untyped cell on the text baseline and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password masks each character as a still block in the title caret's shape, and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
-- The file picker, hidden fields, checkboxes, radios, `Textarea`, and `InputGroup*` are unchanged.
+- Hidden fields, checkboxes, radios, `Textarea`, and `InputGroup*` are unchanged. The JSON file field uses the same bracket frame, button-colored brackets, dot track, and focus caret as a text input. The native picker is hidden. The chosen file name sits in the text position, and the dots follow it.
 - Verify: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, plus the per-phase browser checks.
 
 ## What We're NOT Doing
@@ -59,7 +59,7 @@ Verified against branch `feature/s-16-bracket-button-borders` (one commit, `969b
 - New routes, and any behavior change besides the chrome and the label text named here.
 - Other raw `<button>` elements: the category panel toggle (`src/app/inventory/inventory-category-panel.tsx:75`), the disclosure buttons in `bulk-insert-form.tsx:60`, `barcodeless-item-form.tsx:62`, and `item-create-form.tsx:173`, the no-barcode button (`barcode-line.tsx:41`), and the item-name toggle (`item-level-editor.tsx:261`).
 - Other typed brackets: the stock label `[IN STOCK]` and initials (`item-level-editor.tsx:253-258`), the category display `[`, `]` (`item-level-editor.tsx:331-336`), the `[<hab unit name>]` heading, the scan `[consume]` label, `[<n> short]`.
-- The file picker, hidden inputs, checkboxes, radios, the item `<select>`, `Textarea`, and `InputGroup*` (dead code that wraps `Input`; its `border-0!` and `flex-1` classes now land on the frame, which is accepted because no page renders it).
+- Hidden inputs, checkboxes, radios, the item `<select>`, `Textarea`, and `InputGroup*` (dead code that wraps `Input`; its `border-0!` and `flex-1` classes now land on the frame, which is accepted because no page renders it).
 - Restyling the rectangular focus ring, fills, or disabled opacity on buttons and inputs.
 - Regenerating `public/help/*.png`. Two screenshots show the old `[-]` and `[+]` and become stale (see Risks in `plan-brief.md`).
 - Moving the caret to the native selection point. The caret always sits after the typed text.
@@ -254,7 +254,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 **Contract:**
 
-- When `isBracketInputType(type)` is false, render exactly today's single `InputPrimitive` with today's classes, including `file:*`. File pickers, hidden fields, checkboxes, and radios are unchanged.
+- When `isBracketInputType(type)` is false, render exactly today's single `InputPrimitive` with today's classes, including `file:*`. Hidden fields, checkboxes, and radios are unchanged. `type="file"` is the exception: it gets the same frame, longer arms, button-colored brackets, dot track, and focus caret. The native control covers the frame at `opacity-0`. The visible name is the selected file name. `value` and `defaultValue` are not passed through.
 - When true, render a frame `<span data-slot="input-frame">` that owns `className`. The frame has `group/input bracket-frame relative flex w-full min-w-0 h-8 text-base md:text-sm` and sets `--bracket-arm` to `calc(0.4em + 2px)`, the same longer arm as a shared button, then `className`. Callers' `fieldControl` and `min-w-0 flex-1` therefore size the frame (`inventory-tally.tsx:182`). `<select>` and any other dropdown stay unframed.
 - Inside the frame, the `InputPrimitive` (keep `data-slot="input"`) fills it: `w-full self-stretch bg-transparent px-3 outline-none`, `text-[length:inherit] font-[inherit]`, no border, `placeholder:text-transparent` in place of `placeholder:text-muted-foreground`, and the search cancel, search decoration, and Edge password reveal hidden. The type, all other props, and the caller `ref` pass through. The input and frame font match, so `md:text-sm` lives on the frame only.
 - After the input, a track layer: `aria-hidden`, `pointer-events-none`, `absolute inset-y-0 left-3 right-3 flex items-center overflow-hidden`. Its children in order: the mirror (`data-slot="input-mirror"`, `invisible min-w-0 shrink overflow-hidden whitespace-pre`) rendering `getInputMirrorText`, then the dots (`data-slot="input-dots"`, `min-w-0 flex-1 overflow-hidden whitespace-nowrap text-muted-foreground`) rendering `INPUT_DOT_TRACK`, a module constant `'.'.repeat(300)`. Phase 4 inserts the caret between them.
@@ -274,7 +274,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 - `is-bracket-input-type.test.ts`: `undefined`, `text`, `search`, `email`, `password` return true. `file`, `hidden`, `checkbox`, `radio`, `number`, and the empty string return false.
 - `get-input-mirror-text.test.ts`: text returns the value. An empty value returns an empty string. Password returns one `•` per character. A value with one emoji returns one `•` for it. Search and email return the value.
-- `input.test.ts` uses `renderToStaticMarkup` from `react-dom/server` with `createElement`. For `text`, `search`, `email`, `password`: the markup has `data-slot="input-frame"`, `data-slot="input-dots"`, `aria-hidden="true"` on the track, the 300-dot string, and `placeholder:text-transparent` on the input. For `password` with `defaultValue="secret"`, the track has six `input-password-block` elements, no blink class, and does not contain `secret`. For `file`, `checkbox`, `radio`, and `hidden`: no `data-slot="input-frame"`, and a single `<input`. `className` lands on the frame for framed types.
+- `input.test.ts` uses `renderToStaticMarkup` from `react-dom/server` with `createElement`. For `text`, `search`, `email`, `password`: the markup has `data-slot="input-frame"`, `data-slot="input-dots"`, `aria-hidden="true"` on the track, the 300-dot string, and `placeholder:text-transparent` on the input. For `password` with `defaultValue="secret"`, the track has six `input-password-block` elements, no blink class, and does not contain `secret`. For `checkbox`, `radio`, and `hidden`: no `data-slot="input-frame"`, and a single `<input`. For `file`: one frame, the dot track, a file-name slot, a caret before the dots, `type="file"`, `opacity-0` on the input, and `className` on the frame. `className` lands on the frame for framed text types.
 
 ### Success Criteria
 
@@ -282,7 +282,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 - `pnpm test` passes `is-bracket-input-type.test.ts` (five true types, six false values).
 - `pnpm test` passes `get-input-mirror-text.test.ts` (text, empty, password per character, emoji, search, email).
-- `pnpm test` passes `input.test.ts` (framed markup for four types, password mirror hides the value, unframed markup for four types, `className` on the frame).
+- `pnpm test` passes `input.test.ts` (framed markup for four text types, password mirror hides the value, unframed markup for checkbox, radio, and hidden, framed file markup, `className` on the frame).
 - `pnpm lint` and `pnpm typecheck` pass.
 - `git diff --name-only main` lists neither `src/components/ui/textarea.tsx` nor `src/components/ui/input-group.tsx`.
 
@@ -294,7 +294,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 - After a form submit that resets or repopulates a field, and after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - The controlled search on `/inventory` follows typing and clearing. A value longer than the field pushes all dots out and scrolls without any text or dot leaving the frame.
 - `aria-invalid` shows destructive brackets and a destructive ring. A disabled input dims the frame and dots. The read-only invite code and link inputs on `/hab-unit/share` show their value followed by dots.
-- The JSON file picker on `/inventory/new` looks exactly as before.
+- The JSON file field on `/inventory/new` uses the same brackets, dots, and focus caret as the barcode field. Choosing a file shows that file name, then the dots, and does not submit the form.
 
 ---
 
@@ -358,7 +358,7 @@ A focused input shows the app-title block caret, the native caret goes away, and
 - A focused empty input shows the block caret blinking at the start, and dots fill the rest. The native caret is not visible. The cadence matches the app title (1s, step-end).
 - Typing one character puts the caret after it, and one dot is gone. Deleting brings it back. Blurring removes the caret and the dots return to full width.
 - A long value keeps the caret visible at the right edge.
-- Every input screen is checked in light and dark: `/login`, `/signup`, `/hab-unit/new` (invite code and name), `/hab-unit/share` (read-only fields), `/inventory` (search), `/inventory/new` (barcode, item name, attach filter, JSON file picker unchanged), `/inventory/scan` and `/inventory/lookup` (manual barcode). Framing, dots, caret, and password masking behave as above, and no form submission changes.
+- Every input screen is checked in light and dark: `/login`, `/signup`, `/hab-unit/new` (invite code and name), `/hab-unit/share` (read-only fields), `/inventory` (search), `/inventory/new` (barcode, item name, attach filter, JSON file field), `/inventory/scan` and `/inventory/lookup` (manual barcode). Framing, dots, caret, and password masking behave as above, and no form submission changes.
 - The `/inventory` search row keeps its sort and group buttons aligned with the framed search field, and no control is clipped on a 390px viewport.
 
 ---
@@ -460,7 +460,7 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 - [ ] 3.9 After a form submit that resets or repopulates a field, after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - [x] 3.10 The controlled search on `/inventory` follows typing and clearing, and a value longer than the field scrolls without any text or dot leaving the frame. `8cb28f2`
 - [ ] 3.11 `aria-invalid` shows destructive brackets and ring, a disabled input dims the frame and dots, and the read-only invite fields on `/hab-unit/share` show their value followed by dots.
-- [x] 3.12 The JSON file picker on `/inventory/new` looks exactly as before. `8cb28f2`
+- [x] 3.12 The JSON file field on `/inventory/new` uses the same brackets, dots, and focus caret as the barcode field. Choosing a file shows that file name, then the dots, and does not submit the form.
 
 ### Phase 4: Focus caret and input sweep
 

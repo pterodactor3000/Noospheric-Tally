@@ -251,7 +251,7 @@ The household's main grocery buyer does not know how much pet food or cooking st
 ### S-16: Bracket control borders
 
 - **Outcome:** user can see every shared button, and every text input, framed by a bracket-shaped border that is 50% taller than its text, including Help and the count controls on the tally and the item page. A focused input shows the app-title block caret blinking. Dots fill the untyped width, and each typed character removes one dot.
-- **Decisions (2026-11-02):** Help, the tally, and the item page drop the typed brackets. The visible labels are `?`, `-`, and `+`. The bracket border is the only pair. The tally and item-page controls are raw buttons, and they get the same border. Help copy that names those controls uses `-` and `+`. The tally heading `[<hab unit name>] tally` stays. Text, search, email, and password inputs use the bracket border, the blinking caret, and the dot track. The file picker, hidden fields, checkboxes, and radios stay as they are.
+- **Decisions (2026-11-02):** Help, the tally, and the item page drop the typed brackets. The visible labels are `?`, `-`, and `+`. The bracket border is the only pair. The tally and item-page controls are raw buttons, and they get the same border. Help copy that names those controls uses `-` and `+`. The tally heading `[<hab unit name>] tally` stays. Text, search, email, password, and file inputs use the bracket border, the blinking caret, and the dot track. The file field hides the native picker and shows the chosen file name. Hidden fields, checkboxes, and radios stay as they are.
 - **Change ID:** bracket-button-borders
 - **PRD refs:** FR-019
 - **Prerequisites:** -
