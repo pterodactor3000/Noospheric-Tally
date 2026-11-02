@@ -68,6 +68,7 @@ const textLink = clsx(
   'font-medium',
   'text-input',
   'underline-offset-4',
+  'hover:bg-current/40',
   'hover:underline',
   'font-mono',
 )
@@ -112,8 +113,8 @@ const countBracketButton = clsx(
   'justify-center',
   'border-0',
   'bg-transparent',
-  'enabled:hover:bg-current/10',
-  'enabled:active:bg-current/20',
+  'enabled:hover:bg-current/40',
+  'enabled:active:bg-current/60',
   'transition-colors',
   'px-[0.6em]',
   'font-[inherit]',

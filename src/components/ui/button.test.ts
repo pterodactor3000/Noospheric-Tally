@@ -32,8 +32,8 @@ const REMOVED_BORDER_COLOR_CLASSES = [
 ] as const
 
 const TINT_CLASSES = [
-  'enabled:hover:bg-current/10',
-  'enabled:active:bg-current/20',
+  'enabled:hover:bg-current/40',
+  'enabled:active:bg-current/60',
 ] as const
 
 const FONT_SIZE_CLASSES = [
