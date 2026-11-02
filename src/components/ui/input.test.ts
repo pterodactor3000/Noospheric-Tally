@@ -62,6 +62,9 @@ describe('Input', () => {
         ),
         hidesNativeCaret: inputTag.includes('caret-transparent'),
         hasBlockCaret: markup.includes('data-slot="input-caret"'),
+        caretIsHiddenUntilFocus: getOpeningTag(markup, 'input-caret').includes(
+          'group-focus-within/input:block',
+        ) && getOpeningTag(markup, 'input-caret').includes('hidden'),
       }).toEqual({
         hasFrame: true,
         hasDots: true,
@@ -69,8 +72,9 @@ describe('Input', () => {
         hasDotTrack: true,
         hasTransparentPlaceholder: true,
         hasLongerArms: true,
-        hidesNativeCaret: false,
-        hasBlockCaret: false,
+        hidesNativeCaret: true,
+        hasBlockCaret: true,
+        caretIsHiddenUntilFocus: true,
       })
     },
   )
@@ -80,19 +84,23 @@ describe('Input', () => {
     const blockCount = markup.match(/data-slot="input-password-block"/g)?.length ?? 0
     const trackStart = markup.indexOf('aria-hidden="true"')
     const track = trackStart < 0 ? '' : markup.slice(trackStart)
+    const passwordBlocksBlink = track
+      .split('data-slot="input-password-block"')
+      .slice(1)
+      .some((part) => part.slice(0, part.indexOf('>')).includes('animate-terminal-blink'))
 
     expect({
       blockCount,
       trackContainsSecret: track.includes('secret'),
-      blockBlinks: track.includes('animate-terminal-blink'),
+      passwordBlocksBlink,
       inputHidesNativeGlyphs: getOpeningTag(markup, 'input').includes('text-transparent'),
-      caretStaysVisible: getOpeningTag(markup, 'input').includes('caret-foreground'),
+      nativeCaretHidden: getOpeningTag(markup, 'input').includes('caret-transparent'),
     }).toEqual({
       blockCount: 6,
       trackContainsSecret: false,
-      blockBlinks: false,
+      passwordBlocksBlink: false,
       inputHidesNativeGlyphs: true,
-      caretStaysVisible: true,
+      nativeCaretHidden: true,
     })
   })
 
@@ -105,10 +113,14 @@ describe('Input', () => {
         hasFrame: markup.includes('data-slot="input-frame"'),
         inputCount: countInputElements(markup),
         hasFileClasses: markup.includes('file:h-6'),
+        hasBlockCaret: markup.includes('data-slot="input-caret"'),
+        hidesNativeCaret: markup.includes('caret-transparent'),
       }).toEqual({
         hasFrame: false,
         inputCount: 1,
         hasFileClasses: true,
+        hasBlockCaret: false,
+        hidesNativeCaret: false,
       })
     },
   )

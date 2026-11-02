@@ -12,6 +12,7 @@ import { Input as InputPrimitive } from '@base-ui/react/input'
 
 import { clsx } from 'clsx'
 
+import { passwordMaskBlock, terminalCaret } from '@/app/styles/class-names'
 import { getInputMirrorText } from '@/lib/inputs/get-input-mirror-text'
 import { isBracketInputType } from '@/lib/inputs/is-bracket-input-type'
 
@@ -57,13 +58,6 @@ const plainInputClassName = clsx(
   'dark:focus-visible:aria-invalid:border-destructive',
 )
 
-const passwordMaskBlockClassName = clsx(
-  'inline-block',
-  'shrink-0',
-  'border-r-[1ch]',
-  'border-foreground',
-)
-
 const framedInputClassName = clsx(
   'w-full',
   'min-w-0',
@@ -75,6 +69,7 @@ const framedInputClassName = clsx(
   'font-[inherit]',
   'outline-none',
   'placeholder:text-transparent',
+  'caret-transparent',
   '[&::-webkit-search-cancel-button]:hidden',
   '[&::-webkit-search-decoration]:hidden',
   '[&::-ms-reveal]:hidden',
@@ -218,7 +213,6 @@ function BracketInput({
         className={clsx(
           framedInputClassName,
           type === 'password' && 'text-transparent',
-          type === 'password' && 'caret-foreground',
         )}
       />
       <span
@@ -239,10 +233,8 @@ function BracketInput({
               <span
                 key={index}
                 data-slot="input-password-block"
-                className={passwordMaskBlockClassName}
-              >
-                {'\u200b'}
-              </span>
+                className={passwordMaskBlock}
+              />
             ))
           : (
               <span
@@ -258,6 +250,16 @@ function BracketInput({
                 {getInputMirrorText(mirrorValue, type)}
               </span>
             )}
+        <span
+          data-slot="input-caret"
+          className={clsx(
+            'hidden',
+            'shrink-0',
+            'group-focus-within/input:block',
+            'h-[1.25em]',
+            terminalCaret,
+          )}
+        />
         <span
           data-slot="input-dots"
           className={clsx(

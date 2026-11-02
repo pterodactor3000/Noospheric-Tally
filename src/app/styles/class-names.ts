@@ -157,6 +157,17 @@ const categoryTreeItem = clsx(
 
 const fullWidthButton = clsx(actionButton, 'w-full')
 
+const terminalCaretShape = clsx('border-r-[1ch]', 'border-foreground')
+
+const terminalCaret = clsx(terminalCaretShape, 'animate-terminal-blink')
+
+const passwordMaskBlock = clsx(
+  'inline-block',
+  'h-[1.25em]',
+  'shrink-0',
+  terminalCaretShape,
+)
+
 export {
   actionButton,
   centeredPage,
@@ -175,7 +186,9 @@ export {
   pageLead,
   pageShell,
   pageTitle,
+  passwordMaskBlock,
   sectionCopy,
   sectionHeading,
+  terminalCaret,
   textLink,
 }

@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
+import { terminalCaret } from '@/app/styles/class-names'
+
 const TallyLabel = () => {
   return (
     <Link href="/" className={clsx('flex', 'items-center')}>
@@ -21,13 +23,7 @@ const TallyLabel = () => {
         )}
       >
         Noospheric Tally
-        <span
-          className={clsx(
-            'border-r-[1ch]',
-            'border-foreground',
-            'animate-terminal-blink',
-          )}
-        />
+        <span className={terminalCaret} />
       </p>
     </Link>
   )
