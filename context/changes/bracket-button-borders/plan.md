@@ -49,7 +49,7 @@ Verified against branch `feature/s-16-bracket-button-borders` (one commit, `969b
 
 - Every `Button` (default, outline, secondary, destructive, ghost, link; sizes default, xs, sm, lg, icon, icon-xs, icon-sm, icon-lg) shows a left bracket and a right bracket, each with short arms, in every state: idle, hover, focus, pressed, disabled. The brackets are the side borders of the control: they run from its top edge to its bottom edge. They are not the `[` `]` characters, and they are not a 1.5em glyph centered in the hit area. The default label is 1rem. Hit areas, fills, rings, and colors are unchanged.
 - Help reads `?`. The tally and the item page read `-` and `+`. Each has the same frame. No typed brackets remain on those labels. Help copy says `-` and `+`. The `[<hab unit name>] tally` heading is unchanged.
-- Text, search, email, and password inputs show the same frame, spanning each input from its top edge to its bottom edge. Unfocused, periods fill every untyped cell on the text baseline and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password still masks and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
+- Text, search, email, and password inputs show the same frame, spanning each input from its top edge to its bottom edge. Unfocused, periods fill every untyped cell on the text baseline and no caret shows. Focused, the app-title block caret blinks right after the typed text and replaces the first dot cell. Each typed character removes one dot. Deleting one brings it back. Password masks each character as a still block in the title caret's shape, and the rest stays dots. The native caret is hidden and placeholder text is never drawn.
 - The file picker, hidden fields, checkboxes, radios, `Textarea`, and `InputGroup*` are unchanged.
 - Verify: `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, plus the per-phase browser checks.
 
@@ -82,9 +82,9 @@ Phases: shared frame and Button first (everything else depends on it), then the 
 - **Border classes that must go.** Removing the visible rectangle means removing every class that colors the real border: `border-border` (`:46`), `dark:border-input` (`:52`), `focus-visible:border-ring` (`:22`), `aria-invalid:border-destructive` (`:28`), `dark:aria-invalid:border-destructive/50` (`:31`), and `focus-visible:border-destructive/40` (`:74`). `border-2 border-transparent` stays for box geometry. Each removed color moves to `--bracket-color` under the same state.
 - **`--bracket-color` is read with a fallback, not declared by the utility.** The pseudo-elements use `var(--bracket-color, currentColor)`. The utility never declares the property, so variant classes cannot lose a same-element cascade fight.
 - **One class on `itemControl` is forbidden.** `itemControl` is shared with the category `<select>` and the no-barcode button. Add `bracket-frame` only on the two stepper buttons.
-- **Monospace cell assumption.** The dot cell and the typed cell must be the same width. Kode Mono is monospaced and the mirror uses the real glyphs. Password uses the browser mask glyph in the input and `•` (U+2022) in the mirror. If a browser's mask glyph is not the width of a dot cell, stop and ask. Do not change the contract in code.
+- **Monospace cell assumption.** The dot cell and the typed cell must be the same width. Kode Mono is monospaced and the mirror uses the real glyphs. A password block is `border-r-[1ch]`, one cell wide.
 - **React 19 form reset.** Uncontrolled inputs are reset by form actions. The input state must re-read the DOM value after a form `reset` event, one macrotask later, because the event fires before the reset applies. It must also read the DOM value on mount to catch autofill and restored values.
-- **Password never reaches the mirror.** The mirror for `type="password"` is one `•` per code point. The typed value is never rendered into the track.
+- **Password never reaches the track as text.** Each code point is one still block: `border-r-[1ch] border-foreground`, the title caret's shape, without `animate-terminal-blink`. The native password glyphs are transparent. The caret color stays the foreground.
 - **Native chrome inside the field.** Hide the search cancel button and decoration, and the Edge password reveal, so the cells are the only content. Set `caret-transparent` only in Phase 4, when the block caret exists, so no phase ships a focused input with no caret.
 - **Dot track length.** `'.'.repeat(300)`, clipped by `overflow-hidden`, as the existing dot leaders do. The glyph is a period, so it sits on the text baseline. The widest input is bounded by `max-w-4xl` (`class-names.ts:29`), so 300 cells is enough.
 
@@ -261,7 +261,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 - The mirror, not cell math, positions the dots. One typed code point takes one mono cell and removes one dot cell.
 - Bracket color on the frame follows what the input border did: base `var(--color-input)`, `focus-within` and `has-[input:focus-visible]` use `var(--color-ring)`, `has-[input[aria-invalid=true]]` uses `var(--color-destructive)` (50% in dark). The rectangular focus ring and invalid ring move to the frame through `has-[...]`. `disabled:*` effects (`disabled:opacity-50`, `disabled:cursor-not-allowed`, `disabled:pointer-events-none`) apply to the frame through `has-disabled:`.
 - Value tracking: keep the typed text in state. Initial state is `String(value ?? defaultValue ?? '')`. For a controlled input (`value !== undefined`), render from `value` directly. `onInput` updates the state and calls the caller's `onInput`. On mount, read the DOM `value`. Subscribe to the input's form `reset` event and, one macrotask later, read the DOM `value`. Clean up the listener and the timer in the effect cleanup. Merge the caller `ref` with the internal ref.
-- Password: the mirror shows only `•`. The real value is never rendered into the track.
+- Password: one `data-slot="input-password-block"` per code point, with `border-r-[1ch] border-foreground` and no blink. The typed value is never rendered into the track. The input text is transparent and `caret-foreground` keeps the native caret visible.
 - Do not touch `src/components/ui/input-group.tsx` or `src/components/ui/textarea.tsx`.
 
 #### 4. Tests
@@ -274,7 +274,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 - `is-bracket-input-type.test.ts`: `undefined`, `text`, `search`, `email`, `password` return true. `file`, `hidden`, `checkbox`, `radio`, `number`, and the empty string return false.
 - `get-input-mirror-text.test.ts`: text returns the value. An empty value returns an empty string. Password returns one `•` per character. A value with one emoji returns one `•` for it. Search and email return the value.
-- `input.test.ts` uses `renderToStaticMarkup` from `react-dom/server` with `createElement`. For `text`, `search`, `email`, `password`: the markup has `data-slot="input-frame"`, `data-slot="input-dots"`, `aria-hidden="true"` on the track, the 300-dot string, and `placeholder:text-transparent` on the input. For `password` with `defaultValue="secret"`, the mirror content equals `••••••` and does not contain `secret`. For `file`, `checkbox`, `radio`, and `hidden`: no `data-slot="input-frame"`, and a single `<input`. `className` lands on the frame for framed types.
+- `input.test.ts` uses `renderToStaticMarkup` from `react-dom/server` with `createElement`. For `text`, `search`, `email`, `password`: the markup has `data-slot="input-frame"`, `data-slot="input-dots"`, `aria-hidden="true"` on the track, the 300-dot string, and `placeholder:text-transparent` on the input. For `password` with `defaultValue="secret"`, the track has six `input-password-block` elements, no blink class, and does not contain `secret`. For `file`, `checkbox`, `radio`, and `hidden`: no `data-slot="input-frame"`, and a single `<input`. `className` lands on the frame for framed types.
 
 ### Success Criteria
 
@@ -290,7 +290,7 @@ Text, search, email, and password inputs get the bracket frame and the middle-do
 
 - Unfocused empty inputs (`/login` email, `/inventory/new` barcode) show a left bracket, a right bracket, and periods on the text baseline across the full width. No block caret shows.
 - Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character. Backspace brings one dot back each time. Total cells (dots plus characters) stay constant.
-- Password (`/login`) masks every character, and the mask cells are the same width as the dot cells. If a browser's mask glyph differs, stop and ask.
+- Password (`/login`) masks every character as a still block the shape of the title caret, one dot-cell wide.
 - After a form submit that resets or repopulates a field, and after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - The controlled search on `/inventory` follows typing and clearing. A value longer than the field pushes all dots out and scrolls without any text or dot leaving the frame.
 - `aria-invalid` shows destructive brackets and a destructive ring. A disabled input dims the frame and dots. The read-only invite code and link inputs on `/hab-unit/share` show their value followed by dots.
@@ -456,7 +456,7 @@ No data, schema, or route changes. Each phase is a separate commit, and revertin
 
 - [x] 3.6 Unfocused empty inputs show both brackets and periods on the text baseline across the full width, with no block caret. `400f170`
 - [ ] 3.7 Typing 1, 5, and 10 characters in a text, a search, and an email field removes exactly one dot per character, backspace brings one back each time, and total cells stay constant.
-- [x] 3.8 Password masks every character, and the mask cells are the same width as the dot cells. `400f170`
+- [ ] 3.8 Password masks every character as a still block the shape of the title caret, and each block is as wide as a dot cell.
 - [ ] 3.9 After a form submit that resets or repopulates a field, after back and forward navigation, and after browser autofill, the dot count matches the visible text.
 - [ ] 3.10 The controlled search on `/inventory` follows typing and clearing, and a value longer than the field scrolls without any text or dot leaving the frame.
 - [ ] 3.11 `aria-invalid` shows destructive brackets and ring, a disabled input dims the frame and dots, and the read-only invite fields on `/hab-unit/share` show their value followed by dots.

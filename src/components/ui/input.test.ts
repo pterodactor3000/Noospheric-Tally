@@ -26,31 +26,19 @@ const getOpeningTag = (markup: string, slot: string): string => {
 }
 
 const getTrackOpeningTag = (markup: string): string => {
-  const mirrorSlotIndex = markup.indexOf('data-slot="input-mirror"')
-  if (mirrorSlotIndex < 0) {
+  const token = 'aria-hidden="true"'
+  const tokenIndex = markup.indexOf(token)
+  if (tokenIndex < 0) {
     return ''
   }
 
-  const mirrorTagStart = markup.lastIndexOf('<span', mirrorSlotIndex)
-  const trackTagStart = markup.lastIndexOf('<span', mirrorTagStart - 1)
-  if (trackTagStart < 0) {
+  const tagStart = markup.lastIndexOf('<span', tokenIndex)
+  const tagEnd = markup.indexOf('>', tokenIndex)
+  if (tagStart < 0 || tagEnd < 0) {
     return ''
   }
 
-  const trackTagEnd = markup.indexOf('>', trackTagStart)
-  return markup.slice(trackTagStart, trackTagEnd + 1)
-}
-
-const getSlotText = (markup: string, slot: string): string => {
-  const openingTag = getOpeningTag(markup, slot)
-  const contentStart = markup.indexOf(openingTag)
-  if (openingTag.length === 0 || contentStart < 0) {
-    return ''
-  }
-
-  const textStart = contentStart + openingTag.length
-  const textEnd = markup.indexOf('</span>', textStart)
-  return markup.slice(textStart, textEnd)
+  return markup.slice(tagStart, tagEnd + 1)
 }
 
 const countInputElements = (markup: string): number =>
@@ -87,12 +75,25 @@ describe('Input', () => {
     },
   )
 
-  test('masks a password in the mirror and leaves the typed value out of it', () => {
+  test('masks a password with one still caret block per character', () => {
     const markup = renderInput({ type: 'password', defaultValue: 'secret' })
-    const mirrorText = getSlotText(markup, 'input-mirror')
+    const blockCount = markup.match(/data-slot="input-password-block"/g)?.length ?? 0
+    const trackStart = markup.indexOf('aria-hidden="true"')
+    const track = trackStart < 0 ? '' : markup.slice(trackStart)
 
-    expect(mirrorText).toEqual('••••••')
-    expect(mirrorText.includes('secret')).toEqual(false)
+    expect({
+      blockCount,
+      trackContainsSecret: track.includes('secret'),
+      blockBlinks: track.includes('animate-terminal-blink'),
+      inputHidesNativeGlyphs: getOpeningTag(markup, 'input').includes('text-transparent'),
+      caretStaysVisible: getOpeningTag(markup, 'input').includes('caret-foreground'),
+    }).toEqual({
+      blockCount: 6,
+      trackContainsSecret: false,
+      blockBlinks: false,
+      inputHidesNativeGlyphs: true,
+      caretStaysVisible: true,
+    })
   })
 
   test.each(UNFRAMED_TYPES)(

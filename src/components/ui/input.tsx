@@ -57,6 +57,13 @@ const plainInputClassName = clsx(
   'dark:focus-visible:aria-invalid:border-destructive',
 )
 
+const passwordMaskBlockClassName = clsx(
+  'inline-block',
+  'shrink-0',
+  'border-r-[1ch]',
+  'border-foreground',
+)
+
 const framedInputClassName = clsx(
   'w-full',
   'min-w-0',
@@ -208,7 +215,11 @@ function BracketInput({
         onChange={onChange}
         onInput={handleInput}
         data-slot="input"
-        className={framedInputClassName}
+        className={clsx(
+          framedInputClassName,
+          type === 'password' && 'text-transparent',
+          type === 'password' && 'caret-foreground',
+        )}
       />
       <span
         aria-hidden="true"
@@ -223,18 +234,30 @@ function BracketInput({
           'overflow-hidden',
         )}
       >
-        <span
-          data-slot="input-mirror"
-          className={clsx(
-            'invisible',
-            'min-w-0',
-            'shrink',
-            'overflow-hidden',
-            'whitespace-pre',
-          )}
-        >
-          {getInputMirrorText(mirrorValue, type)}
-        </span>
+        {type === 'password'
+          ? Array.from(mirrorValue).map((_, index) => (
+              <span
+                key={index}
+                data-slot="input-password-block"
+                className={passwordMaskBlockClassName}
+              >
+                {'\u200b'}
+              </span>
+            ))
+          : (
+              <span
+                data-slot="input-mirror"
+                className={clsx(
+                  'invisible',
+                  'min-w-0',
+                  'shrink',
+                  'overflow-hidden',
+                  'whitespace-pre',
+                )}
+              >
+                {getInputMirrorText(mirrorValue, type)}
+              </span>
+            )}
         <span
           data-slot="input-dots"
           className={clsx(

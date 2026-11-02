@@ -66,7 +66,7 @@ Add one `@utility bracket-frame` in `globals.css` that draws both brackets with 
 ## Risks and Assumptions
 
 - **Default label conflict.** The closed decision says the default label stays 1rem. `button.tsx:16` makes it 0.875rem. The plan follows 1rem, a 2px change on the default size only.
-- The dot track can be misread as a password mask. Password uses `•` and the empty cells use `.`. Phase 3 checks both side by side.
+- The dot track can be misread as a password mask. Password uses a still caret block per character, and the empty cells use `.`. Phase 3 checks both side by side.
 - No component test harness. Dot counts, blink, form reset, and overflow are checked in a browser. Chromium is not installed for the Playwright MCP on this machine (`/opt/google/chrome/chrome` is missing), so the parent needs another browser path for manual checks.
 - `input.test.ts` imports `@base-ui/react/input` and `react-dom/server` in the `node` environment. If that import fails, fall back to asserting class strings from an exported constant. Do not add jsdom.
 - The caret does not follow the native selection and the native caret is hidden. Editing in the middle of a value shows no insertion point. This follows the closed decision wording. Raise it as a follow-up if it hurts.
