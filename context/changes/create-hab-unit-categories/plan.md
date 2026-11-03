@@ -689,21 +689,21 @@ Rollback after Phase 1 or 2: drop the new functions and table. Rollback after Ph
 
 #### Automated
 
-- [x] 2.1 `pnpm exec vitest run src/lib/items/validate-category-name.test.ts src/lib/items/create-hab-unit-category.test.ts` passes. The tests cover a valid name, a trimmed name, an empty name, a 40-character name, a 41-character name, a built-in label in any case, `Pet foods`, a created result, a `23505` duplicate result, another rpc error thrown with `cause`, and a non-string result.
-- [x] 2.2 `pnpm test` passes.
-- [x] 2.3 `pnpm typecheck` passes.
-- [x] 2.4 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [x] 2.5 `rg "create_household_category" supabase/migrations` matches only `20261103091000_create_household_category.sql`. That file contains `security definer`, `set search_path = ''`, `auth.uid()`, and `revoke all on function public.create_household_category(text) from public, anon`.
+- [x] 2.1 `pnpm exec vitest run src/lib/items/validate-category-name.test.ts src/lib/items/create-hab-unit-category.test.ts` passes. The tests cover a valid name, a trimmed name, an empty name, a 40-character name, a 41-character name, a built-in label in any case, `Pet foods`, a created result, a `23505` duplicate result, another rpc error thrown with `cause`, and a non-string result. `fb54326`
+- [x] 2.2 `pnpm test` passes. `fb54326`
+- [x] 2.3 `pnpm typecheck` passes. `fb54326`
+- [x] 2.4 `pnpm lint` passes with no new warnings in the files this phase touches. `fb54326`
+- [x] 2.5 `rg "create_household_category" supabase/migrations` matches only `20261103091000_create_household_category.sql`. That file contains `security definer`, `set search_path = ''`, `auth.uid()`, and `revoke all on function public.create_household_category(text) from public, anon`. `fb54326`
 
 #### Manual
 
-- [x] 2.6 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103091000_create_household_category.sql` with no error.
-- [x] 2.7 In a rolled-back SQL transaction as a member of hab unit A, `create_household_category('Cleaning')` returns a uuid and the new row has hab unit A's id. A second call with `'cleaning'`, and a call with `'food'`, each raise `23505`. A blank name and a 41-character name each raise.
-- [x] 2.8 In a rolled-back SQL transaction as a member of a second hab unit B, `select` on `household_categories` returns none of A's rows, and `create_household_category('Cleaning')` succeeds there.
-- [x] 2.9 On `/inventory` as a member of hab unit A, entering `Cleaning` shows a new empty panel before Pet food, with count 0, "Nothing in this category.", and no warning icon. The create control is visible when the tally holds no items.
-- [x] 2.10 Creating `Garden` next shows its panel after Cleaning and before Pet food, and a reload keeps that order.
-- [x] 2.11 Entering a duplicate name, a built-in label, a blank name, or 41 characters shows a field error under the input, creates no panel, and keeps the typed text.
-- [x] 2.12 Signed in as a member of a second hab unit, `/inventory` and `/inventory/restock` list none of the first hab unit's categories (TEC-52 criterion 2).
+- [x] 2.6 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103091000_create_household_category.sql` with no error. `fb54326`
+- [x] 2.7 In a rolled-back SQL transaction as a member of hab unit A, `create_household_category('Cleaning')` returns a uuid and the new row has hab unit A's id. A second call with `'cleaning'`, and a call with `'food'`, each raise `23505`. A blank name and a 41-character name each raise. `fb54326`
+- [x] 2.8 In a rolled-back SQL transaction as a member of a second hab unit B, `select` on `household_categories` returns none of A's rows, and `create_household_category('Cleaning')` succeeds there. `fb54326`
+- [x] 2.9 On `/inventory` as a member of hab unit A, entering `Cleaning` shows a new empty panel before Pet food, with count 0, "Nothing in this category.", and no warning icon. The create control is visible when the tally holds no items. `fb54326`
+- [x] 2.10 Creating `Garden` next shows its panel after Cleaning and before Pet food, and a reload keeps that order. `fb54326`
+- [x] 2.11 Entering a duplicate name, a built-in label, a blank name, or 41 characters shows a field error under the input, creates no panel, and keeps the typed text. `fb54326`
+- [x] 2.12 Signed in as a member of a second hab unit, `/inventory` and `/inventory/restock` list none of the first hab unit's categories (TEC-52 criterion 2). `fb54326`
 
 ### Phase 3: Assign a custom category to an item
 
