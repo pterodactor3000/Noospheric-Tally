@@ -4,6 +4,12 @@ import { ITEM_CATEGORIES } from './item-category'
 import { readHabUnitTallyLine } from './load-hab-unit-items'
 
 const ITEM_ID = '7d4e1a90-3b2c-4f58-9a6d-8e0c5b1f2a37'
+const CUSTOM_CATEGORY_ID = '0b9c3f2e-5a1d-4c7e-8f46-2d1a9b7e3c50'
+
+const builtInCategory = (category: string) => ({
+  kind: 'built-in' as const,
+  category,
+})
 
 describe('readHabUnitTallyLine', () => {
   test('returns a line with the minimum quantity for a valid row', () => {
@@ -14,13 +20,14 @@ describe('readHabUnitTallyLine', () => {
         quantity: 4,
         minimum_quantity: 3,
         category: 'food',
+        custom_category_id: null,
       }),
     ).toEqual({
       itemId: ITEM_ID,
       name: 'Wet food',
       quantity: 4,
       minimumQuantity: 3,
-      category: 'food',
+      category: builtInCategory('food'),
     })
   })
 
@@ -38,7 +45,7 @@ describe('readHabUnitTallyLine', () => {
       name: 'Wet food',
       quantity: 0,
       minimumQuantity: 0,
-      category: 'uncategorized',
+      category: builtInCategory('uncategorized'),
     })
   })
 
@@ -59,9 +66,67 @@ describe('readHabUnitTallyLine', () => {
         name: 'Wet food',
         quantity: 4,
         minimumQuantity: 3,
-        category,
+        category: builtInCategory(category),
       })),
     )
+  })
+
+  test('returns a line for a custom category id', () => {
+    expect(
+      readHabUnitTallyLine({
+        item_id: ITEM_ID,
+        name: 'Wet food',
+        quantity: 4,
+        minimum_quantity: 3,
+        category: null,
+        custom_category_id: CUSTOM_CATEGORY_ID,
+      }),
+    ).toEqual({
+      itemId: ITEM_ID,
+      name: 'Wet food',
+      quantity: 4,
+      minimumQuantity: 3,
+      category: { kind: 'custom', categoryId: CUSTOM_CATEGORY_ID },
+    })
+  })
+
+  test('returns null when category and custom_category_id are both set', () => {
+    expect(
+      readHabUnitTallyLine({
+        item_id: ITEM_ID,
+        name: 'Wet food',
+        quantity: 4,
+        minimum_quantity: 3,
+        category: 'food',
+        custom_category_id: CUSTOM_CATEGORY_ID,
+      }),
+    ).toEqual(null)
+  })
+
+  test('returns null when category and custom_category_id are both null', () => {
+    expect(
+      readHabUnitTallyLine({
+        item_id: ITEM_ID,
+        name: 'Wet food',
+        quantity: 4,
+        minimum_quantity: 3,
+        category: null,
+        custom_category_id: null,
+      }),
+    ).toEqual(null)
+  })
+
+  test('returns null for a non-UUID custom category id', () => {
+    expect(
+      readHabUnitTallyLine({
+        item_id: ITEM_ID,
+        name: 'Wet food',
+        quantity: 4,
+        minimum_quantity: 3,
+        category: null,
+        custom_category_id: 'not-a-uuid',
+      }),
+    ).toEqual(null)
   })
 
   test('returns null for a missing category', () => {

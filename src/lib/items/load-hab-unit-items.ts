@@ -1,14 +1,16 @@
 import { DB_TABLE_HOUSEHOLD_INVENTORY } from '../db/entities'
 import { createClient } from '../supabase/server'
 import { Item } from '../types'
-import { isItemCategory, type ItemCategory } from './item-category'
+import { isItemCategory } from './item-category'
+import type { ItemCategoryRef } from './item-category-ref'
+import { isScanSessionId } from './scan-session'
 
 interface HabUnitTallyLine {
   readonly itemId: string
   readonly name: string
   readonly quantity: number
   readonly minimumQuantity: number
-  readonly category: ItemCategory
+  readonly category: ItemCategoryRef
 }
 
 const loadHabUnitItems = async ({
@@ -42,6 +44,46 @@ const loadHabUnitItems = async ({
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
+const readCategoryRef = (
+  category: unknown,
+  customCategoryId: unknown,
+): ItemCategoryRef | null => {
+  if (
+    (category !== null &&
+      category !== undefined &&
+      typeof category !== 'string') ||
+    (customCategoryId !== null &&
+      customCategoryId !== undefined &&
+      typeof customCategoryId !== 'string')
+  ) {
+    return null
+  }
+
+  const categoryText = typeof category === 'string' ? category : null
+  const customCategoryText =
+    typeof customCategoryId === 'string' ? customCategoryId : null
+  const hasCategory = categoryText !== null
+  const hasCustomCategory = customCategoryText !== null
+
+  if (hasCategory === hasCustomCategory) {
+    return null
+  }
+
+  if (categoryText !== null) {
+    if (!isItemCategory(categoryText)) {
+      return null
+    }
+
+    return { kind: 'built-in', category: categoryText }
+  }
+
+  if (customCategoryText === null || !isScanSessionId(customCategoryText)) {
+    return null
+  }
+
+  return { kind: 'custom', categoryId: customCategoryText }
+}
+
 const readHabUnitTallyLine = (row: unknown): HabUnitTallyLine | null => {
   if (!isRecord(row)) {
     return null
@@ -53,7 +95,9 @@ const readHabUnitTallyLine = (row: unknown): HabUnitTallyLine | null => {
     quantity,
     minimum_quantity: minimumQuantity,
     category,
+    custom_category_id: customCategoryId,
   } = row
+  const categoryRef = readCategoryRef(category, customCategoryId)
 
   if (
     typeof itemId !== 'string' ||
@@ -62,12 +106,18 @@ const readHabUnitTallyLine = (row: unknown): HabUnitTallyLine | null => {
     !Number.isInteger(quantity) ||
     typeof minimumQuantity !== 'number' ||
     !Number.isInteger(minimumQuantity) ||
-    !isItemCategory(category)
+    categoryRef === null
   ) {
     return null
   }
 
-  return { itemId, name, quantity, minimumQuantity, category }
+  return {
+    itemId,
+    name,
+    quantity,
+    minimumQuantity,
+    category: categoryRef,
+  }
 }
 
 const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
@@ -75,7 +125,9 @@ const loadHabUnitTallyLines = async (): Promise<HabUnitTallyLine[]> => {
 
   const { data, error } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity, minimum_quantity, category')
+    .select(
+      'item_id, name, quantity, minimum_quantity, category, custom_category_id',
+    )
     .order('name', { ascending: true })
 
   const rows: unknown = data

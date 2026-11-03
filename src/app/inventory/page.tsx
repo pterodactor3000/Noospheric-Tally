@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { loadHabUnitCategories } from '@/lib/items/load-hab-unit-categories'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -39,6 +40,7 @@ const inventoryTitle = clsx('m-0', 'text-center', 'text-2xl', 'font-semibold')
 const InventoryPage = async () => {
   await requireCurrentUser()
   const habUnit = await requireCurrentHabUnit()
+  const customCategories = await loadHabUnitCategories()
   const tallyLines = await loadHabUnitTallyLines()
 
   return (
@@ -51,7 +53,10 @@ const InventoryPage = async () => {
           tally
         </h1>
         <Separator variant="heading" />
-        <InventoryTally lines={tallyLines} />
+        <InventoryTally
+          lines={tallyLines}
+          customCategories={customCategories}
+        />
         <div className={inventoryActions}>
           <Button
             variant="outline"

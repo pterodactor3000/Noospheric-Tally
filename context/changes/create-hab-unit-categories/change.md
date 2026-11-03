@@ -1,7 +1,7 @@
 ---
 change_id: create-hab-unit-categories
 title: Create categories per hab unit
-status: planned
+status: implementing
 created: 2026-11-03
 updated: 2026-11-03
 archived_at: null
@@ -45,3 +45,5 @@ Display and access:
 - An empty custom category still shows its panel.
 
 Out of scope: reordering categories, changing the catalog mapping, bulk import categories, category archive or undo, sibling issues TEC-58, TEC-59, TEC-60, and every other open follow-up, and any edit to `context/foundation/roadmap.md` or `context/foundation/prd.md`.
+
+Phase 1 edits the item page to pass a built-in category ref through and call notFound() for a custom ref, and leaves the item editor category prop for Phase 3.

@@ -30,7 +30,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
 
   const item = await loadHabUnitItemById(itemId)
 
-  if (!item) {
+  if (!item || item.category.kind !== 'built-in') {
     notFound()
   }
 
@@ -51,7 +51,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
           quantity={item.quantity}
           minimumQuantity={item.minimumQuantity}
           consumptionCount={usingScanCount}
-          category={item.category}
+          category={item.category.category}
           barcodes={barcodes}
         />
       </section>

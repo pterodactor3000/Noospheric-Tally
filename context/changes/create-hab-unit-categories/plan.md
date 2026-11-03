@@ -217,6 +217,20 @@ type ItemCategoryRef = BuiltInCategoryRef | CustomCategoryRef
 
 **Contract:** Add cases for a custom-id row, a row with both values set, a row with neither, a row with a non-UUID custom id, and a built-in row, which still returns as before. Existing cases update to the `ItemCategoryRef` shape (`load-hab-unit-items.test.ts:3,16,23`).
 
+#### 8. Item page narrowing
+
+**File:** `src/app/inventory/[itemId]/page.tsx`, `src/lib/items/rank-restock-lines.test.ts`
+
+**Intent:** Keep the item editor on a built-in category until Phase 3.
+
+**Contract:**
+
+- Phase 1 may edit `src/app/inventory/[itemId]/page.tsx` and only that extra file outside the original Phase 1 list. `ItemLevelEditor` keeps `category: ItemCategory`. Phase 3 still owns that prop.
+- The page narrows `item.category`. When `kind` is `built-in`, it passes `category`. When `kind` is `custom`, it calls `notFound()` and does not render `ItemLevelEditor`. It does not substitute a built-in. Existing rows are built-in, so the visible page stays the same. A custom ref fails closed until Phase 3.
+- `rank-restock-lines.test.ts` fixtures that build `HabUnitTallyLine` use `ItemCategoryRef`. That stays inside the Phase 1 rank path.
+
+Approved by the user on 2026-11-03.
+
 ### Success Criteria
 
 #### Automated Verification
@@ -659,17 +673,17 @@ Rollback after Phase 1 or 2: drop the new functions and table. Rollback after Ph
 
 #### Automated
 
-- [ ] 1.1 `pnpm test` passes, including the new `item-category-ref.test.ts` and the updated `group-tally-lines-by-category.test.ts` and `load-hab-unit-items.test.ts`.
-- [ ] 1.2 `pnpm typecheck` passes.
-- [ ] 1.3 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [ ] 1.4 `rg "household_categories" supabase/migrations` matches only `20261103090000_create_household_categories.sql`. That file contains `enable row level security`, `household_categories_select_if_member`, a composite foreign key from `household_inventory` to `household_categories (id, household_id)`, and `num_nonnulls`. It contains no `for insert`, `for update`, or `for delete` policy.
+- [x] 1.1 `pnpm test` passes, including the new `item-category-ref.test.ts` and the updated `group-tally-lines-by-category.test.ts` and `load-hab-unit-items.test.ts`.
+- [x] 1.2 `pnpm typecheck` passes.
+- [x] 1.3 `pnpm lint` passes with no new warnings in the files this phase touches.
+- [x] 1.4 `rg "household_categories" supabase/migrations` matches only `20261103090000_create_household_categories.sql`. That file contains `enable row level security`, `household_categories_select_if_member`, a composite foreign key from `household_inventory` to `household_categories (id, household_id)`, and `num_nonnulls`. It contains no `for insert`, `for update`, or `for delete` policy.
 
 #### Manual
 
-- [ ] 1.5 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103090000_create_household_categories.sql` with no error.
-- [ ] 1.6 In a rolled-back SQL transaction as a member of hab unit A (set the caller first: `select set_config('request.jwt.claims', '{"sub":"<user uuid>"}', true); set local role authenticated;`), `select` on `household_categories` returns zero rows, and an `insert` into it is refused. As the table owner in a rolled-back transaction, referencing a category of hab unit B from a `household_inventory` row of hab unit A fails with a foreign key error, setting both `category` and `custom_category_id` fails the CHECK, and setting neither fails the CHECK.
-- [ ] 1.7 Full-page screenshots of `/inventory` and `/inventory/restock` taken before and after the code change, in light and dark, at a wide viewport and at 390px, with animations frozen, show a zero-pixel diff.
-- [ ] 1.8 Signed in with existing data, every item still shows in the same one of the five panels with the same count, the same warning icons, and the same open and closed state.
+- [x] 1.5 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103090000_create_household_categories.sql` with no error.
+- [x] 1.6 In a rolled-back SQL transaction as a member of hab unit A (set the caller first: `select set_config('request.jwt.claims', '{"sub":"<user uuid>"}', true); set local role authenticated;`), `select` on `household_categories` returns zero rows, and an `insert` into it is refused. As the table owner in a rolled-back transaction, referencing a category of hab unit B from a `household_inventory` row of hab unit A fails with a foreign key error, setting both `category` and `custom_category_id` fails the CHECK, and setting neither fails the CHECK.
+- [x] 1.7 Full-page screenshots of `/inventory` and `/inventory/restock` taken before and after the code change, in light and dark, at a wide viewport and at 390px, with animations frozen, show a zero-pixel diff.
+- [x] 1.8 Signed in with existing data, every item still shows in the same one of the five panels with the same count, the same warning icons, and the same open and closed state.
 
 ### Phase 2: Create a custom category
 
