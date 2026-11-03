@@ -18,6 +18,7 @@ import {
   isItemCategory,
   type ItemCategory,
 } from '@/lib/items/item-category'
+import { parseCategoryRefKey } from '@/lib/items/item-category-ref'
 import { loadHabUnitItemByBarcode } from '@/lib/items/load-hab-unit-item-by-barcode'
 import {
   loadScanSessionLines,
@@ -490,8 +491,10 @@ const saveItemLevels = async (
   const expectedQuantity = parseExpectedQuantity(
     getFormString(formData, 'expectedQuantity'),
   )
-  const category = getFormString(formData, 'category')
-  const expectedCategory = getFormString(formData, 'expectedCategory')
+  const categoryInput = getFormString(formData, 'category')
+  const expectedCategoryInput = getFormString(formData, 'expectedCategory')
+  const category = parseCategoryRefKey(categoryInput)
+  const expectedCategory = parseCategoryRefKey(expectedCategoryInput)
 
   if (!isScanSessionId(itemId)) {
     console.error('saveItemLevels rejected item id', { itemId })
@@ -517,15 +520,18 @@ const saveItemLevels = async (
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
-  if (!isItemCategory(category)) {
-    console.error('saveItemLevels rejected category', { itemId, category })
+  if (!category) {
+    console.error('saveItemLevels rejected category', {
+      itemId,
+      category: categoryInput,
+    })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
-  if (!isItemCategory(expectedCategory)) {
+  if (!expectedCategory) {
     console.error('saveItemLevels rejected expected category', {
       itemId,
-      expectedCategory,
+      expectedCategory: expectedCategoryInput,
     })
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }

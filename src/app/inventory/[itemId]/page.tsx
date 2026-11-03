@@ -2,6 +2,7 @@ import { clsx } from 'clsx'
 import { notFound } from 'next/navigation'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { loadHabUnitCategories } from '@/lib/items/load-hab-unit-categories'
 import { loadHabUnitItemById } from '@/lib/items/load-hab-unit-item-by-id'
 import { loadItemBarcodes } from '@/lib/items/load-item-barcodes'
 import { loadItemConsumptionCount } from '@/lib/items/load-item-consumption-count'
@@ -30,10 +31,11 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
 
   const item = await loadHabUnitItemById(itemId)
 
-  if (!item || item.category.kind !== 'built-in') {
+  if (!item) {
     notFound()
   }
 
+  const customCategories = await loadHabUnitCategories()
   const supabase = await createClient()
   const usingScanCount = await loadItemConsumptionCount(
     item.itemId,
@@ -51,7 +53,8 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
           quantity={item.quantity}
           minimumQuantity={item.minimumQuantity}
           consumptionCount={usingScanCount}
-          category={item.category.category}
+          category={item.category}
+          customCategories={customCategories}
           barcodes={barcodes}
         />
       </section>
