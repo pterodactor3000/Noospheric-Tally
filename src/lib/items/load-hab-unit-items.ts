@@ -77,7 +77,7 @@ const readCategoryRef = (
     return { kind: 'built-in', category: categoryText }
   }
 
-  if (customCategoryText === null || !isScanSessionId(customCategoryText)) {
+  if (!isScanSessionId(customCategoryText)) {
     return null
   }
 

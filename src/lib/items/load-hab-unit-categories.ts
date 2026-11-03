@@ -48,7 +48,19 @@ const loadHabUnitCategories = async (): Promise<HabUnitCategory[]> => {
     const category = readHabUnitCategory(row)
 
     if (!category) {
-      throw new Error('household_categories select failed')
+      const rowId =
+        typeof row === 'object' &&
+        row !== null &&
+        'id' in row &&
+        typeof row.id === 'string'
+          ? row.id
+          : null
+
+      throw new Error(
+        rowId === null
+          ? 'household_categories row failed validation'
+          : `household_categories row failed validation (id: ${rowId})`,
+      )
     }
 
     return category
