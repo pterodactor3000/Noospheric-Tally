@@ -83,6 +83,7 @@ const RenameCategoryForm = ({
             variant="outline"
             type="button"
             size="sm"
+            disabled={isPending}
             onClick={onClose}
           >
             Cancel
