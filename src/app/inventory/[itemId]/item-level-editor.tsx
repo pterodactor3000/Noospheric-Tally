@@ -88,7 +88,7 @@ const categoryField = clsx(
 const categoryFieldLabel = clsx(
   'grid',
   'w-full',
-  'grid-cols-[auto_1fr_auto]',
+  'grid-cols-[auto_minmax(0,1fr)_auto]',
   'items-baseline',
 )
 const categorySelect = clsx(
@@ -322,10 +322,10 @@ const ItemLevelEditor = ({
             Category
           </label>
           <DotLeader />
-          <span className={clsx(itemValue, categoryField)}>
+          <span className={clsx(categoryField, 'min-w-0', 'max-w-full', 'shrink')}>
             <span aria-hidden="true" className={categoryFieldLabel}>
               <span>[</span>
-              <span className="text-center">
+              <span className="min-w-0 truncate text-center">
                 {getSelectedCategoryLabel(
                   selectedCategory,
                   orderedCustomCategories,
