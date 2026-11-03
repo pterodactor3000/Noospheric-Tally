@@ -709,20 +709,20 @@ Rollback after Phase 1 or 2: drop the new functions and table. Rollback after Ph
 
 #### Automated
 
-- [x] 3.1 `pnpm exec vitest run src/lib/items/item-category-ref.test.ts src/lib/items/set-hab-unit-item-levels.test.ts` passes. The key round-trip, an invalid key, a built-in save, a custom save, a stale result, and another error are covered.
-- [x] 3.2 `pnpm test` passes.
-- [x] 3.3 `pnpm typecheck` passes.
-- [x] 3.4 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [x] 3.5 The newest `set_household_item_levels` definition is in `20261103092000_set_household_item_levels_custom_category.sql`. It contains `drop function public.set_household_item_levels(uuid, integer, integer, integer, text, text)`, `new_quantity > 99`, `household_quantity_changes`, `serialization_failure`, `for share`, and `revoke all on function public.set_household_item_levels(uuid, integer, integer, integer, text, uuid, text, uuid) from public, anon`.
+- [x] 3.1 `pnpm exec vitest run src/lib/items/item-category-ref.test.ts src/lib/items/set-hab-unit-item-levels.test.ts` passes. The key round-trip, an invalid key, a built-in save, a custom save, a stale result, and another error are covered. `69d2666`
+- [x] 3.2 `pnpm test` passes. `69d2666`
+- [x] 3.3 `pnpm typecheck` passes. `69d2666`
+- [x] 3.4 `pnpm lint` passes with no new warnings in the files this phase touches. `69d2666`
+- [x] 3.5 The newest `set_household_item_levels` definition is in `20261103092000_set_household_item_levels_custom_category.sql`. It contains `drop function public.set_household_item_levels(uuid, integer, integer, integer, text, text)`, `new_quantity > 99`, `household_quantity_changes`, `serialization_failure`, `for share`, and `revoke all on function public.set_household_item_levels(uuid, integer, integer, integer, text, uuid, text, uuid) from public, anon`. `69d2666`
 
 #### Manual
 
-- [x] 3.6 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103092000_set_household_item_levels_custom_category.sql` with no error.
-- [x] 3.7 In a rolled-back SQL transaction as a member of hab unit A, saving an item with A's custom category id sets `custom_category_id` and nulls `category`. Passing a category id of hab unit B raises `serialization_failure`. Passing a wrong `expected_custom_category_id` raises `serialization_failure`. Saving a built-in category still works, and saving a lower count still writes one `household_quantity_changes` row per unit removed.
-- [x] 3.8 On an item page as a member of hab unit A, the Category select lists the custom categories first in creation order, then Pet food, Food, Beauty, Other, and Uncategorized.
-- [x] 3.9 Picking `Cleaning` and pressing Save returns to `/inventory`, and the item is listed under the Cleaning panel with its count. The panel shows its count and the shortage icon rules apply. If the item is CRITICAL, it also appears under Cleaning on `/inventory/restock`.
-- [x] 3.10 Reopening the item shows Cleaning selected. The Category row turns the unsaved color when the selection differs from the saved one, and moving it back to Food and saving leaves the item in Food.
-- [x] 3.11 A new item created from `/inventory/new` still lands in a built-in category.
+- [x] 3.6 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103092000_set_household_item_levels_custom_category.sql` with no error. `69d2666`
+- [x] 3.7 In a rolled-back SQL transaction as a member of hab unit A, saving an item with A's custom category id sets `custom_category_id` and nulls `category`. Passing a category id of hab unit B raises `serialization_failure`. Passing a wrong `expected_custom_category_id` raises `serialization_failure`. Saving a built-in category still works, and saving a lower count still writes one `household_quantity_changes` row per unit removed. `69d2666`
+- [x] 3.8 On an item page as a member of hab unit A, the Category select lists the custom categories first in creation order, then Pet food, Food, Beauty, Other, and Uncategorized. `69d2666`
+- [x] 3.9 Picking `Cleaning` and pressing Save returns to `/inventory`, and the item is listed under the Cleaning panel with its count. The panel shows its count and the shortage icon rules apply. If the item is CRITICAL, it also appears under Cleaning on `/inventory/restock`. `69d2666`
+- [x] 3.10 Reopening the item shows Cleaning selected. The Category row turns the unsaved color when the selection differs from the saved one, and moving it back to Food and saving leaves the item in Food. `69d2666`
+- [x] 3.11 A new item created from `/inventory/new` still lands in a built-in category. `69d2666`
 
 ### Phase 4: Rename a custom category
 
