@@ -29,13 +29,13 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
     notFound()
   }
 
+  const customCategories = await loadHabUnitCategories()
   const item = await loadHabUnitItemById(itemId)
 
   if (!item) {
     notFound()
   }
 
-  const customCategories = await loadHabUnitCategories()
   const supabase = await createClient()
   const usingScanCount = await loadItemConsumptionCount(
     item.itemId,
