@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { FormAlert } from '@/components/ui/form-alert'
 import { Input } from '@/components/ui/input'
 
-import { renameCategory } from './category-actions'
+import { deleteCategory, renameCategory } from './category-actions'
 
 interface CustomCategoryControlsProps {
   readonly categoryId: string
@@ -19,6 +19,19 @@ interface RenameCategoryFormProps extends CustomCategoryControlsProps {
 }
 
 type RenameCategoryFormState = Awaited<ReturnType<typeof renameCategory>> | null
+
+type DeleteCategoryFormState = Awaited<ReturnType<typeof deleteCategory>> | null
+
+const CONFIRM_DELETE_LABEL = 'Confirm delete. Items move to Uncategorized'
+
+const categoryActionsClassName = clsx(
+  'flex',
+  'max-w-full',
+  'flex-wrap',
+  'items-start',
+  'justify-end',
+  'gap-2',
+)
 
 const renameFormClassName = clsx(
   'flex',
@@ -94,36 +107,92 @@ const RenameCategoryForm = ({
   )
 }
 
+const DeleteCategoryControl = ({
+  categoryId,
+  name,
+}: CustomCategoryControlsProps) => {
+  const [isArmed, setIsArmed] = useState(false)
+  const [state, formAction, isPending] = useActionState(
+    async (_previous: DeleteCategoryFormState, formData: FormData) =>
+      deleteCategory(formData),
+    null,
+  )
+
+  return (
+    <form action={formAction}>
+      <input type="hidden" name="categoryId" value={categoryId} />
+      <FormAlert message={state?.status === 'error' ? state.message : null}>
+        <div className={clsx('flex', 'flex-wrap', 'items-center', 'gap-2')}>
+          <Button
+            type="submit"
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            aria-label={
+              isArmed ? CONFIRM_DELETE_LABEL : `Delete ${name}`
+            }
+            onClick={(event) => {
+              if (isArmed) {
+                return
+              }
+
+              event.preventDefault()
+              setIsArmed(true)
+            }}
+          >
+            {isArmed ? CONFIRM_DELETE_LABEL : 'Delete'}
+          </Button>
+          {isArmed ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isPending}
+              aria-label={`Cancel delete ${name}`}
+              onClick={() => {
+                setIsArmed(false)
+              }}
+            >
+              Cancel
+            </Button>
+          ) : null}
+        </div>
+      </FormAlert>
+    </form>
+  )
+}
+
 const CustomCategoryControls = ({
   categoryId,
   name,
 }: CustomCategoryControlsProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  if (!isOpen) {
-    return (
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        aria-label={`Rename ${name}`}
-        onClick={() => {
-          setIsOpen(true)
-        }}
-      >
-        Rename
-      </Button>
-    )
-  }
-
   return (
-    <RenameCategoryForm
-      categoryId={categoryId}
-      name={name}
-      onClose={() => {
-        setIsOpen(false)
-      }}
-    />
+    <div className={categoryActionsClassName}>
+      {isOpen ? (
+        <RenameCategoryForm
+          categoryId={categoryId}
+          name={name}
+          onClose={() => {
+            setIsOpen(false)
+          }}
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          aria-label={`Rename ${name}`}
+          onClick={() => {
+            setIsOpen(true)
+          }}
+        >
+          Rename
+        </Button>
+      )}
+      <DeleteCategoryControl categoryId={categoryId} name={name} />
+    </div>
   )
 }
 

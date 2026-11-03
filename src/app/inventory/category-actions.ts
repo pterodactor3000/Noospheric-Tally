@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 
 import { createHabUnitCategory } from '@/lib/items/create-hab-unit-category'
+import { deleteHabUnitCategory } from '@/lib/items/delete-hab-unit-category'
 import { renameHabUnitCategory } from '@/lib/items/rename-hab-unit-category'
 import { isScanSessionId } from '@/lib/items/scan-session'
 import { ITEM_WRITE_FAILURE_MESSAGE } from '@/lib/items/scan-failure-messages'
@@ -107,5 +108,33 @@ const renameCategory = async (
   return { status: 'saved' }
 }
 
-export { createCategory, renameCategory }
+const deleteCategory = async (
+  formData: FormData,
+): Promise<CreateCategoryResult> => {
+  const categoryId = getFormString(formData, 'categoryId')
+  if (!isScanSessionId(categoryId)) {
+    console.error('deleteCategory rejected category id', { categoryId })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  try {
+    const supabase = await createClient()
+    const result = await deleteHabUnitCategory(categoryId, supabase)
+    if (result.status === 'missing') {
+      return { status: 'error', message: MISSING_CATEGORY_MESSAGE }
+    }
+  } catch (error: unknown) {
+    console.error('deleteCategory failed', {
+      categoryId,
+      error,
+    })
+    return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
+  }
+
+  revalidatePath('/inventory')
+  revalidatePath('/inventory/restock')
+  return { status: 'saved' }
+}
+
+export { createCategory, deleteCategory, renameCategory }
 export type { CreateCategoryResult }

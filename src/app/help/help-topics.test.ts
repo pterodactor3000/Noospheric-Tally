@@ -95,6 +95,31 @@ describe('HELP_TOPICS', () => {
     expect(text.includes('Minimum')).toEqual(true)
     expect(text.includes('Category')).toEqual(true)
     expect(text.includes('Use')).toEqual(true)
+    expect(text.includes('earliest created first')).toEqual(true)
+    expect(text.includes('Create, rename, and delete')).toEqual(true)
+  })
+
+  test('names custom categories before the built-ins on the tally', () => {
+    const text = joinTopicParagraphs('tally-list')
+
+    expect(text.includes('its own categories')).toEqual(true)
+    expect(text.includes('earliest created first')).toEqual(true)
+    expect(text.includes('Add a category')).toEqual(true)
+    expect(text.includes('Rename')).toEqual(true)
+    expect(text.includes('Delete')).toEqual(true)
+  })
+
+  test('names create, rename, and delete in the search and categories topic', () => {
+    const text = joinTopicParagraphs('search-sort-categories')
+
+    expect(text.includes('Add a category')).toEqual(true)
+    expect(text.includes('earliest created first')).toEqual(true)
+    expect(text.includes('Rename')).toEqual(true)
+    expect(text.includes('Delete')).toEqual(true)
+    expect(
+      text.includes('Confirm delete. Items move to Uncategorized'),
+    ).toEqual(true)
+    expect(text.includes('There is no undo.')).toEqual(true)
   })
 
   test('names the - button and the + button in the tally topic', () => {
@@ -121,6 +146,8 @@ describe('HELP_TOPICS', () => {
     expect(
       text.includes('The - button, the + button, and the category list'),
     ).toEqual(true)
+    expect(text.includes('hab unit categories first')).toEqual(true)
+    expect(text.includes('Create, rename, and delete')).toEqual(true)
     expect(text.includes(TYPED_DECREASE)).toEqual(false)
     expect(text.includes(TYPED_INCREASE)).toEqual(false)
   })

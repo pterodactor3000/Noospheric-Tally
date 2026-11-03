@@ -747,19 +747,19 @@ Rollback after Phase 1 or 2: drop the new functions and table. Rollback after Ph
 
 #### Automated
 
-- [ ] 5.1 `pnpm exec vitest run src/lib/items/delete-hab-unit-category.test.ts src/app/help/help-topics.test.ts` passes. The wrapper tests cover deleted, missing, and another error thrown with `cause`.
-- [ ] 5.2 `pnpm test` passes.
-- [ ] 5.3 `pnpm typecheck` passes.
-- [ ] 5.4 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [ ] 5.5 `pnpm worker:check` passes.
-- [ ] 5.6 `rg "delete_household_category" supabase/migrations` matches only `20261103094000_delete_household_category.sql`. That file contains `security definer`, `set search_path = ''`, `auth.uid()`, `for update`, `P0002`, and `revoke all on function public.delete_household_category(uuid) from public, anon`. The function does not write `quantity` or `minimum_quantity`.
+- [x] 5.1 `pnpm exec vitest run src/lib/items/delete-hab-unit-category.test.ts src/app/help/help-topics.test.ts` passes. The wrapper tests cover deleted, missing, and another error thrown with `cause`.
+- [x] 5.2 `pnpm test` passes.
+- [x] 5.3 `pnpm typecheck` passes.
+- [x] 5.4 `pnpm lint` passes with no new warnings in the files this phase touches.
+- [x] 5.5 `pnpm worker:check` passes.
+- [x] 5.6 `rg "delete_household_category" supabase/migrations` matches only `20261103094000_delete_household_category.sql`. That file contains `security definer`, `set search_path = ''`, `auth.uid()`, `for update`, `P0002`, and `revoke all on function public.delete_household_category(uuid) from public, anon`. The function does not write `quantity` or `minimum_quantity`.
 
 #### Manual
 
-- [ ] 5.7 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103094000_delete_household_category.sql` with no error.
-- [ ] 5.8 In a rolled-back SQL transaction as a member of hab unit A, deleting a category that holds two items leaves both items with `category = 'uncategorized'`, `custom_category_id` null, and the same `quantity` and `minimum_quantity`. The category row is gone and no `household_quantity_changes` row was added. Deleting a category id of hab unit B raises `P0002`.
-- [ ] 5.9 On `/inventory`, the first press on a custom panel's delete control arms it and the second press deletes. The items appear under Uncategorized with the same counts, and the panel disappears. Cancel disarms it. Built-in panels show no delete control. There is no undo control.
-- [ ] 5.10 With an item page open in a second tab on a deleted category, pressing Save returns "The count changed. Reload the page before saving." Pressing Save with the deleted category chosen in the select from a stale page returns the same message.
-- [ ] 5.11 Signed in as a member of a second hab unit, the same custom name can be created, assigned, renamed, and deleted without changing the first hab unit's categories or items. The first hab unit's list is unchanged throughout.
-- [ ] 5.12 The help page describes custom categories, their order, and the create, rename, and delete controls.
-- [ ] 5.13 A final run through `/inventory` and `/inventory/restock` at a wide viewport and at 390px, in light and dark, shows custom panels before the built-ins, earliest created first, with no layout break.
+- [x] 5.7 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103094000_delete_household_category.sql` with no error.
+- [x] 5.8 In a rolled-back SQL transaction as a member of hab unit A, deleting a category that holds two items leaves both items with `category = 'uncategorized'`, `custom_category_id` null, and the same `quantity` and `minimum_quantity`. The category row is gone and no `household_quantity_changes` row was added. Deleting a category id of hab unit B raises `P0002`.
+- [x] 5.9 On `/inventory`, the first press on a custom panel's delete control arms it and the second press deletes. The items appear under Uncategorized with the same counts, and the panel disappears. Cancel disarms it. Built-in panels show no delete control. There is no undo control.
+- [x] 5.10 With an item page open in a second tab on a deleted category, pressing Save returns "The count changed. Reload the page before saving." Pressing Save with the deleted category chosen in the select from a stale page returns the same message.
+- [x] 5.11 Signed in as a member of a second hab unit, the same custom name can be created, assigned, renamed, and deleted without changing the first hab unit's categories or items. The first hab unit's list is unchanged throughout.
+- [x] 5.12 The help page describes custom categories, their order, and the create, rename, and delete controls.
+- [x] 5.13 A final run through `/inventory` and `/inventory/restock` at a wide viewport and at 390px, in light and dark, shows custom panels before the built-ins, earliest created first, with no layout break.

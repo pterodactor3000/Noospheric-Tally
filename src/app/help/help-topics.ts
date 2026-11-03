@@ -35,10 +35,10 @@ const HELP_TOPICS: readonly HelpTopic[] = [
     title: 'The tally list',
     paragraphs: [
       'The tally lists every item in the hab unit. Each row shows the name, a dot leader, the - button, the count, and the + button. The heading is [<hab unit name>] tally.',
-      'Items sit in Pet food, Food, Beauty, Other, then Uncategorized. A category header shows how many items it holds.',
+      'A hab unit can add its own categories. Those panels come before Pet food, Food, Beauty, Other, and Uncategorized, earliest created first. Add a category is under the tally. Rename and Delete are on each custom panel header. A category header shows how many items it holds.',
       'The - button lowers the count by 1. The + button raises it by 1. The tally saves that change at once. The - button is disabled at 0. The + button is disabled at 99.',
       'The row is green for IN STOCK, yellow for WARNING, and red for CRITICAL. Tap a name to open that item.',
-      'A category with a WARNING or CRITICAL item uses that color and opens on its own. The other categories stay closed until you tap them.',
+      'A custom category follows the same open rule as a built-in category. A category with a WARNING or CRITICAL item uses that color and opens on its own. The other categories stay closed until you tap them.',
     ],
     screenshots: [
       {
@@ -57,6 +57,8 @@ const HELP_TOPICS: readonly HelpTopic[] = [
       'The list starts A to Z. The name button switches it to Z to A, then back to A to Z. The count button sorts from low to high, then high to low. Items at 0 stay last.',
       'The layers button is labelled Group by category. It switches between category panels and one flat list. It stays disabled while a count change is saving.',
       'The search field appears once the hab unit holds an item.',
+      'Add a category sits under the tally. Open it, type a Category name, and press Add category. The new panel appears before the built-in categories, earliest created first.',
+      'Each custom panel header has Rename and Delete. Built-in panels have neither. Rename changes only the name. The items stay in that panel, and the panel stays in the same position. The first press on Delete changes the label to "Confirm delete. Items move to Uncategorized". The second press moves the items to Uncategorized and removes the category. Cancel disarms Delete. There is no undo.',
     ],
     screenshots: [
       {
@@ -198,7 +200,7 @@ const HELP_TOPICS: readonly HelpTopic[] = [
     paragraphs: [
       'Tap an item name on the tally. The heading shows the state label and the name. Below 460px the heading shows [I], [W], or [C] in place of the full state label.',
       'On a wide screen the barcode sits on the line under the name. On a phone, tap the name to show the barcode.',
-      'The rows are Count from 0 to 99, Minimum from 0 to 999, Category with Pet food, Food, Beauty, Other, and Uncategorized, and Use.',
+      'The rows are Count from 0 to 99, Minimum from 0 to 999, Category, and Use. Category lists the hab unit categories first, earliest created first, then Pet food, Food, Beauty, Other, and Uncategorized. Create, rename, and delete for those categories are on the tally.',
       'Use is information only. It counts consume scans from the last 7 days as <n> per week, or it says No use recorded.',
       'The - button, the + button, and the category list change Count, Minimum, and Category. Unsaved edits turn yellow gold. They apply when you press Save. Cancel drops them and returns to the tally. The state label follows the count and the minimum while you edit.',
     ],
