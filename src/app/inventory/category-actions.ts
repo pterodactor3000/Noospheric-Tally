@@ -45,9 +45,6 @@ const createCategory = async (
         field: 'name',
       }
     }
-
-    revalidatePath('/inventory')
-    revalidatePath('/inventory/restock')
   } catch (error: unknown) {
     console.error('createCategory failed', {
       name: nameResult.name,
@@ -56,6 +53,8 @@ const createCategory = async (
     return { status: 'error', message: ITEM_WRITE_FAILURE_MESSAGE }
   }
 
+  revalidatePath('/inventory')
+  revalidatePath('/inventory/restock')
   return { status: 'saved' }
 }
 

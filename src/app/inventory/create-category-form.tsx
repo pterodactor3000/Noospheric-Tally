@@ -13,6 +13,8 @@ import { createCategory } from './category-actions'
 
 type CreateCategoryFormState = Awaited<ReturnType<typeof createCategory>> | null
 
+const CATEGORY_NAME_ERROR_ID = 'category-name-error'
+
 const getSubmittedName = (formData: FormData): string => {
   const value = formData.get('name')
   return typeof value === 'string' ? value : ''
@@ -24,7 +26,13 @@ const CreateCategoryForm = () => {
     async (_previous: CreateCategoryFormState, formData: FormData) => {
       const submittedName = getSubmittedName(formData)
       const result = await createCategory(formData)
-      setName(result.status === 'saved' ? '' : submittedName)
+      setName((currentName) => {
+        if (currentName !== submittedName) {
+          return currentName
+        }
+
+        return result.status === 'saved' ? '' : submittedName
+      })
       return result
     },
     null,
@@ -48,9 +56,13 @@ const CreateCategoryForm = () => {
               setName(event.currentTarget.value)
             }}
             aria-invalid={isNameInvalid}
+            aria-describedby={isNameInvalid ? CATEGORY_NAME_ERROR_ID : undefined}
           />
         </div>
-        <FormAlert message={state?.status === 'error' ? state.message : null}>
+        <FormAlert
+          id={CATEGORY_NAME_ERROR_ID}
+          message={state?.status === 'error' ? state.message : null}
+        >
           <Button
             variant="outline"
             type="submit"
