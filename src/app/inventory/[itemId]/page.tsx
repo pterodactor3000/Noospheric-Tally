@@ -2,6 +2,7 @@ import { clsx } from 'clsx'
 import { notFound } from 'next/navigation'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { loadHabUnitCategories } from '@/lib/items/load-hab-unit-categories'
 import { loadHabUnitItemById } from '@/lib/items/load-hab-unit-item-by-id'
 import { loadItemBarcodes } from '@/lib/items/load-item-barcodes'
 import { loadItemConsumptionCount } from '@/lib/items/load-item-consumption-count'
@@ -28,6 +29,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
     notFound()
   }
 
+  const customCategories = await loadHabUnitCategories()
   const item = await loadHabUnitItemById(itemId)
 
   if (!item) {
@@ -52,6 +54,7 @@ const ItemPage = async ({ params }: PageProps<'/inventory/[itemId]'>) => {
           minimumQuantity={item.minimumQuantity}
           consumptionCount={usingScanCount}
           category={item.category}
+          customCategories={customCategories}
           barcodes={barcodes}
         />
       </section>

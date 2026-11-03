@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
 import type { ItemCategory } from './item-category'
+import type { ItemCategoryRef } from './item-category-ref'
 import type { HabUnitTallyLine } from './load-hab-unit-items'
 import { rankRestockLines } from './rank-restock-lines'
 
@@ -12,6 +13,11 @@ interface RestockLineInput {
 }
 
 let nextItemNumber = 0
+
+const builtInCategory = (category: ItemCategory): ItemCategoryRef => ({
+  kind: 'built-in',
+  category,
+})
 
 const line = ({
   name,
@@ -25,7 +31,7 @@ const line = ({
     name,
     quantity,
     minimumQuantity,
-    category,
+    category: builtInCategory(category),
   }
 }
 
@@ -52,7 +58,7 @@ describe('rankRestockLines', () => {
         name: 'Salt',
         quantity: 3,
         minimumQuantity: 3,
-        category: 'uncategorized',
+        category: builtInCategory('uncategorized'),
         shortfall: 0,
       },
     ])
@@ -73,7 +79,7 @@ describe('rankRestockLines', () => {
         name: 'Basil',
         quantity: 1,
         minimumQuantity: 3,
-        category: 'uncategorized',
+        category: builtInCategory('uncategorized'),
         shortfall: 2,
       },
     ])
@@ -88,7 +94,7 @@ describe('rankRestockLines', () => {
         name: 'Ash',
         quantity: 0,
         minimumQuantity: 0,
-        category: 'uncategorized',
+        category: builtInCategory('uncategorized'),
         shortfall: 0,
       },
     ])
@@ -150,7 +156,7 @@ describe('rankRestockLines', () => {
         name: 'Zebra',
         quantity: 0,
         minimumQuantity: 5,
-        category: 'uncategorized',
+        category: builtInCategory('uncategorized'),
         shortfall: 5,
       },
       {
@@ -158,7 +164,7 @@ describe('rankRestockLines', () => {
         name: 'Apple',
         quantity: 2,
         minimumQuantity: 3,
-        category: 'pet-food',
+        category: builtInCategory('pet-food'),
         shortfall: 1,
       },
     ])

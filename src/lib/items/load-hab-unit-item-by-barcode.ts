@@ -19,7 +19,8 @@ interface HabUnitItemRow {
   readonly name: string
   readonly quantity: number
   readonly minimum_quantity: number
-  readonly category: string
+  readonly category: string | null
+  readonly custom_category_id: string | null
 }
 
 const loadHabUnitItemByBarcode = async (
@@ -42,7 +43,9 @@ const loadHabUnitItemByBarcode = async (
 
   const { data: habUnitItem, error: itemError } = await supabase
     .from(DB_TABLE_HOUSEHOLD_INVENTORY)
-    .select('item_id, name, quantity, minimum_quantity, category')
+    .select(
+      'item_id, name, quantity, minimum_quantity, category, custom_category_id',
+    )
     .eq('item_id', findItem.item_id)
     .maybeSingle<HabUnitItemRow>()
 

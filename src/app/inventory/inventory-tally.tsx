@@ -5,14 +5,11 @@ import Link from 'next/link'
 import { ArrowDown01, ArrowDown10, ArrowDownAZ, ArrowDownZA, Layers } from 'lucide-react'
 import { clsx } from 'clsx'
 
+import type { HabUnitCategory } from '@/lib/items/load-hab-unit-categories'
 import type { HabUnitTallyLine } from '@/lib/items/load-hab-unit-items'
 import { filterItemsByName } from '@/lib/items/filter-items-by-name'
 import { getCategoryShortage } from '@/lib/items/get-category-shortage'
 import { groupTallyLinesByCategory } from '@/lib/items/group-tally-lines-by-category'
-import {
-  ITEM_CATEGORY_LABELS,
-  type ItemCategory,
-} from '@/lib/items/item-category'
 import { resolveCategoryPanelOpen } from '@/lib/items/resolve-category-panel-open'
 import {
   sortTallyLines,
@@ -28,6 +25,7 @@ import { Label } from '@/components/ui/label'
 import { categoryTree, categoryTreeItem, fieldStack } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
+import { CustomCategoryControls } from './custom-category-controls'
 import InventoryCategoryPanel from './inventory-category-panel'
 import TallyCountControls from './tally-count-controls'
 
@@ -61,6 +59,7 @@ const tallyName = clsx(
 
 interface InventoryTallyProps {
   readonly lines: readonly HabUnitTallyLine[]
+  readonly customCategories: readonly HabUnitCategory[]
 }
 
 interface TallyLineListProps {
@@ -108,7 +107,7 @@ const TallyLineList = ({
   </ul>
 )
 
-const InventoryTally = ({ lines }: InventoryTallyProps) => {
+const InventoryTally = ({ lines, customCategories }: InventoryTallyProps) => {
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<TallySort>(INITIAL_TALLY_SORT)
   const [isCategorized, setIsCategorized] = useState(true)
@@ -131,9 +130,7 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
     })
   }, [])
   const isCountWritePending = pendingItemIds.size > 0
-  const [toggled, setToggled] = useState<
-    Partial<Record<ItemCategory, boolean>>
-  >({})
+  const [toggled, setToggled] = useState<Partial<Record<string, boolean>>>({})
   const isNameDescending = sort.field === 'name' && sort.direction === 'desc'
   const isCountDescending = sort.field === 'count' && sort.direction === 'desc'
   const NameSortIcon = isNameDescending ? ArrowDownZA : ArrowDownAZ
@@ -141,16 +138,16 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
   const trimmedQuery = query.trim()
   const isSearching = trimmedQuery.length > 0
   const visibleLines = sortTallyLines(filterItemsByName(lines, query), sort)
-  const visibleGroups = groupTallyLinesByCategory(visibleLines)
-  const categoryGroups = groupTallyLinesByCategory(lines)
-  const shortageByCategory = new Map<ItemCategory, 'critical' | 'warning' | null>(
+  const visibleGroups = groupTallyLinesByCategory(visibleLines, customCategories)
+  const categoryGroups = groupTallyLinesByCategory(lines, customCategories)
+  const shortageByCategory = new Map<string, 'critical' | 'warning' | null>(
     categoryGroups.map((group) => [
-      group.category,
+      group.key,
       getCategoryShortage(group.lines),
     ]),
   )
-  const countByCategory = new Map<ItemCategory, number>(
-    categoryGroups.map((group) => [group.category, group.lines.length]),
+  const countByCategory = new Map<string, number>(
+    categoryGroups.map((group) => [group.key, group.lines.length]),
   )
 
   return (
@@ -216,9 +213,9 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
       <div className={tallyPanelStack}>
         {isCategorized
           ? visibleGroups.map((group) => {
-              const shortage = shortageByCategory.get(group.category) ?? null
+              const shortage = shortageByCategory.get(group.key) ?? null
               const isOpen = resolveCategoryPanelOpen({
-                toggledOpen: toggled[group.category],
+                toggledOpen: toggled[group.key],
                 isSearching,
                 matchCount: group.lines.length,
                 hasShortage: shortage !== null,
@@ -226,18 +223,28 @@ const InventoryTally = ({ lines }: InventoryTallyProps) => {
 
               return (
                 <InventoryCategoryPanel
-                  key={group.category}
-                  label={ITEM_CATEGORY_LABELS[group.category]}
-                  panelId={`inventory-category-${group.category}`}
+                  key={group.key}
+                  label={group.label}
+                  panelId={`inventory-category-${group.key}`}
                   isOpen={isOpen}
                   onToggle={() => {
                     setToggled((current) => ({
                       ...current,
-                      [group.category]: !isOpen,
+                      [group.key]: !isOpen,
                     }))
                   }}
-                  itemCount={countByCategory.get(group.category) ?? 0}
+                  itemCount={countByCategory.get(group.key) ?? 0}
                   shortage={shortage}
+                  {...(group.ref.kind === 'custom'
+                    ? {
+                        actions: (
+                          <CustomCategoryControls
+                            categoryId={group.ref.categoryId}
+                            name={group.label}
+                          />
+                        ),
+                      }
+                    : {})}
                 >
                   <TallyLineList
                     lines={group.lines}

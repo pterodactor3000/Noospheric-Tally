@@ -14,9 +14,13 @@ import { formatConsumptionRate } from '@/lib/items/format-consumption-rate'
 import {
   ITEM_CATEGORIES,
   ITEM_CATEGORY_LABELS,
-  isItemCategory,
-  type ItemCategory,
 } from '@/lib/items/item-category'
+import {
+  getCategoryRefKey,
+  parseCategoryRefKey,
+  type ItemCategoryRef,
+} from '@/lib/items/item-category-ref'
+import type { HabUnitCategory } from '@/lib/items/load-hab-unit-categories'
 import { HOUSEHOLD_QUANTITY_MAX } from '@/lib/items/validate-household-quantity'
 import {
   getStockState,
@@ -84,7 +88,7 @@ const categoryField = clsx(
 const categoryFieldLabel = clsx(
   'grid',
   'w-full',
-  'grid-cols-[auto_1fr_auto]',
+  'grid-cols-[auto_minmax(0,1fr)_auto]',
   'items-baseline',
 )
 const categorySelect = clsx(
@@ -130,7 +134,8 @@ interface ItemLevelEditorProps {
   readonly quantity: number
   readonly minimumQuantity: number
   readonly consumptionCount: number
-  readonly category: ItemCategory
+  readonly category: ItemCategoryRef
+  readonly customCategories: readonly HabUnitCategory[]
   readonly barcodes: readonly string[]
 }
 
@@ -168,6 +173,37 @@ const LevelStepper = ({
   </div>
 )
 
+const compareHabUnitCategories = (
+  left: HabUnitCategory,
+  right: HabUnitCategory,
+): number => {
+  const createdAtComparison = left.createdAt.localeCompare(right.createdAt)
+  if (createdAtComparison !== 0) {
+    return createdAtComparison
+  }
+
+  return left.id.localeCompare(right.id)
+}
+
+const getSelectedCategoryLabel = (
+  categoryKey: string,
+  customCategories: readonly HabUnitCategory[],
+): string => {
+  const categoryRef = parseCategoryRefKey(categoryKey)
+  if (categoryRef?.kind === 'built-in') {
+    return ITEM_CATEGORY_LABELS[categoryRef.category]
+  }
+
+  if (categoryRef?.kind !== 'custom') {
+    return ''
+  }
+
+  const match = customCategories.find(
+    (customCategory) => customCategory.id === categoryRef.categoryId,
+  )
+  return match?.name ?? ''
+}
+
 const ItemLevelEditor = ({
   itemId,
   name,
@@ -175,11 +211,16 @@ const ItemLevelEditor = ({
   minimumQuantity,
   consumptionCount,
   category,
+  customCategories,
   barcodes,
 }: ItemLevelEditorProps) => {
   const [count, setCount] = useState(quantity)
   const [minimum, setMinimum] = useState(minimumQuantity)
-  const [selectedCategory, setSelectedCategory] = useState<ItemCategory>(category)
+  const savedCategoryKey = getCategoryRefKey(category)
+  const [selectedCategory, setSelectedCategory] = useState(savedCategoryKey)
+  const orderedCustomCategories = [...customCategories].sort(
+    compareHabUnitCategories,
+  )
   const [isBarcodeLineOpen, setIsBarcodeLineOpen] = useState(false)
   const [isHideArmed, setIsHideArmed] = useState(false)
   const isWideItemHeading = useIsWideItemHeading()
@@ -201,7 +242,7 @@ const ItemLevelEditor = ({
       <input type="hidden" name="quantity" value={count} />
       <input type="hidden" name="minimumQuantity" value={minimum} />
       <input type="hidden" name="expectedQuantity" value={quantity} />
-      <input type="hidden" name="expectedCategory" value={category} />
+      <input type="hidden" name="expectedCategory" value={savedCategoryKey} />
       <div className={itemRows}>
         <h1 className={itemTitle}>
           <span className={itemHeadingLine}>
@@ -274,18 +315,21 @@ const ItemLevelEditor = ({
         <div
           className={clsx(
             itemLine,
-            selectedCategory !== category && 'text-unsaved',
+            selectedCategory !== savedCategoryKey && 'text-unsaved',
           )}
         >
           <label htmlFor="item-category" className={itemLabel}>
             Category
           </label>
           <DotLeader />
-          <span className={clsx(itemValue, categoryField)}>
+          <span className={clsx(categoryField, 'min-w-0', 'max-w-full', 'shrink')}>
             <span aria-hidden="true" className={categoryFieldLabel}>
               <span>[</span>
-              <span className="text-center">
-                {ITEM_CATEGORY_LABELS[selectedCategory]}
+              <span className="min-w-0 truncate text-center">
+                {getSelectedCategoryLabel(
+                  selectedCategory,
+                  orderedCustomCategories,
+                )}
               </span>
               <span>]</span>
             </span>
@@ -295,12 +339,23 @@ const ItemLevelEditor = ({
               value={selectedCategory}
               onChange={(event) => {
                 const nextCategory = event.currentTarget.value
-                if (isItemCategory(nextCategory)) {
+                if (parseCategoryRefKey(nextCategory)) {
                   setSelectedCategory(nextCategory)
                 }
               }}
               className={categorySelect}
             >
+              {orderedCustomCategories.map((customCategory) => {
+                const categoryKey = getCategoryRefKey({
+                  kind: 'custom',
+                  categoryId: customCategory.id,
+                })
+                return (
+                  <option key={categoryKey} value={categoryKey}>
+                    {customCategory.name}
+                  </option>
+                )
+              })}
               {ITEM_CATEGORIES.map((itemCategory) => (
                 <option key={itemCategory} value={itemCategory}>
                   {ITEM_CATEGORY_LABELS[itemCategory]}

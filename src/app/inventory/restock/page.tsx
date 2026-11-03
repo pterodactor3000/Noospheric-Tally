@@ -1,6 +1,7 @@
 import { clsx } from 'clsx'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { loadHabUnitCategories } from '@/lib/items/load-hab-unit-categories'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { rankRestockLines } from '@/lib/items/rank-restock-lines'
 import { Separator } from '@/components/ui/separator'
@@ -19,6 +20,7 @@ const restockTitle = clsx('m-0', 'text-center', 'text-2xl', 'font-semibold')
 const RestockPage = async () => {
   await requireCurrentUser()
   await requireCurrentHabUnit()
+  const customCategories = await loadHabUnitCategories()
   const tallyLines = await loadHabUnitTallyLines()
   const restockLines = rankRestockLines(tallyLines)
 
@@ -27,7 +29,10 @@ const RestockPage = async () => {
       <section className={restockSection}>
         <h1 className={restockTitle}>Restock</h1>
         <Separator variant="heading" />
-        <RestockList lines={restockLines} />
+        <RestockList
+          lines={restockLines}
+          customCategories={customCategories}
+        />
       </section>
     </main>
   )

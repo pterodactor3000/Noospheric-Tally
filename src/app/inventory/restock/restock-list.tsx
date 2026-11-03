@@ -4,13 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 
+import type { HabUnitCategory } from '@/lib/items/load-hab-unit-categories'
 import type { RestockLine } from '@/lib/items/rank-restock-lines'
 import { getCategoryShortage } from '@/lib/items/get-category-shortage'
 import { groupTallyLinesByCategory } from '@/lib/items/group-tally-lines-by-category'
-import {
-  ITEM_CATEGORY_LABELS,
-  type ItemCategory,
-} from '@/lib/items/item-category'
 import { resolveCategoryPanelOpen } from '@/lib/items/resolve-category-panel-open'
 import { categoryTree, categoryTreeItem } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
@@ -32,6 +29,7 @@ const restockNarrowLine = clsx(restockLine, 'sm:hidden')
 
 interface RestockListProps {
   readonly lines: readonly RestockLine[]
+  readonly customCategories: readonly HabUnitCategory[]
 }
 
 interface RestockLineRowProps {
@@ -61,11 +59,9 @@ const RestockLineRow = ({ line }: RestockLineRowProps) => (
   </li>
 )
 
-const RestockList = ({ lines }: RestockListProps) => {
-  const [toggled, setToggled] = useState<Partial<Record<ItemCategory, boolean>>>(
-    {},
-  )
-  const categoryGroups = groupTallyLinesByCategory(lines)
+const RestockList = ({ lines, customCategories }: RestockListProps) => {
+  const [toggled, setToggled] = useState<Partial<Record<string, boolean>>>({})
+  const categoryGroups = groupTallyLinesByCategory(lines, customCategories)
 
   if (lines.length === 0) {
     return <p>Nothing needs restocking.</p>
@@ -76,7 +72,7 @@ const RestockList = ({ lines }: RestockListProps) => {
       {categoryGroups.map((group) => {
         const shortage = getCategoryShortage(group.lines)
         const isOpen = resolveCategoryPanelOpen({
-          toggledOpen: toggled[group.category],
+          toggledOpen: toggled[group.key],
           isSearching: false,
           matchCount: group.lines.length,
           hasShortage: shortage !== null,
@@ -84,14 +80,14 @@ const RestockList = ({ lines }: RestockListProps) => {
 
         return (
           <InventoryCategoryPanel
-            key={group.category}
-            label={ITEM_CATEGORY_LABELS[group.category]}
-            panelId={`restock-category-${group.category}`}
+            key={group.key}
+            label={group.label}
+            panelId={`restock-category-${group.key}`}
             isOpen={isOpen}
             onToggle={() => {
               setToggled((current) => ({
                 ...current,
-                [group.category]: !isOpen,
+                [group.key]: !isOpen,
               }))
             }}
             itemCount={group.lines.length}

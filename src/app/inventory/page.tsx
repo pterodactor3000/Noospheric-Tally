@@ -2,12 +2,14 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 
 import { requireCurrentHabUnit, requireCurrentUser } from '@/lib/helpers'
+import { loadHabUnitCategories } from '@/lib/items/load-hab-unit-categories'
 import { loadHabUnitTallyLines } from '@/lib/items/load-hab-unit-items'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { centeredPage } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
+import { CreateCategoryForm } from './create-category-form'
 import InventoryTally from './inventory-tally'
 
 const inventorySection = clsx(
@@ -39,6 +41,7 @@ const inventoryTitle = clsx('m-0', 'text-center', 'text-2xl', 'font-semibold')
 const InventoryPage = async () => {
   await requireCurrentUser()
   const habUnit = await requireCurrentHabUnit()
+  const customCategories = await loadHabUnitCategories()
   const tallyLines = await loadHabUnitTallyLines()
 
   return (
@@ -51,7 +54,11 @@ const InventoryPage = async () => {
           tally
         </h1>
         <Separator variant="heading" />
-        <InventoryTally lines={tallyLines} />
+        <InventoryTally
+          lines={tallyLines}
+          customCategories={customCategories}
+        />
+        <CreateCategoryForm />
         <div className={inventoryActions}>
           <Button
             variant="outline"
