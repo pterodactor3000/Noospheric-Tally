@@ -673,17 +673,17 @@ Rollback after Phase 1 or 2: drop the new functions and table. Rollback after Ph
 
 #### Automated
 
-- [x] 1.1 `pnpm test` passes, including the new `item-category-ref.test.ts` and the updated `group-tally-lines-by-category.test.ts` and `load-hab-unit-items.test.ts`.
-- [x] 1.2 `pnpm typecheck` passes.
-- [x] 1.3 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [x] 1.4 `rg "household_categories" supabase/migrations` matches only `20261103090000_create_household_categories.sql`. That file contains `enable row level security`, `household_categories_select_if_member`, a composite foreign key from `household_inventory` to `household_categories (id, household_id)`, and `num_nonnulls`. It contains no `for insert`, `for update`, or `for delete` policy.
+- [x] 1.1 `pnpm test` passes, including the new `item-category-ref.test.ts` and the updated `group-tally-lines-by-category.test.ts` and `load-hab-unit-items.test.ts`. `6a60d22`
+- [x] 1.2 `pnpm typecheck` passes. `6a60d22`
+- [x] 1.3 `pnpm lint` passes with no new warnings in the files this phase touches. `6a60d22`
+- [x] 1.4 `rg "household_categories" supabase/migrations` matches only `20261103090000_create_household_categories.sql`. That file contains `enable row level security`, `household_categories_select_if_member`, a composite foreign key from `household_inventory` to `household_categories (id, household_id)`, and `num_nonnulls`. It contains no `for insert`, `for update`, or `for delete` policy. `6a60d22`
 
 #### Manual
 
-- [x] 1.5 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103090000_create_household_categories.sql` with no error.
-- [x] 1.6 In a rolled-back SQL transaction as a member of hab unit A (set the caller first: `select set_config('request.jwt.claims', '{"sub":"<user uuid>"}', true); set local role authenticated;`), `select` on `household_categories` returns zero rows, and an `insert` into it is refused. As the table owner in a rolled-back transaction, referencing a category of hab unit B from a `household_inventory` row of hab unit A fails with a foreign key error, setting both `category` and `custom_category_id` fails the CHECK, and setting neither fails the CHECK.
-- [x] 1.7 Full-page screenshots of `/inventory` and `/inventory/restock` taken before and after the code change, in light and dark, at a wide viewport and at 390px, with animations frozen, show a zero-pixel diff.
-- [x] 1.8 Signed in with existing data, every item still shows in the same one of the five panels with the same count, the same warning icons, and the same open and closed state.
+- [x] 1.5 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103090000_create_household_categories.sql` with no error. `6a60d22`
+- [x] 1.6 In a rolled-back SQL transaction as a member of hab unit A (set the caller first: `select set_config('request.jwt.claims', '{"sub":"<user uuid>"}', true); set local role authenticated;`), `select` on `household_categories` returns zero rows, and an `insert` into it is refused. As the table owner in a rolled-back transaction, referencing a category of hab unit B from a `household_inventory` row of hab unit A fails with a foreign key error, setting both `category` and `custom_category_id` fails the CHECK, and setting neither fails the CHECK. `6a60d22`
+- [x] 1.7 Full-page screenshots of `/inventory` and `/inventory/restock` taken before and after the code change, in light and dark, at a wide viewport and at 390px, with animations frozen, show a zero-pixel diff. `6a60d22`
+- [x] 1.8 Signed in with existing data, every item still shows in the same one of the five panels with the same count, the same warning icons, and the same open and closed state. `6a60d22`
 
 ### Phase 2: Create a custom category
 
