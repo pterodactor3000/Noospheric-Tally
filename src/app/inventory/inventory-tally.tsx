@@ -25,6 +25,7 @@ import { Label } from '@/components/ui/label'
 import { categoryTree, categoryTreeItem, fieldStack } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
+import { CustomCategoryControls } from './custom-category-controls'
 import InventoryCategoryPanel from './inventory-category-panel'
 import TallyCountControls from './tally-count-controls'
 
@@ -234,6 +235,16 @@ const InventoryTally = ({ lines, customCategories }: InventoryTallyProps) => {
                   }}
                   itemCount={countByCategory.get(group.key) ?? 0}
                   shortage={shortage}
+                  {...(group.ref.kind === 'custom'
+                    ? {
+                        actions: (
+                          <CustomCategoryControls
+                            categoryId={group.ref.categoryId}
+                            name={group.label}
+                          />
+                        ),
+                      }
+                    : {})}
                 >
                   <TallyLineList
                     lines={group.lines}

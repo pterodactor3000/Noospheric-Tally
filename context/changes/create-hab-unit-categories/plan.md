@@ -728,20 +728,20 @@ Rollback after Phase 1 or 2: drop the new functions and table. Rollback after Ph
 
 #### Automated
 
-- [ ] 4.1 `pnpm exec vitest run src/lib/items/rename-hab-unit-category.test.ts src/app/inventory/inventory-category-panel.test.ts` passes. The tests cover renamed, duplicate, missing, another error thrown with `cause`, the unchanged markup without `actions`, and the control placed outside the toggle `<button>`.
-- [ ] 4.2 `pnpm test` passes.
-- [ ] 4.3 `pnpm typecheck` passes.
-- [ ] 4.4 `pnpm lint` passes with no new warnings in the files this phase touches.
-- [ ] 4.5 `rg "rename_household_category" supabase/migrations` matches only `20261103093000_rename_household_category.sql`. That file contains `security definer`, `set search_path = ''`, `auth.uid()`, `P0002`, and `revoke all on function public.rename_household_category(uuid, text) from public, anon`.
+- [x] 4.1 `pnpm exec vitest run src/lib/items/rename-hab-unit-category.test.ts src/app/inventory/inventory-category-panel.test.ts` passes. The tests cover renamed, duplicate, missing, another error thrown with `cause`, the unchanged markup without `actions`, and the control placed outside the toggle `<button>`.
+- [x] 4.2 `pnpm test` passes.
+- [x] 4.3 `pnpm typecheck` passes.
+- [x] 4.4 `pnpm lint` passes with no new warnings in the files this phase touches.
+- [x] 4.5 `rg "rename_household_category" supabase/migrations` matches only `20261103093000_rename_household_category.sql`. That file contains `security definer`, `set search_path = ''`, `auth.uid()`, `P0002`, and `revoke all on function public.rename_household_category(uuid, text) from public, anon`.
 
 #### Manual
 
-- [ ] 4.6 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103093000_rename_household_category.sql` with no error.
-- [ ] 4.7 In a rolled-back SQL transaction as a member of hab unit A, renaming `Cleaning` to `Garden` raises `23505` when `Garden` exists. Renaming `Cleaning` to `CLEANING` succeeds and keeps the same id. Renaming a category id of hab unit B raises `P0002`. The assigned items still point at the same id after a rename.
-- [ ] 4.8 On `/inventory`, each custom panel header shows a rename control, and the built-in panels show none. Renaming `Cleaning` to `Cleaners` shows the new label, keeps the items inside, and keeps the panel's position. A reload shows the same.
-- [ ] 4.9 Renaming to another category's name, to a built-in label, to a blank name, or to 41 characters shows a field error and changes nothing. A case-only rename succeeds.
-- [ ] 4.10 The item page Category select shows the new name.
-- [ ] 4.11 Full-page screenshots of `/inventory` with only built-in panels, before and after this phase, in light and dark at a wide viewport and at 390px, show a zero-pixel diff.
+- [x] 4.6 After confirming the linked project and taking a snapshot, `pnpm exec supabase db push` applies `20261103093000_rename_household_category.sql` with no error.
+- [x] 4.7 In a rolled-back SQL transaction as a member of hab unit A, renaming `Cleaning` to `Garden` raises `23505` when `Garden` exists. Renaming `Cleaning` to `CLEANING` succeeds and keeps the same id. Renaming a category id of hab unit B raises `P0002`. The assigned items still point at the same id after a rename.
+- [x] 4.8 On `/inventory`, each custom panel header shows a rename control, and the built-in panels show none. Renaming `Cleaning` to `Cleaners` shows the new label, keeps the items inside, and keeps the panel's position. A reload shows the same.
+- [x] 4.9 Renaming to another category's name, to a built-in label, to a blank name, or to 41 characters shows a field error and changes nothing. A case-only rename succeeds.
+- [x] 4.10 The item page Category select shows the new name.
+- [x] 4.11 Full-page screenshots of `/inventory` with only built-in panels, before and after this phase, in light and dark at a wide viewport and at 390px, show a zero-pixel diff.
 
 ### Phase 5: Delete a custom category and update the help copy
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode } from 'react'
+import { type PropsWithChildren, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
@@ -13,7 +13,7 @@ interface InventoryCategoryPanelProps {
   readonly onToggle: () => void
   readonly itemCount: number
   readonly shortage: 'critical' | 'warning' | null
-  readonly children: ReactNode
+  readonly actions?: ReactNode
 }
 
 interface CategoryPanelChevronProps {
@@ -65,42 +65,53 @@ const InventoryCategoryPanel = ({
   onToggle,
   itemCount,
   shortage,
+  actions,
   children,
-}: InventoryCategoryPanelProps) => {
+}: PropsWithChildren<InventoryCategoryPanelProps>) => {
   const headerStockState = getCategoryHeaderStockState(shortage, itemCount)
+  const headerButton = (isFullWidth: boolean) => (
+    <button
+      type="button"
+      aria-expanded={isOpen}
+      aria-controls={panelId}
+      onClick={onToggle}
+      className={clsx(
+        'flex',
+        isFullWidth ? 'w-full' : clsx('min-w-0', 'flex-1'),
+        'items-center',
+        'justify-between',
+        'gap-3',
+        'text-left',
+        'font-mono',
+        'text-base',
+        'leading-7',
+        headerStockState === null
+          ? null
+          : STOCK_STATE_TEXT_CLASS_NAMES[headerStockState],
+      )}
+    >
+      <span className={clsx('flex', 'min-w-0', 'items-center', 'gap-2')}>
+        <span className="truncate">{label}</span>
+        <span className="shrink-0">{itemCount}</span>
+        {shortage === null ? null : (
+          <span className="sr-only">{STOCK_STATE_LABELS[shortage]}</span>
+        )}
+      </span>
+      <CategoryPanelChevron isOpen={isOpen} />
+    </button>
+  )
 
   return (
     <div>
       <h2 className="m-0">
-        <button
-          type="button"
-          aria-expanded={isOpen}
-          aria-controls={panelId}
-          onClick={onToggle}
-          className={clsx(
-            'flex',
-            'w-full',
-            'items-center',
-            'justify-between',
-            'gap-3',
-            'text-left',
-            'font-mono',
-            'text-base',
-            'leading-7',
-            headerStockState === null
-              ? null
-              : STOCK_STATE_TEXT_CLASS_NAMES[headerStockState],
-          )}
-        >
-          <span className={clsx('flex', 'min-w-0', 'items-center', 'gap-2')}>
-            <span className="truncate">{label}</span>
-            <span className="shrink-0">{itemCount}</span>
-            {shortage === null ? null : (
-              <span className="sr-only">{STOCK_STATE_LABELS[shortage]}</span>
-            )}
-          </span>
-          <CategoryPanelChevron isOpen={isOpen} />
-        </button>
+        {actions === undefined ? (
+          headerButton(true)
+        ) : (
+          <div className={clsx('flex', 'items-center', 'gap-2')}>
+            {headerButton(false)}
+            {actions}
+          </div>
+        )}
       </h2>
       <div
         className={clsx(
