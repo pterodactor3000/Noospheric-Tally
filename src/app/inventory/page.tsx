@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { centeredPage } from '@/app/styles/class-names'
 import { STOCK_STATE_TEXT_CLASS_NAMES } from '@/app/styles/stock-state-class-names'
 
+import { CreateCategoryForm } from './create-category-form'
 import InventoryTally from './inventory-tally'
 
 const inventorySection = clsx(
@@ -57,6 +58,7 @@ const InventoryPage = async () => {
           lines={tallyLines}
           customCategories={customCategories}
         />
+        <CreateCategoryForm />
         <div className={inventoryActions}>
           <Button
             variant="outline"
